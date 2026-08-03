@@ -38,7 +38,7 @@ export default function RootLayout({
       suppressHydrationWarning
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <head><script dangerouslySetInnerHTML={{ __html: `(function(){try{var t=localStorage.getItem('workspace-interface-theme');if(['minimal-light','midnight-pro','glass-flow','warm-journal','focus-compact'].includes(t)){document.documentElement.dataset.workspaceTheme=t}else{document.documentElement.dataset.workspaceTheme='minimal-light'}}catch(e){}})()` }} /></head>
+      <head><script dangerouslySetInnerHTML={{ __html: `(function(){try{var t=localStorage.getItem('workspace-interface-theme');if(['bunny-life','cat-cafe','peach-bubble','forest-diary','little-planet','pet-assistant'].includes(t)){document.documentElement.dataset.workspaceTheme=t}else{document.documentElement.dataset.workspaceTheme='bunny-life'}}catch(e){}})()` }} /></head>
       <body className="min-h-full"><ThemeProvider>{children}</ThemeProvider></body>
     </html>
   );
