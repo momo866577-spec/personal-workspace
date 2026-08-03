@@ -5,7 +5,7 @@ export default function manifest(): MetadataRoute.Manifest {
     id: "/",
     name: "Personal Workspace",
     short_name: "Workspace",
-    description: "你的本机优先个人工作台",
+    description: "你的本地优先个人工作台",
     start_url: "/",
     scope: "/",
     display: "standalone",

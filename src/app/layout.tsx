@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Personal Workspace",
-  description: "你的本机优先个人工作台",
+  description: "你的本地优先个人工作台",
   applicationName: "Personal Workspace",
   manifest: "/manifest.webmanifest",
   icons: {
