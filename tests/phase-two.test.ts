@@ -9,8 +9,9 @@ import { exportAllData, importAllData } from "../src/lib/data-portability";
 import { db } from "../src/lib/db";
 import fs from "node:fs";
 import { builtInLesson, validateQuestionBank } from "../src/lib/english-question-bank";
+import { deleteAiConnection, MockAiProvider } from "../src/lib/ai-connection";
 
-test("IndexedDB v1 upgrades to v3 without losing old rows",async()=>{await Dexie.delete("personal-workspace");const old=new Dexie("personal-workspace");old.version(1).stores({tasks:"id,due,done,order,createdAt",english:"id,date,completed,createdAt",workouts:"id,date,bodyPart,completed,createdAt",notes:"id,title,category,favorite,pinned,updatedAt,*tags",streams:"id,date,platform,streamer,createdAt",contacts:"id,username,platform,country,importance,createdAt,*tags"});await old.table("tasks").add({id:"old-task",title:"保留",due:"2026-08-03",done:false,order:0,createdAt:"x"});old.close();const upgraded=new WorkspaceDB();await upgraded.open();assert.equal((await upgraded.tasks.get("old-task"))?.title,"保留");assert.ok(upgraded.tables.some(x=>x.name==="workoutCheckins"));assert.ok(upgraded.tables.some(x=>x.name==="englishQuestionBanks"));upgraded.close()});
+test("IndexedDB v1 upgrades to v4 without losing old rows",async()=>{await Dexie.delete("personal-workspace");const old=new Dexie("personal-workspace");old.version(1).stores({tasks:"id,due,done,order,createdAt",english:"id,date,completed,createdAt",workouts:"id,date,bodyPart,completed,createdAt",notes:"id,title,category,favorite,pinned,updatedAt,*tags",streams:"id,date,platform,streamer,createdAt",contacts:"id,username,platform,country,importance,createdAt,*tags"});await old.table("tasks").add({id:"old-task",title:"保留",due:"2026-08-03",done:false,order:0,createdAt:"x"});old.close();const upgraded=new WorkspaceDB();await upgraded.open();assert.equal((await upgraded.tasks.get("old-task"))?.title,"保留");assert.ok(upgraded.tables.some(x=>x.name==="workoutCheckins"));assert.ok(upgraded.tables.some(x=>x.name==="englishQuestionBanks"));assert.ok(upgraded.tables.some(x=>x.name==="aiSecrets"));upgraded.close()});
 
 test("daily English plan is generated exactly once and refresh-safe",async()=>{await Dexie.delete("personal-workspace");await db.open();const date="2026-08-03";await ensureEnglishDailyPlan(date);await ensureEnglishDailyPlan(date);assert.equal(await db.englishDailyPlans.count(),1);assert.equal(await db.tasks.where("due").equals(date).count(),5)});
 
@@ -22,7 +23,11 @@ test("workout streak, weekly and monthly totals are correct across days",()=>{co
 
 test("all three local rule AI tools return usable output",async()=>{const provider=new LocalRuleProvider();for(const mode of ["reply","review","coach"] as const){const output=await provider.generate({mode,input:"有人觉得价格太高"});assert.ok(output.length>80)}});
 
+test("AI connection wizard uses Mock Provider without environment variables",async()=>{const mock=new MockAiProvider();assert.equal(await mock.test(),"AI 已连接");assert.match(await mock.generate("reply","你好"),/Mock reply/);await deleteAiConnection()});
+
 test("v3 JSON exports and imports all old and new tables",async()=>{const exported=await exportAllData();for(const name of ["tasks","english","workouts","notes","streams","contacts","workoutCheckins","englishDailyPlans","aiToolRecords","englishQuestionBanks"])assert.ok(Array.isArray(exported[name]));await importAllData(exported);assert.equal(await db.englishDailyPlans.count(),1);db.close()});
+
+test("AI secrets and connection metadata are excluded from JSON export",async()=>{await db.open();const exported=await exportAllData();assert.equal("aiSecrets" in exported,false);assert.equal("aiConnections" in exported,false);db.close()});
 
 test("UI source uses Simplified Chinese and zh-CN locale",()=>{const traditional=/總覽|計畫|設定|資料|備忘錄|運動|學習|匯入|匯出|標籤|搜尋|刪除|標題|內容|紀錄|鍛鍊|連續|還沒有/;for(const file of ["src/components/workspace.tsx","src/components/ui-pack-shells.tsx","src/components/workspace-theme-provider.tsx","src/components/phase-two.tsx","src/lib/english-question-bank.ts","src/app/layout.tsx","src/app/manifest.ts"]){const source=fs.readFileSync(file,"utf8");assert.equal(traditional.test(source),false,`${file} contains a Traditional Chinese UI label`);assert.equal(source.includes("zh-TW"),false)}assert.match(fs.readFileSync("src/app/layout.tsx","utf8"),/lang="zh-CN"/)});
 
