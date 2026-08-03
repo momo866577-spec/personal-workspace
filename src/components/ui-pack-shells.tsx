@@ -1,35 +1,64 @@
 "use client";
-/* eslint-disable @next/next/no-img-element */
 
 import { useEffect, useState, type ReactNode } from "react";
-import { motion } from "motion/react";
+import { AnimatePresence, motion } from "motion/react";
 import { createPortal } from "react-dom";
 import type { LucideIcon } from "lucide-react";
-import { ChevronLeft, Coffee, Download, Gamepad2, LayoutGrid, Leaf, PawPrint, Share, Sparkles, Star, X } from "lucide-react";
-import { useWorkspaceTheme, workspaceThemes, type WorkspaceTheme } from "./workspace-theme-provider";
+import { Download, Menu, Share, Sparkles, X } from "lucide-react";
+import type { WorkspaceTheme } from "./workspace-theme-provider";
 
 export type PackPage = "dashboard"|"tasks"|"english"|"workouts"|"notes"|"streams"|"contacts"|"settings";
 export type PackNavItem = { id:PackPage; label:string; icon:LucideIcon };
 type Props = { page:PackPage; title:string; nav:PackNavItem[]; go:(page:PackPage)=>void; children:ReactNode; theme:WorkspaceTheme };
 
-const NavButton=({item,active,go,className=""}:{item:PackNavItem;active:boolean;go:(p:PackPage)=>void;className?:string})=><motion.button whileTap={{scale:.88}} onClick={()=>go(item.id)} className={`${className} ${active?"active":""}`} aria-current={active?"page":undefined}><item.icon/><span>{item.label.replace("每日","")}</span></motion.button>;
-
 type InstallPromptEvent=Event&{prompt:()=>Promise<void>;userChoice:Promise<{outcome:"accepted"|"dismissed"}>};
-function InstallAppButton(){const [prompt,setPrompt]=useState<InstallPromptEvent|null>(null);const [help,setHelp]=useState(false);const [installed,setInstalled]=useState(()=>typeof window!=="undefined"&&(window.matchMedia("(display-mode: standalone)").matches||Boolean((navigator as Navigator&{standalone?:boolean}).standalone)));useEffect(()=>{const ready=(event:Event)=>{event.preventDefault();setPrompt(event as InstallPromptEvent)};const done=()=>setInstalled(true);window.addEventListener("beforeinstallprompt",ready);window.addEventListener("appinstalled",done);return()=>{window.removeEventListener("beforeinstallprompt",ready);window.removeEventListener("appinstalled",done)}},[]);const install=async()=>{if(prompt){await prompt.prompt();const choice=await prompt.userChoice;if(choice.outcome==="accepted")setInstalled(true);setPrompt(null)}else setHelp(true)};const helpDialog=help&&typeof document!=="undefined"?createPortal(<div className="install-help-backdrop" onClick={()=>setHelp(false)}><motion.section initial={{scale:.92,opacity:0}} animate={{scale:1,opacity:1}} onClick={e=>e.stopPropagation()} className="install-help"><button className="install-close" onClick={()=>setHelp(false)} aria-label="關閉"><X/></button><span className="install-symbol"><Share/></span><h3>加入 iPhone 主畫面</h3><ol><li>先用 Safari 開啟正式網址</li><li>點 Safari 的「分享」按鈕</li><li>選擇「加入主畫面」</li><li>開啟「作為 Web App 打開」，再按「加入」</li></ol><a href="https://personal-workspace-dvc.pages.dev">在正式網址開啟</a><small>如果分享面板顯示 share.google，代表目前不是直接開啟正式網站。</small></motion.section></div>,document.body):null;return <><button className="install-app-button" onClick={install} disabled={installed}><Download/><span>{installed?"已安裝到桌面":"安裝到桌面 App"}</span></button>{helpDialog}</>}
+function InstallAppButton(){
+  const [prompt,setPrompt]=useState<InstallPromptEvent|null>(null);
+  const [help,setHelp]=useState(false);
+  const [installed,setInstalled]=useState(()=>typeof window!=="undefined"&&(window.matchMedia("(display-mode: standalone)").matches||Boolean((navigator as Navigator&{standalone?:boolean}).standalone)));
+  useEffect(()=>{
+    const ready=(event:Event)=>{event.preventDefault();setPrompt(event as InstallPromptEvent)};
+    const done=()=>setInstalled(true);
+    window.addEventListener("beforeinstallprompt",ready);window.addEventListener("appinstalled",done);
+    return()=>{window.removeEventListener("beforeinstallprompt",ready);window.removeEventListener("appinstalled",done)};
+  },[]);
+  const install=async()=>{if(prompt){await prompt.prompt();const result=await prompt.userChoice;if(result.outcome==="accepted")setInstalled(true);setPrompt(null)}else setHelp(true)};
+  const dialog=help&&typeof document!=="undefined"?createPortal(<div className="install-help-backdrop" onClick={()=>setHelp(false)}><motion.section initial={{scale:.92,opacity:0}} animate={{scale:1,opacity:1}} onClick={e=>e.stopPropagation()} className="install-help"><button className="install-close" onClick={()=>setHelp(false)} aria-label="關閉"><X/></button><span className="install-symbol"><Share/></span><h3>加入 iPhone 主畫面</h3><ol><li>請先使用 Safari 開啟工作台。</li><li>點擊 Safari 下方的「分享」按鈕。</li><li>向下找到「加入主畫面」。</li><li>確認名稱後點擊「加入」。</li></ol><a href="https://personal-workspace-dvc.pages.dev">使用 Safari 開啟</a><small>如果目前是從分享頁或 App 內瀏覽器開啟，請先選擇「在 Safari 中開啟」。</small></motion.section></div>,document.body):null;
+  return <><button className="companion-install" onClick={install} disabled={installed}><Download/><span>{installed?"已安裝到桌面":"安裝桌面 App"}</span></button>{dialog}</>;
+}
 
-function PackChooser({compact=false}:{compact?:boolean}){const {workspaceTheme,setWorkspaceTheme}=useWorkspaceTheme();return <div className={compact?"pack-chooser compact":"pack-chooser"}><small>更換 UI Pack</small><div>{workspaceThemes.map(t=><button key={t.id} aria-pressed={workspaceTheme===t.id} onClick={()=>setWorkspaceTheme(t.id)}><i style={{background:t.colors[2]}}/><span>{t.name}</span></button>)}</div><InstallAppButton/></div>}
-function MobileHub({nav,page,go,className}:{nav:PackNavItem[];page:PackPage;go:(p:PackPage)=>void;className:string}){const [open,setOpen]=useState(false);return <><nav className={`pack-mobile ${className}`}>{nav.slice(0,4).map(n=><NavButton key={n.id} item={n} active={page===n.id} go={go}/>)}<button className={open?"active":""} onClick={()=>setOpen(true)}><LayoutGrid/><span>全部</span></button></nav>{open&&<motion.div className="mobile-hub-backdrop" initial={{opacity:0}} animate={{opacity:1}} onClick={()=>setOpen(false)}><motion.section initial={{y:"100%"}} animate={{y:0}} transition={{type:"spring",stiffness:280,damping:26}} onClick={e=>e.stopPropagation()} className="mobile-hub"><header><div><small>PERSONAL WORKSPACE</small><b>全部功能與介面</b></div><button onClick={()=>setOpen(false)} aria-label="關閉"><X/></button></header><div className="mobile-all-nav">{nav.map(n=><NavButton key={n.id} item={n} active={page===n.id} go={p=>{go(p);setOpen(false)}}/>)}</div><PackChooser compact/></motion.section></motion.div>}</>}
+function Companion({kind,active}:{kind:"rabbit"|"fox";active:boolean}){
+  return <motion.img
+    className={`ui-companion ${kind}`}
+    src={kind==="rabbit"?"/mascots/pink-rabbit.png":"/mascots/blue-fox.png"}
+    alt={kind==="rabbit"?"粉雪兔兔助手":"月光小狐助手"}
+    animate={active?{y:[0,-13,0],rotate:[0,-4,4,0],scale:[1,1.06,1]}:{y:[0,-5,0]}}
+    transition={{duration:active?1.05:3.2,repeat:Infinity,type:"tween"}}
+    draggable={false}
+  />;
+}
 
-export function BunnyLifeShell({page,title,nav,go,children}:Props){return <div className="pack pack-bunny"><div className="bunny-cloud cloud-a"/><div className="bunny-cloud cloud-b"/><header className="bunny-top"><button onClick={()=>go("dashboard")}><img src="/packs/bunny-life.png" alt="兔兔生活助手"/><span><small>今天也一起加油</small><b>{title}</b></span></button><span className="carrot-score">今日能量</span></header><aside className="bunny-path feature-rail"><div className="garden-title"><Sparkles/><b>Bunny Life</b></div>{nav.map((n,i)=><NavButton key={n.id} item={n} active={page===n.id} go={go} className={`garden-stop stop-${i}`}/>)}<PackChooser/></aside><main className="pack-stage bunny-stage">{children}</main><MobileHub nav={nav} page={page} go={go} className="bunny-mobile"/></div>}
+export function CompanionShell({page,title,nav,go,children}:Props){
+  const [menu,setMenu]=useState(false);const [reaction,setReaction]=useState(0);
+  const navigate=(id:PackPage)=>{setReaction(x=>x+1);go(id);setMenu(false)};
+  return <div className="companion-app" onPointerDown={e=>{if((e.target as HTMLElement).closest("button,.glass-card,.task"))setReaction(x=>x+1)}}>
+    <aside className={menu?"companion-sidebar open":"companion-sidebar"}>
+      <button className="companion-brand" onClick={()=>navigate("dashboard")}><span><Sparkles/></span><b>我的生活工作台</b><small>和兩位夥伴一起完成今天</small></button>
+      <nav>{nav.map((item,index)=><motion.button whileTap={{scale:.95}} key={item.id} className={page===item.id?"active":""} onClick={()=>navigate(item.id)}><item.icon/><span>{item.label}</span>{index===1&&<i>今日</i>}</motion.button>)}</nav>
+      <div className="sidebar-friends"><Companion kind="rabbit" active={reaction%2===0}/><Companion kind="fox" active={reaction%2===1}/></div>
+      <InstallAppButton/>
+    </aside>
+    <button className="mobile-menu-button" onClick={()=>setMenu(true)} aria-label="開啟功能列"><Menu/></button>
+    <AnimatePresence>{menu&&<motion.button className="sidebar-backdrop" initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}} onClick={()=>setMenu(false)} aria-label="關閉功能列"/>}</AnimatePresence>
+    <header className="companion-header"><div><small>PERSONAL WORKSPACE</small><h1>{title}</h1></div><div className="header-buddy"><span>{reaction%2===0?"一起完成一件小事吧！":"做得很好，繼續前進！"}</span><Companion kind={reaction%2===0?"rabbit":"fox"} active/></div></header>
+    <main className="companion-stage">{children}</main>
+  </div>
+}
 
-export function CatCafeShell({page,title,nav,go,children}:Props){return <div className="pack pack-cafe"><aside className="cafe-counter feature-rail"><button className="cafe-brand" onClick={()=>go("dashboard")}><Coffee/><b>Cat Cafe</b><small>OPEN · 今日營業中</small></button><div className="cafe-menu-label">TODAY&apos;S MENU</div>{nav.map(n=><NavButton key={n.id} item={n} active={page===n.id} go={go} className="cafe-menu-item"/>)}<PackChooser/></aside><header className="cafe-note"><PawPrint/><span><small>店長的手寫便條</small><b>{title}</b></span></header><main className="pack-stage cafe-table">{children}</main><MobileHub nav={nav} page={page} go={go} className="cafe-tabs"/></div>}
-
-export function PeachBubbleShell({page,title,nav,go,children}:Props){return <div className="pack pack-peach"><div className="bubble-field"><i/><i/><i/><i/></div><header className="peach-header"><button onClick={()=>go("dashboard")}><ChevronLeft/><span><small>Peach Bubble</small><b>{title}</b></span></button><motion.img animate={{y:[0,-7,0],rotate:[-2,2,-2]}} transition={{repeat:Infinity,duration:4}} src="/packs/peach-bubble.png" alt="蜜桃泡泡"/></header><aside className="peach-ribbon feature-rail"><b>Peach Bubble</b>{nav.map(n=><NavButton key={n.id} item={n} active={page===n.id} go={go}/>)}<PackChooser/></aside><main className="pack-stage peach-stage">{children}</main><MobileHub nav={nav} page={page} go={go} className="peach-dock"/></div>}
-
-export function ForestDiaryShell({page,title,nav,go,children}:Props){return <div className="pack pack-forest"><header className="forest-sign"><button onClick={()=>go("dashboard")}><Leaf/><span><small>FOREST DIARY</small><b>{title}</b></span></button></header><aside className="forest-trail feature-rail"><img src="/packs/forest-diary.png" alt="森林朋友"/><div className="trail-line"/>{nav.map((n,i)=><NavButton key={n.id} item={n} active={page===n.id} go={go} className={`trail-stop trail-${i}`}/>)}<PackChooser/></aside><main className="pack-stage forest-cabin">{children}</main><MobileHub nav={nav} page={page} go={go} className="forest-mobile"/></div>}
-
-export function LittlePlanetShell({page,title,nav,go,children}:Props){return <div className="pack pack-space"><div className="space-stars">{Array.from({length:18},(_,i)=><i key={i}/>)}</div><header className="space-hud"><button onClick={()=>go("dashboard")}><Star/><span><small>LITTLE PLANET</small><b>{title}</b></span></button><img src="/packs/little-planet.png" alt="小星球"/></header><aside className="orbit-nav feature-rail">{nav.map((n,i)=><NavButton key={n.id} item={n} active={page===n.id} go={go} className={`orbit orbit-${i}`}/>)}<PackChooser/></aside><main className="pack-stage planet-stage">{children}</main><MobileHub nav={nav} page={page} go={go} className="planet-mobile"/></div>}
-
-export function PetAssistantShell({page,title,nav,go,children}:Props){return <div className="pack pack-game"><header className="game-hud"><button onClick={()=>go("dashboard")}><Gamepad2/><span><small>LV. 01 · DAILY QUEST</small><b>{title}</b></span></button><div className="game-bars"><span>ENERGY</span><i><b/></i></div></header><aside className="game-menu feature-rail"><img src="/packs/pet-assistant.png" alt="寵物助手夥伴"/><div className="pet-status"><b>夥伴心情</b><span>開心跳躍中</span></div>{nav.map(n=><NavButton key={n.id} item={n} active={page===n.id} go={go} className="quest-button"/>)}<PackChooser/></aside><main className="pack-stage game-stage">{children}</main><MobileHub nav={nav} page={page} go={go} className="game-mobile"/></div>}
-
-export const packShells:Record<WorkspaceTheme,(props:Props)=>ReactNode>={"bunny-life":BunnyLifeShell,"cat-cafe":CatCafeShell,"peach-bubble":PeachBubbleShell,"forest-diary":ForestDiaryShell,"little-planet":LittlePlanetShell,"pet-assistant":PetAssistantShell};
+export const BunnyLifeShell=CompanionShell;
+export const CatCafeShell=CompanionShell;
+export const PeachBubbleShell=CompanionShell;
+export const ForestDiaryShell=CompanionShell;
+export const LittlePlanetShell=CompanionShell;
+export const PetAssistantShell=CompanionShell;
+export const packShells:Record<WorkspaceTheme,(props:Props)=>ReactNode>={"bunny-life":CompanionShell,"cat-cafe":CompanionShell,"peach-bubble":CompanionShell,"forest-diary":CompanionShell,"little-planet":CompanionShell,"pet-assistant":CompanionShell};
