@@ -3,12 +3,12 @@
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 
 export const workspaceThemes = [
-  { id: "bunny-life", name: "粉雪日常", note: "奶油色与粉雪兔兔", colors: ["#fffaf5", "#f7d9e2", "#89c9dd"] },
-  { id: "cat-cafe", name: "奶茶手帐", note: "温暖纸张与咖啡色", colors: ["#f7ead6", "#c9996b", "#695046"] },
-  { id: "peach-bubble", name: "蜜桃泡泡", note: "柔粉果冻与活泼互动", colors: ["#fff0f5", "#ff9fbd", "#a789ef"] },
-  { id: "forest-diary", name: "森林日记", note: "柔和绿意与自然质感", colors: ["#f2f1df", "#87a878", "#8a684b"] },
-  { id: "little-planet", name: "月光星球", note: "天空蓝与漂浮星光", colors: ["#edf8ff", "#bde7ff", "#7289ff"] },
-  { id: "pet-assistant", name: "双星伙伴", note: "角色陪伴与任务互动", colors: ["#f2fff4", "#bceccb", "#62b885"] },
+  { id: "bunny-life", name: "樱花侧栏", note: "粉色窄栏与柔白卡片", colors: ["#fff3f7", "#ff96b7", "#ffd5e2"] },
+  { id: "cat-cafe", name: "晴空清单", note: "蓝色导轨与清爽列表", colors: ["#eef8ff", "#72bdf3", "#cdeaff"] },
+  { id: "peach-bubble", name: "莓果糖盒", note: "粉紫糖果与圆润模块", colors: ["#fff0f7", "#f487b0", "#c99af5"] },
+  { id: "forest-diary", name: "薄荷分栏", note: "蓝绿色双层功能导航", colors: ["#eefbfa", "#70c8c2", "#bdece8"] },
+  { id: "little-planet", name: "云朵胶囊", note: "天蓝胶囊与轻盈画布", colors: ["#f2f8ff", "#7daef7", "#d7e7ff"] },
+  { id: "pet-assistant", name: "蜜桃花瓣", note: "浅粉留白与花瓣层级", colors: ["#fff6f7", "#f2a0ae", "#f8d3d9"] },
 ] as const;
 
 export type WorkspaceTheme = (typeof workspaceThemes)[number]["id"];
