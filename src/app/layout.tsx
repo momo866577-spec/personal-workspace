@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Personal Workspace",
-  description: "你的本機優先個人工作台",
+  description: "你的本机优先个人工作台",
   applicationName: "Personal Workspace",
   manifest: "/manifest.webmanifest",
   icons: {
@@ -34,7 +34,7 @@ export default function RootLayout({
 }>) {
   return (
     <html
-      lang="zh-Hant"
+      lang="zh-CN"
       suppressHydrationWarning
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >

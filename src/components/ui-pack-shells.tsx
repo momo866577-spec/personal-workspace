@@ -23,8 +23,8 @@ function InstallAppButton(){
     return()=>{window.removeEventListener("beforeinstallprompt",ready);window.removeEventListener("appinstalled",done)};
   },[]);
   const install=async()=>{if(prompt){await prompt.prompt();const result=await prompt.userChoice;if(result.outcome==="accepted")setInstalled(true);setPrompt(null)}else setHelp(true)};
-  const dialog=help&&typeof document!=="undefined"?createPortal(<div className="install-help-backdrop" onClick={()=>setHelp(false)}><motion.section initial={{scale:.92,opacity:0}} animate={{scale:1,opacity:1}} onClick={e=>e.stopPropagation()} className="install-help"><button className="install-close" onClick={()=>setHelp(false)} aria-label="關閉"><X/></button><span className="install-symbol"><Share/></span><h3>加入 iPhone 主畫面</h3><ol><li>請先使用 Safari 開啟工作台。</li><li>點擊 Safari 下方的「分享」按鈕。</li><li>向下找到「加入主畫面」。</li><li>確認名稱後點擊「加入」。</li></ol><a href="https://personal-workspace-dvc.pages.dev">使用 Safari 開啟</a><small>如果目前是從分享頁或 App 內瀏覽器開啟，請先選擇「在 Safari 中開啟」。</small></motion.section></div>,document.body):null;
-  return <><button className="companion-install" onClick={install} disabled={installed}><Download/><span>{installed?"已安裝到桌面":"安裝桌面 App"}</span></button>{dialog}</>;
+  const dialog=help&&typeof document!=="undefined"?createPortal(<div className="install-help-backdrop" onClick={()=>setHelp(false)}><motion.section initial={{scale:.92,opacity:0}} animate={{scale:1,opacity:1}} onClick={e=>e.stopPropagation()} className="install-help"><button className="install-close" onClick={()=>setHelp(false)} aria-label="关闭"><X/></button><span className="install-symbol"><Share/></span><h3>加入 iPhone 主画面</h3><ol><li>请先使用 Safari 开启工作台。</li><li>点击 Safari 下方的「分享」按钮。</li><li>向下找到「加入主画面」。</li><li>确认名称后点击「加入」。</li></ol><a href="https://personal-workspace-dvc.pages.dev">使用 Safari 开启</a><small>如果目前是从分享页或 App 内浏览器开启，请先选择「在 Safari 中开启」。</small></motion.section></div>,document.body):null;
+  return <><button className="companion-install" onClick={install} disabled={installed}><Download/><span>{installed?"已安装到桌面":"安装桌面 App"}</span></button>{dialog}</>;
 }
 
 function Companion({kind,active}:{kind:"rabbit"|"fox";active:boolean}){
@@ -43,14 +43,14 @@ export function CompanionShell({page,title,nav,go,children}:Props){
   const navigate=(id:PackPage)=>{setReaction(x=>x+1);go(id);setMenu(false)};
   return <div className="companion-app" onPointerDown={e=>{if((e.target as HTMLElement).closest("button,.glass-card,.task"))setReaction(x=>x+1)}}>
     <aside className={menu?"companion-sidebar open":"companion-sidebar"}>
-      <button className="companion-brand" onClick={()=>navigate("dashboard")}><span><Sparkles/></span><b>我的生活工作台</b><small>和兩位夥伴一起完成今天</small></button>
+      <button className="companion-brand" onClick={()=>navigate("dashboard")}><span><Sparkles/></span><b>我的生活工作台</b><small>和两位伙伴一起完成今天</small></button>
       <nav>{nav.map((item,index)=><motion.button whileTap={{scale:.95}} key={item.id} className={page===item.id?"active":""} onClick={()=>navigate(item.id)}><item.icon/><span>{item.label}</span>{index===1&&<i>今日</i>}</motion.button>)}</nav>
       <div className="sidebar-friends"><Companion kind="rabbit" active={reaction%2===0}/><Companion kind="fox" active={reaction%2===1}/></div>
       <InstallAppButton/>
     </aside>
-    <button className="mobile-menu-button" onClick={()=>setMenu(true)} aria-label="開啟功能列"><Menu/></button>
-    <AnimatePresence>{menu&&<motion.button className="sidebar-backdrop" initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}} onClick={()=>setMenu(false)} aria-label="關閉功能列"/>}</AnimatePresence>
-    <header className="companion-header"><div><small>PERSONAL WORKSPACE</small><h1>{title}</h1></div><div className="header-buddy"><span>{reaction%2===0?"一起完成一件小事吧！":"做得很好，繼續前進！"}</span><Companion kind={reaction%2===0?"rabbit":"fox"} active/></div></header>
+    <button className="mobile-menu-button" onClick={()=>setMenu(true)} aria-label="开启功能列"><Menu/></button>
+    <AnimatePresence>{menu&&<motion.button className="sidebar-backdrop" initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}} onClick={()=>setMenu(false)} aria-label="关闭功能列"/>}</AnimatePresence>
+    <header className="companion-header"><div><small>PERSONAL WORKSPACE</small><h1>{title}</h1></div><div className="header-buddy"><span>{reaction%2===0?"一起完成一件小事吧！":"做得很好，继续前进！"}</span><Companion kind={reaction%2===0?"rabbit":"fox"} active/></div></header>
     <main className="companion-stage">{children}</main>
   </div>
 }

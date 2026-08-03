@@ -5,8 +5,13 @@ export type Workout = { id: Id; date: string; bodyPart: string; exercise: string
 export type Note = { id: Id; title: string; content: string; category: string; tags: string[]; favorite: boolean; pinned: boolean; files: { name: string; data: string }[]; createdAt: string; updatedAt: string };
 export type Stream = { id: Id; date: string; platform: string; streamer: string; submission: string; mentioned: boolean; thoughts: string; review: string; improvements: string; rating: number; createdAt: string };
 export type Contact = { id: Id; username: string; platform: string; country: string; interests: string; birthday: string; chats: string; notes: string; tags: string[]; importance: number; createdAt: string };
-export type TableName = "tasks" | "english" | "workouts" | "notes" | "streams" | "contacts";
-export type RecordMap = { tasks: Task; english: EnglishEntry; workouts: Workout; notes: Note; streams: Stream; contacts: Contact };
+export type WorkoutCheckin = { date: string; completed: boolean; completedAt: string };
+export type EnglishDailyItemKind = "words" | "sentences" | "shadowing" | "speaking" | "listening";
+export type EnglishDailyItem = { kind: EnglishDailyItemKind; title: string; detail: string; taskId: string };
+export type EnglishDailyPlan = { date: string; items: EnglishDailyItem[]; createdAt: string };
+export type AiToolMode = "reply" | "review" | "coach";
+export type AiToolRecord = { id: Id; mode: AiToolMode; input: string; output: string; provider: string; createdAt: string };
+export type TableName = "tasks" | "english" | "workouts" | "notes" | "streams" | "contacts" | "workoutCheckins" | "englishDailyPlans" | "aiToolRecords";
+export type RecordMap = { tasks: Task; english: EnglishEntry; workouts: Workout; notes: Note; streams: Stream; contacts: Contact; workoutCheckins: WorkoutCheckin; englishDailyPlans: EnglishDailyPlan; aiToolRecords: AiToolRecord };
 export const uid = () => crypto.randomUUID();
 export const today = () => new Date().toLocaleDateString("en-CA");
-
