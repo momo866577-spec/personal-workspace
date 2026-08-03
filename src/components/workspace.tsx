@@ -14,7 +14,7 @@ import { useTheme } from "next-themes";
 import { Archive, BookOpen, CalendarCheck, Check, Download, Dumbbell, FileText, GripVertical, Heart, Home, Languages, Moon, Paperclip, Pencil, Pin, Plus, Radio, Search, Settings, Sparkles, Star, Sun, Trash2, Upload, Users } from "lucide-react";
 import { db } from "@/lib/db";
 import { useWorkspaceTheme, workspaceThemes } from "@/components/workspace-theme-provider";
-import { packShells, type PackNavItem } from "@/components/ui-pack-shells";
+import { InstallAppButton, packShells, type PackNavItem } from "@/components/ui-pack-shells";
 import { today, uid, type Contact, type EnglishEntry, type Note, type Stream, type Task, type Workout } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -50,9 +50,10 @@ export function Workspace(){
  useEffect(()=>{setMounted(true);initializeDailyFeatures().catch(console.error);if("serviceWorker" in navigator) navigator.serviceWorker.register("/sw.js").catch(()=>{});},[]);
  if(!mounted) return <div className="grid min-h-screen place-items-center"><Sparkles className="animate-pulse text-violet-500"/></div>;
  const PackShell=packShells[workspaceTheme];
- const content=page==="dashboard"?<Dashboard go={setPage}/>:page==="tasks"?<Tasks/>:page==="english"?<><EnglishDailyTasks/><English/></>:page==="workouts"?<><WorkoutCheckinPanel/><Workouts/></>:page==="notes"?<Notes/>:page==="streams"?<><StreamAiAssistant/><Streams/></>:page==="contacts"?<Contacts/>:<><CompleteDataPanel/><SettingsPage/></>;
+ const content=page==="dashboard"?<Dashboard go={setPage}/>:page==="tasks"?<Tasks/>:page==="english"?<><EnglishDailyTasks/><English/></>:page==="workouts"?<><WorkoutCheckinPanel/><Workouts/></>:page==="notes"?<Notes/>:page==="streams"?<><StreamAiAssistant/><Streams/></>:page==="contacts"?<Contacts/>:<><InstallAppSettings/><CompleteDataPanel/><SettingsPage/></>;
  return <><LanguageBridge/><PackShell page={page} title={pageTitle[page]} nav={nav as PackNavItem[]} go={setPage} theme={workspaceTheme}><AnimatePresence mode="wait"><motion.div key={`${workspaceTheme}-${page}`} initial={{opacity:0,y:14,scale:.985}} animate={{opacity:1,y:0,scale:1}} exit={{opacity:0,y:-8,scale:.99}} transition={{type:"spring",stiffness:260,damping:25}} className="pack-page mx-auto max-w-7xl">{content}</motion.div></AnimatePresence></PackShell></>
 }
+function InstallAppSettings(){return <Card className="mb-6"><SectionTitle title="安装应用" subtitle="将 Personal Workspace 添加到手机或电脑桌面"/><div className="max-w-xs"><InstallAppButton/></div></Card>}
 function Dashboard({go}:{go:(p:Page)=>void}){
  const tasks=useLiveQuery(()=>db.tasks.where("due").equals(today()).toArray(),[])||[]; const english=useLiveQuery(()=>db.english.where("date").equals(today()).toArray(),[])||[]; const workouts=useLiveQuery(()=>db.workouts.where("date").equals(today()).toArray(),[])||[]; const notes=useLiveQuery(()=>db.notes.orderBy("updatedAt").reverse().limit(3).toArray(),[])||[]; const streams=useLiveQuery(()=>db.streams.orderBy("date").reverse().limit(3).toArray(),[])||[];
  const done=tasks.filter(t=>t.done).length; const pct=tasks.length?Math.round(done/tasks.length*100):0;

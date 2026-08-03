@@ -12,7 +12,7 @@ export type PackNavItem = { id:PackPage; label:string; icon:LucideIcon };
 type Props = { page:PackPage; title:string; nav:PackNavItem[]; go:(page:PackPage)=>void; children:ReactNode; theme:WorkspaceTheme };
 
 type InstallPromptEvent=Event&{prompt:()=>Promise<void>;userChoice:Promise<{outcome:"accepted"|"dismissed"}>};
-function InstallAppButton(){
+export function InstallAppButton(){
   const [prompt,setPrompt]=useState<InstallPromptEvent|null>(null);
   const [help,setHelp]=useState(false);
   const [installed,setInstalled]=useState(()=>typeof window!=="undefined"&&(window.matchMedia("(display-mode: standalone)").matches||Boolean((navigator as Navigator&{standalone?:boolean}).standalone)));
@@ -46,7 +46,6 @@ export function CompanionShell({page,title,nav,go,children}:Props){
       <button className="companion-brand" onClick={()=>navigate("dashboard")}><span><Sparkles/></span><b>我的生活工作台</b><small>和两位伙伴一起完成今天</small></button>
       <nav>{nav.map((item,index)=><motion.button whileTap={{scale:.95}} key={item.id} className={page===item.id?"active":""} onClick={()=>navigate(item.id)}><item.icon/><span>{item.label}</span>{index===1&&<i>今日</i>}</motion.button>)}</nav>
       <div className="sidebar-friends"><Companion kind="rabbit" active={reaction%2===0}/><Companion kind="fox" active={reaction%2===1}/></div>
-      <InstallAppButton/>
     </aside>
     <button className="mobile-menu-button" onClick={()=>setMenu(true)} aria-label="开启功能列"><Menu/></button>
     <AnimatePresence>{menu&&<motion.button className="sidebar-backdrop" initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}} onClick={()=>setMenu(false)} aria-label="关闭功能列"/>}</AnimatePresence>
