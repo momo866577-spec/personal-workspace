@@ -15,6 +15,7 @@ import { Archive, BookOpen, CalendarCheck, Check, Download, Dumbbell, FileText, 
 import { db } from "@/lib/db";
 import { useWorkspaceTheme, workspaceThemes } from "@/components/workspace-theme-provider";
 import { InstallAppButton, packShells, type PackNavItem } from "@/components/ui-pack-shells";
+import { packHomes } from "@/components/ui-pack-homes";
 import { today, uid, type Contact, type EnglishEntry, type Note, type Stream, type Task, type Workout } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -57,9 +58,8 @@ function InstallAppSettings(){return <Card className="mb-6"><SectionTitle title=
 function Dashboard({go}:{go:(p:Page)=>void}){
  const tasks=useLiveQuery(()=>db.tasks.where("due").equals(today()).toArray(),[])||[]; const english=useLiveQuery(()=>db.english.where("date").equals(today()).toArray(),[])||[]; const workouts=useLiveQuery(()=>db.workouts.where("date").equals(today()).toArray(),[])||[]; const notes=useLiveQuery(()=>db.notes.orderBy("updatedAt").reverse().limit(3).toArray(),[])||[]; const streams=useLiveQuery(()=>db.streams.orderBy("date").reverse().limit(3).toArray(),[])||[];
  const done=tasks.filter(t=>t.done).length; const pct=tasks.length?Math.round(done/tasks.length*100):0;
- const data={tasks,english,workouts,notes,streams,done,pct,go}; const {workspaceTheme}=useWorkspaceTheme();
- const phaseTwo=<DashboardPhaseTwo/>;
- return <>{phaseTwo}<ReferenceHome {...data} theme={workspaceTheme}/></>;
+ const {workspaceTheme}=useWorkspaceTheme(); const PackHome=packHomes[workspaceTheme];
+ return <PackHome tasks={tasks} english={english} workouts={workouts} notes={notes} streams={streams} done={done} pct={pct} go={go} toggle={toggleTask} phaseTwo={<DashboardPhaseTwo/>}/>;
 }
 
 type HomeData={tasks:Task[];english:EnglishEntry[];workouts:Workout[];notes:Note[];streams:Stream[];done:number;pct:number;go:(p:Page)=>void};

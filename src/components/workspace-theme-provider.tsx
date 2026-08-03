@@ -3,12 +3,12 @@
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 
 export const workspaceThemes = [
-  { id: "bunny-life", name: "樱花侧栏", note: "粉色窄栏与柔白卡片", colors: ["#fff3f7", "#ff96b7", "#ffd5e2"] },
-  { id: "cat-cafe", name: "晴空清单", note: "蓝色导轨与清爽列表", colors: ["#eef8ff", "#72bdf3", "#cdeaff"] },
-  { id: "peach-bubble", name: "莓果糖盒", note: "粉紫糖果与圆润模块", colors: ["#fff0f7", "#f487b0", "#c99af5"] },
-  { id: "forest-diary", name: "薄荷分栏", note: "蓝绿色双层功能导航", colors: ["#eefbfa", "#70c8c2", "#bdece8"] },
-  { id: "little-planet", name: "云朵胶囊", note: "天蓝胶囊与轻盈画布", colors: ["#f2f8ff", "#7daef7", "#d7e7ff"] },
-  { id: "pet-assistant", name: "蜜桃花瓣", note: "浅粉留白与花瓣层级", colors: ["#fff6f7", "#f2a0ae", "#f8d3d9"] },
+  { id: "bunny-life", name: "果冻视界", note: "粉色 VisionOS 三栏果冻工作台", colors: ["#fff2f8", "#ff7fac", "#ffc5dc"] },
+  { id: "cat-cafe", name: "晴空留白", note: "蓝色 Apple 双栏轻量空间", colors: ["#f4f9ff", "#76b9f5", "#d7ecff"] },
+  { id: "peach-bubble", name: "莓果拼图", note: "粉色 Bento 模块化创意桌面", colors: ["#fff1f7", "#f27fab", "#ffc2db"] },
+  { id: "forest-diary", name: "蓝雾漂浮", note: "蓝色玻璃悬浮空间与时间线", colors: ["#effbff", "#62b8df", "#c8efff"] },
+  { id: "little-planet", name: "云端手记", note: "蓝色 Notebook 章节式工作台", colors: ["#f3f7ff", "#789ee9", "#dbe5ff"] },
+  { id: "pet-assistant", name: "柔粉工作区", note: "粉色 Cursor 风专业效率空间", colors: ["#fff6f9", "#ef91ad", "#f8d3df"] },
 ] as const;
 
 export type WorkspaceTheme = (typeof workspaceThemes)[number]["id"];
@@ -27,4 +27,5 @@ export function WorkspaceThemeProvider({children}:{children:React.ReactNode}){
   const value=useMemo(()=>({workspaceTheme,setWorkspaceTheme:setWorkspaceThemeState}),[workspaceTheme]);
   return <WorkspaceThemeContext.Provider value={value}>{children}</WorkspaceThemeContext.Provider>;
 }
+
 export function useWorkspaceTheme(){const value=useContext(WorkspaceThemeContext);if(!value)throw new Error("useWorkspaceTheme must be used inside WorkspaceThemeProvider");return value}

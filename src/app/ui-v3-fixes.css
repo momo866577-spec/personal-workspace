@@ -1,0 +1,11 @@
+.v3-shell{overflow-x:clip}
+.v3-shell main,.v3-shell .pack-page,.v3-home,.v3-home>*{min-width:0}
+.v3-home header{background:transparent!important}
+.jelly-home{grid-template-columns:minmax(0,1.35fr) minmax(0,.9fr)}
+.bento-home{grid-template-columns:minmax(0,1.4fr) minmax(0,.7fr) minmax(0,.7fr)}
+.floating-home{grid-template-columns:minmax(0,1.2fr) minmax(0,.8fr)}
+.notebook-home{grid-template-columns:minmax(0,1.3fr) minmax(0,.7fr)}
+.ai-home{grid-template-columns:minmax(0,1.3fr) minmax(0,.7fr)}
+.dark .jelly-hero,.dark .jelly-orbit button,.dark .jelly-task-pod,.dark .apple-today,.dark .bento-lead,.dark .bento-piece,.dark .bento-list,.dark .floating-intro,.dark .floating-cards button,.dark .floating-timeline,.dark .notebook-summary,.dark .notebook-checklist,.dark .notebook-quote,.dark .ai-brief,.dark .ai-priority,.dark .ai-activity{background:#222936!important;border-color:#ffffff12!important;color:#f6f8fc!important}
+.dark .jelly-hero p,.dark .floating-intro p,.dark .ai-brief p{color:#b7bfcc}
+@media(max-width:640px){.jelly-home,.floating-home,.notebook-home,.ai-home{grid-template-columns:minmax(0,1fr)}.bento-home{grid-template-columns:repeat(2,minmax(0,1fr))}}
