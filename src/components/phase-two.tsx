@@ -13,37 +13,515 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Textarea } from "@/components/ui/textarea";
 
-export function DashboardPhaseTwo(){
- const tasks=useLiveQuery(()=>db.tasks.where("due").equals(today()).toArray(),[])||[];
- const checkins=useLiveQuery(()=>db.workoutCheckins.toArray(),[]); const storedPlan=useLiveQuery(()=>db.englishDailyPlans.get(today()),[]),plan=storedPlan?.source?.startsWith(NGSL_VERSION)?storedPlan:undefined;
- const notes=useLiveQuery(()=>db.notes.orderBy("updatedAt").reverse().limit(1).toArray(),[])||[];
- const streams=useLiveQuery(()=>db.streams.orderBy("date").reverse().limit(1).toArray(),[])||[];
- const stats=useMemo(()=>workoutStats(checkins||[]),[checkins]); const englishTasks=tasks.filter(x=>x.id.startsWith(`english-daily:${today()}:`));
- const remaining=tasks.filter(x=>!x.done).length,completed=tasks.filter(x=>x.done),progress=tasks.length?Math.round(completed.length/tasks.length*100):0;
- const suggestion=stats.todayDone?(englishTasks.some(x=>!x.done)?"今天英语还没有全部完成，抽出五分钟完成下一项。":remaining?`今天还剩 ${remaining} 项任务，先完成最轻松的一项。`:"今天的目标已经全部完成，可以安心休息了。") : "建议先完成运动打卡，让身体进入状态，再处理第一项任务。";
- return <section className="today-control-center"><header><div><span><Sparkles/>今日 AI 摘要</span><h2>今天的控制中心</h2><p>{remaining?`还有 ${remaining} 项待完成，当前整体进度 ${progress}%。`:"今天的事项已经全部完成。"}</p></div><strong style={{"--progress":`${progress}%`} as CSSProperties}>{progress}%</strong></header><div className="control-metrics"><article><CheckCircle2/><b>今日待完成</b><span>{remaining} 项</span></article><article><Languages/><b>今日英文</b><span>{plan?`${englishTasks.filter(x=>x.done).length}/${plan.items.length}`:"准备中"}</span></article><article><Dumbbell/><b>今日运动</b><span>{stats.todayDone?"已打卡":"未打卡"}</span></article><article><Radio/><b>今日直播</b><span>{streams[0]?.date===today()?streams[0].platform:"暂无记录"}</span></article><article><FileText/><b>最近笔记</b><span>{notes[0]?.title||"暂无笔记"}</span></article><article><Check/><b>最近完成</b><span>{completed[0]?.title||"暂无完成"}</span></article></div><div className="control-next"><Sparkles/><div><b>AI 建议下一步</b><p>{suggestion}</p></div></div></section>
+export function DashboardPhaseTwo() {
+  const tasks = useLiveQuery(() => db.tasks.where("due").equals(today()).toArray(), []) || [];
+  const checkins = useLiveQuery(() => db.workoutCheckins.toArray(), []);
+  const storedPlan = useLiveQuery(() => db.englishDailyPlans.get(today()), []),
+    plan = storedPlan?.source?.startsWith(NGSL_VERSION) ? storedPlan : undefined;
+  const notes = useLiveQuery(() => db.notes.orderBy("updatedAt").reverse().limit(1).toArray(), []) || [];
+  const streams = useLiveQuery(() => db.streams.orderBy("date").reverse().limit(1).toArray(), []) || [];
+  const stats = useMemo(() => workoutStats(checkins || []), [checkins]);
+  const englishTasks = tasks.filter((x) => x.id.startsWith(`english-daily:${today()}:`));
+  const remaining = tasks.filter((x) => !x.done).length,
+    completed = tasks.filter((x) => x.done),
+    progress = tasks.length ? Math.round((completed.length / tasks.length) * 100) : 0;
+  const suggestion = stats.todayDone ? (englishTasks.some((x) => !x.done) ? "今天英语还没有全部完成，抽出五分钟完成下一项。" : remaining ? `今天还剩 ${remaining} 项任务，先完成最轻松的一项。` : "今天的目标已经全部完成，可以安心休息了。") : "建议先完成运动打卡，让身体进入状态，再处理第一项任务。";
+  return (
+    <section className="today-control-center">
+      <header>
+        <div>
+          <span>
+            <Sparkles />
+            今日 AI 摘要
+          </span>
+          <h2>今天的控制中心</h2>
+          <p>{remaining ? `还有 ${remaining} 项待完成，当前整体进度 ${progress}%。` : "今天的事项已经全部完成。"}</p>
+        </div>
+        <strong style={{ "--progress": `${progress}%` } as CSSProperties}>{progress}%</strong>
+      </header>
+      <div className="control-metrics">
+        <article>
+          <CheckCircle2 />
+          <b>今日待完成</b>
+          <span>{remaining} 项</span>
+        </article>
+        <article>
+          <Languages />
+          <b>今日英文</b>
+          <span>{plan ? `${englishTasks.filter((x) => x.done).length}/${plan.items.length}` : "准备中"}</span>
+        </article>
+        <article>
+          <Dumbbell />
+          <b>今日运动</b>
+          <span>{stats.todayDone ? "已打卡" : "未打卡"}</span>
+        </article>
+        <article>
+          <Radio />
+          <b>今日直播</b>
+          <span>{streams[0]?.date === today() ? streams[0].platform : "暂无记录"}</span>
+        </article>
+        <article>
+          <FileText />
+          <b>最近笔记</b>
+          <span>{notes[0]?.title || "暂无笔记"}</span>
+        </article>
+        <article>
+          <Check />
+          <b>最近完成</b>
+          <span>{completed[0]?.title || "暂无完成"}</span>
+        </article>
+      </div>
+      <div className="control-next">
+        <Sparkles />
+        <div>
+          <b>AI 建议下一步</b>
+          <p>{suggestion}</p>
+        </div>
+      </div>
+    </section>
+  );
 }
 
-const VOICE_KEY="workspace-english-voice";
-const voiceScore=(voice:SpeechSynthesisVoice)=>{const name=voice.name.toLowerCase();return (voice.lang.startsWith("en-US")?30:voice.lang.startsWith("en")?15:0)+(/natural|premium|enhanced/.test(name)?40:0)+(/aria|jenny|guy|samantha|siri|google us english/.test(name)?25:0)+(voice.localService?5:0)};
-const englishVoices=()=>typeof window==="undefined"||!("speechSynthesis" in window)?[]:window.speechSynthesis.getVoices().filter(x=>x.lang.startsWith("en")).sort((a,b)=>voiceScore(b)-voiceScore(a));
-const selectedVoice=()=>{const voices=englishVoices(),saved=typeof window!=="undefined"?localStorage.getItem(VOICE_KEY):null;return voices.find(x=>x.voiceURI===saved)||voices[0]};
-const speak=(text:string)=>{if(typeof window==="undefined"||!("speechSynthesis" in window))return;window.speechSynthesis.cancel();const utterance=new SpeechSynthesisUtterance(text);utterance.lang="en-US";utterance.rate=.9;utterance.pitch=1;const voice=selectedVoice();if(voice)utterance.voice=voice;window.speechSynthesis.speak(utterance)};
-export function EnglishDailyTasks(){
- const storedPlan=useLiveQuery(()=>db.englishDailyPlans.get(today()),[]),plan=storedPlan?.source?.startsWith(NGSL_VERSION)?storedPlan:undefined,todayTasks=useLiveQuery(()=>db.tasks.where("due").equals(today()).toArray(),[])||[],allTasks=useLiveQuery(()=>db.tasks.toArray(),[])||[],plans=useLiveQuery(()=>db.englishDailyPlans.toArray(),[])||[];
- const [level,setLevel]=useState<CefrLevel>(preferredEnglishLevel),[voices,setVoices]=useState<SpeechSynthesisVoice[]>([]),[voiceUri,setVoiceUri]=useState("");
- useEffect(()=>{const refresh=()=>{const rows=englishVoices();setVoices(rows);setVoiceUri(localStorage.getItem(VOICE_KEY)||rows[0]?.voiceURI||"")};refresh();speechSynthesis.addEventListener?.("voiceschanged",refresh);return()=>speechSynthesis.removeEventListener?.("voiceschanged",refresh)},[]);
- const validDates=new Set(plans.filter(x=>x.source?.startsWith(NGSL_VERSION)&&x.level===level).map(x=>x.date)),stats=curriculumStats(allTasks,validDates,today(),level),changeLevel=async(next:CefrLevel)=>{localStorage.setItem(ENGLISH_LEVEL_KEY,next);setLevel(next);await ensureEnglishDailyPlan(today(),true,next)};
- if(!plan||plan.level!==level)return <section className="phase-panel english-daily"><div className="english-empty"><Sparkles/><b>正在准备 CEFR {level}</b><p>固定词库正在本机初始化，请稍候。</p></div></section>;
- return <section className="phase-panel english-daily"><header><div><b>英文升级之路</b><p>{NGSL_VERSION} · CEFR 固定顺序学习</p></div><span>{stats.todayDone}/5</span></header><div className="english-controls"><label>切换难度<select value={level} onChange={e=>changeLevel(e.target.value as CefrLevel)}>{selectableLevels.map(x=><option key={x} value={x}>{x} {x==="A1"?"初学":x==="A2"?"基础":x==="B1"?"中级（默认）":x==="B2"?"中高级":"高级"}</option>)}</select></label><label>语音引擎<select value={voiceUri} onChange={e=>{setVoiceUri(e.target.value);localStorage.setItem(VOICE_KEY,e.target.value)}}>{voices.length?voices.map(x=><option key={x.voiceURI} value={x.voiceURI}>{x.name}</option>):<option value="">浏览器默认英语语音</option>}</select></label></div><div className="curriculum-overview"><div className="curriculum-main"><small>目前词库</small><b>NGSL</b><span>Oxford 3000 分级参考</span></div><div className="curriculum-levels"><span><small>目前等级</small><b>CEFR {stats.level}</b></span><span><small>下个等级</small><b>{stats.nextLevel}</b></span><span><small>当前等级进度</small><b>{stats.completedWords} / {stats.total}</b></span></div><div className="curriculum-progress"><div><b>整体进度</b><span>{stats.percent}%</span></div><i><span style={{width:`${stats.percent}%`}}/></i></div><div className="curriculum-stats"><span><b>{stats.todayDone}/5</b><small>今日完成</small></span><span><b>{stats.week}</b><small>本周完成</small></span><span><b>{stats.streak}</b><small>连续学习天数</small></span><span><b>{stats.libraryTotal}</b><small>词库总量</small></span></div></div><div className="english-task-list">{plan.items.map(item=>{const task=todayTasks.find(x=>x.id===item.taskId);return <article key={item.kind} className={task?.done?"done":""}><Checkbox checked={task?.done||false} onCheckedChange={v=>toggleEnglishDailyTask(item.taskId,Boolean(v))}/><div><b>{item.title}</b>{item.kind==="words"?<div className="word-grid">{item.prompts?.map(word=>{const [part,...meaning]=word.translation?.split("｜")||["word",""];return <section key={word.text}><div><strong>{word.text}</strong><em>{word.phonetic}</em><button onClick={()=>speak(word.text)} aria-label={`播放 ${word.text}`}><Volume2/></button></div><span className="word-pos">{part}</span><p>{meaning.join("｜")}</p><small>{word.example}</small><small>{word.exampleTranslation}</small></section>})}</div>:<><small>{item.detail}</small>{item.prompts&&<div className="prompt-chips">{item.prompts.map(prompt=><button key={prompt.text} onClick={()=>speak(prompt.text)} title={`播放：${prompt.text}`}><Volume2/>{prompt.text}</button>)}</div>}</>}</div><button className="speak-all" onClick={()=>speak(item.prompts?.map(x=>x.text).join(". ")||item.detail)} aria-label={`播放${item.title}`}><Volume2/></button>{item.kind==="shadowing"&&<button className="reserved-mic" title="已预留跟读评分接口" disabled><Mic/></button>}</article>})}</div>{stats.todayDone===5&&<p className="phase-status success" role="status">今日关卡完成！下一学习日将自动进入下一组。</p>}<footer className="english-sources"><b>资料来源</b><span>词库：NGSL 1.2</span><span>分级：CEFR（参考 Oxford 3000 / 5000）</span><span>发音：{selectedVoice()?.name||"浏览器 Web Speech 英语语音"}</span></footer></section>
+const VOICE_KEY = "workspace-english-voice";
+const VOICE_POLICY_KEY = "workspace-english-voice-policy";
+const VOICE_POLICY_VERSION = "legacy-first-en-us-v1";
+const englishVoices = () =>
+  typeof window === "undefined" || !("speechSynthesis" in window)
+    ? []
+    : window.speechSynthesis.getVoices().filter((x) => x.lang.startsWith("en"));
+const selectedVoice = () => {
+  const voices = englishVoices(),
+    saved = typeof window !== "undefined" ? localStorage.getItem(VOICE_KEY) : null;
+  return voices.find((x) => x.voiceURI === saved) || voices.find((x) => x.lang.startsWith("en-US")) || voices[0];
+};
+const voiceLabel = (voice: SpeechSynthesisVoice, recommendedUri: string) => `${voice.voiceURI === recommendedUri ? "原版推荐 · " : ""}${voice.name} · ${voice.lang}`;
+const speak = (text: string) => {
+  if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
+  window.speechSynthesis.cancel();
+  const utterance = new SpeechSynthesisUtterance(text);
+  const voice = selectedVoice();
+  utterance.lang = "en-US";
+  utterance.rate = 0.88;
+  if (voice) utterance.voice = voice;
+  window.speechSynthesis.speak(utterance);
+};
+export function EnglishDailyTasks() {
+  const storedPlan = useLiveQuery(() => db.englishDailyPlans.get(today()), []),
+    plan = storedPlan?.source?.startsWith(NGSL_VERSION) ? storedPlan : undefined,
+    todayTasks = useLiveQuery(() => db.tasks.where("due").equals(today()).toArray(), []) || [],
+    allTasks = useLiveQuery(() => db.tasks.toArray(), []) || [],
+    plans = useLiveQuery(() => db.englishDailyPlans.toArray(), []) || [];
+  const [level, setLevel] = useState<CefrLevel>(preferredEnglishLevel),
+    [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]),
+    [voiceUri, setVoiceUri] = useState("");
+  useEffect(() => {
+    const refresh = () => {
+      const rows = englishVoices();
+      const policyIsCurrent = localStorage.getItem(VOICE_POLICY_KEY) === VOICE_POLICY_VERSION;
+      const saved = policyIsCurrent ? localStorage.getItem(VOICE_KEY) : null;
+      const originalDefault = rows.find((voice) => voice.lang.startsWith("en-US")) || rows[0];
+      const active = rows.find((voice) => voice.voiceURI === saved) || originalDefault;
+      setVoices(rows);
+      setVoiceUri(active?.voiceURI || "");
+      if (active) {
+        localStorage.setItem(VOICE_KEY, active.voiceURI);
+        localStorage.setItem(VOICE_POLICY_KEY, VOICE_POLICY_VERSION);
+      }
+    };
+    refresh();
+    speechSynthesis.addEventListener?.("voiceschanged", refresh);
+    return () => speechSynthesis.removeEventListener?.("voiceschanged", refresh);
+  }, []);
+  const validDates = new Set(plans.filter((x) => x.source?.startsWith(NGSL_VERSION) && x.level === level).map((x) => x.date)),
+    stats = curriculumStats(allTasks, validDates, today(), level),
+    changeLevel = async (next: CefrLevel) => {
+      localStorage.setItem(ENGLISH_LEVEL_KEY, next);
+      setLevel(next);
+      await ensureEnglishDailyPlan(today(), true, next);
+    };
+  if (!plan || plan.level !== level)
+    return (
+      <section className="phase-panel english-daily">
+        <div className="english-empty">
+          <Sparkles />
+          <b>正在准备 CEFR {level}</b>
+          <p>固定词库正在本机初始化，请稍候。</p>
+        </div>
+      </section>
+    );
+  return (
+    <section className="phase-panel english-daily">
+      <header>
+        <div>
+          <b>英文升级之路</b>
+          <p>{NGSL_VERSION} · CEFR 固定顺序学习</p>
+        </div>
+        <span>{stats.todayDone}/5</span>
+      </header>
+      <div className="english-controls">
+        <label>
+          切换难度
+          <select value={level} onChange={(e) => changeLevel(e.target.value as CefrLevel)}>
+            {selectableLevels.map((x) => (
+              <option key={x} value={x}>
+                {x} {x === "A1" ? "初学" : x === "A2" ? "基础" : x === "B1" ? "中级（默认）" : x === "B2" ? "中高级" : "高级"}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label>
+          标准英语发音
+          <select
+            value={voiceUri}
+            onChange={(e) => {
+              setVoiceUri(e.target.value);
+              localStorage.setItem(VOICE_KEY, e.target.value);
+              window.setTimeout(() => speak("Hello. This is your standard English pronunciation voice."), 80);
+            }}
+          >
+            {voices.length ? (
+              voices.map((x) => (
+                <option key={x.voiceURI} value={x.voiceURI}>
+                  {voiceLabel(x, (voices.find((voice) => voice.lang.startsWith("en-US")) || voices[0])?.voiceURI || "")}
+                </option>
+              ))
+            ) : (
+              <option value="">设备默认英语语音</option>
+            )}
+          </select>
+        </label>
+      </div>
+      <div className="curriculum-overview">
+        <div className="curriculum-main">
+          <small>目前词库</small>
+          <b>NGSL</b>
+          <span>Oxford 3000 分级参考</span>
+        </div>
+        <div className="curriculum-levels">
+          <span>
+            <small>目前等级</small>
+            <b>CEFR {stats.level}</b>
+          </span>
+          <span>
+            <small>下个等级</small>
+            <b>{stats.nextLevel}</b>
+          </span>
+          <span>
+            <small>当前等级进度</small>
+            <b>
+              {stats.completedWords} / {stats.total}
+            </b>
+          </span>
+        </div>
+        <div className="curriculum-progress">
+          <div>
+            <b>整体进度</b>
+            <span>{stats.percent}%</span>
+          </div>
+          <i>
+            <span style={{ width: `${stats.percent}%` }} />
+          </i>
+        </div>
+        <div className="curriculum-stats">
+          <span>
+            <b>{stats.todayDone}/5</b>
+            <small>今日完成</small>
+          </span>
+          <span>
+            <b>{stats.week}</b>
+            <small>本周完成</small>
+          </span>
+          <span>
+            <b>{stats.streak}</b>
+            <small>连续学习天数</small>
+          </span>
+          <span>
+            <b>{stats.libraryTotal}</b>
+            <small>词库总量</small>
+          </span>
+        </div>
+      </div>
+      <div className="english-task-list">
+        {plan.items.map((item) => {
+          const task = todayTasks.find((x) => x.id === item.taskId);
+          return (
+            <article key={item.kind} className={task?.done ? "done" : ""}>
+              <Checkbox checked={task?.done || false} onCheckedChange={(v) => toggleEnglishDailyTask(item.taskId, Boolean(v))} />
+              <div>
+                <b>{item.title}</b>
+                {item.kind === "words" ? (
+                  <div className="word-grid">
+                    {item.prompts?.map((word) => {
+                      const [part, ...meaning] = word.translation?.split("｜") || ["word", ""];
+                      return (
+                        <section key={word.text}>
+                          <div>
+                            <strong>{word.text}</strong>
+                            <em>{word.phonetic}</em>
+                            <button onClick={() => speak(word.text)} aria-label={`播放 ${word.text}`}>
+                              <Volume2 />
+                            </button>
+                          </div>
+                          <span className="word-pos">{part}</span>
+                          <p>{meaning.join("｜")}</p>
+                          <small>{word.example}</small>
+                          <small>{word.exampleTranslation}</small>
+                        </section>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <>
+                    <small>{item.detail}</small>
+                    {item.prompts && (
+                      <div className="prompt-chips">
+                        {item.prompts.map((prompt) => (
+                          <button key={prompt.text} onClick={() => speak(prompt.text)} title={`播放：${prompt.text}`}>
+                            <Volume2 />
+                            {prompt.text}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </>
+                )}
+              </div>
+              <button className="speak-all" onClick={() => speak(item.prompts?.map((x) => x.text).join(". ") || item.detail)} aria-label={`播放${item.title}`}>
+                <Volume2 />
+              </button>
+              {item.kind === "shadowing" && (
+                <button className="reserved-mic" title="已预留跟读评分接口" disabled>
+                  <Mic />
+                </button>
+              )}
+            </article>
+          );
+        })}
+      </div>
+      {stats.todayDone === 5 && (
+        <p className="phase-status success" role="status">
+          今日关卡完成！下一学习日将自动进入下一组。
+        </p>
+      )}
+      <footer className="english-sources">
+        <b>资料来源</b>
+        <span>词库：NGSL 1.2</span>
+        <span>分级：CEFR（参考 Oxford 3000 / 5000）</span>
+        <span>发音：{selectedVoice()?.name || "设备英语语音"}</span>
+      </footer>
+    </section>
+  );
 }
 
-export function WorkoutCheckinPanel(){const rows=useLiveQuery(()=>db.workoutCheckins.toArray(),[])||[];const stats=useMemo(()=>workoutStats(rows),[rows]);return <section className="phase-panel workout-checkin"><header><div><b>每日运动打卡</b><p>点击即可记录今天的完成状态。</p></div><Button onClick={()=>setWorkoutCheckin(today(),!stats.todayDone)} variant={stats.todayDone?"secondary":"default"}>{stats.todayDone?<><Check/>已打卡</>:"今日打卡"}</Button></header><div className="checkin-stats"><span><b>{stats.streak}</b><small>连续天数</small></span><span><b>{stats.week}</b><small>本周打卡</small></span><span><b>{stats.month}</b><small>本月打卡</small></span></div></section>}
+export function WorkoutCheckinPanel() {
+  const rows = useLiveQuery(() => db.workoutCheckins.toArray(), []) || [];
+  const stats = useMemo(() => workoutStats(rows), [rows]);
+  return (
+    <section className="phase-panel workout-checkin">
+      <header>
+        <div>
+          <b>每日运动打卡</b>
+          <p>点击即可记录今天的完成状态。</p>
+        </div>
+        <Button onClick={() => setWorkoutCheckin(today(), !stats.todayDone)} variant={stats.todayDone ? "secondary" : "default"}>
+          {stats.todayDone ? (
+            <>
+              <Check />
+              已打卡
+            </>
+          ) : (
+            "今日打卡"
+          )}
+        </Button>
+      </header>
+      <div className="checkin-stats">
+        <span>
+          <b>{stats.streak}</b>
+          <small>连续天数</small>
+        </span>
+        <span>
+          <b>{stats.week}</b>
+          <small>本周打卡</small>
+        </span>
+        <span>
+          <b>{stats.month}</b>
+          <small>本月打卡</small>
+        </span>
+      </div>
+    </section>
+  );
+}
 
-const modes:{id:AiToolMode;label:string;placeholder:string}[]=[{id:"reply",label:"高情商回复",placeholder:"输入观众留言"},{id:"review",label:"直播复盘",placeholder:"输入今天直播的内容、对话和发生的事情"},{id:"coach",label:"话术教练",placeholder:"输入直播间情境，例如：有人嫌贵、冷场、没人留言"}];
-const replyStyles=["亲切","幽默","带货","高情商","高价值","宠粉","留人","成交"];
-export function StreamAiAssistant(){const [mode,setMode]=useState<AiToolMode>("reply"),[style,setStyle]=useState("高情商"),[input,setInput]=useState(""),[output,setOutput]=useState(""),[recordId,setRecordId]=useState(""),[favorite,setFavorite]=useState(false),[busy,setBusy]=useState(false),[notice,setNotice]=useState("");const connection=useLiveQuery(()=>db.aiConnections.get("active"),[]);const current=modes.find(x=>x.id===mode)!;const run=async(nextStyle=style,regenerate=false)=>{if(!input.trim()){setNotice("请先输入观众留言或直播情境");return}setBusy(true);setNotice("");try{const live=await generateWithConnectedAi(mode,input,nextStyle,regenerate?output:""),id=uid();setOutput(live.output);setRecordId(id);setFavorite(false);await db.aiToolRecords.add({id,mode,input,output:live.output,provider:live.provider,createdAt:new Date().toISOString(),favorite:false,style:nextStyle})}catch(error){setNotice(error instanceof Error?error.message:"生成失败")}finally{setBusy(false)}};const chooseStyle=(next:string)=>{setStyle(next);if(input.trim())void run(next,true)};const toggleFavorite=async()=>{if(!recordId)return;const next=!favorite;await db.aiToolRecords.update(recordId,{favorite:next});setFavorite(next)};return <section className="phase-panel ai-assistant"><header><div><b>直播 AI 助手</b><p>{connection?`当前使用 ${connection.provider} · ${connection.model}`:"请先到设置 → AI 中心连接 AI"}</p></div></header><nav>{modes.map(x=><button className={mode===x.id?"active":""} onClick={()=>{setMode(x.id);setOutput("")}} key={x.id}>{x.label}</button>)}</nav>{mode==="reply"&&<div className="reply-styles" aria-label="回复风格">{replyStyles.map(x=><button key={x} className={style===x?"active":""} disabled={busy} onClick={()=>chooseStyle(x)}>{x}</button>)}</div>}<Textarea value={input} onChange={e=>setInput(e.target.value)} placeholder={current.placeholder} className="min-h-32"/><div className="phase-actions"><Button onClick={()=>run()} disabled={busy}>{busy?"生成中…":"生成内容"}</Button></div>{notice&&<p className="phase-status" role="status">{notice}</p>}{output&&<div className="ai-output-card"><div className="ai-output-toolbar"><button onClick={()=>navigator.clipboard.writeText(output)}><Copy/>一键复制</button><button onClick={()=>run(style,true)} disabled={busy}><RefreshCw/>重新生成</button><button className={favorite?"active":""} onClick={toggleFavorite}><Heart/> {favorite?"已收藏":"收藏"}</button></div><pre>{output}</pre></div>}</section>}
+const modes: { id: AiToolMode; label: string; placeholder: string }[] = [
+  { id: "reply", label: "高情商回复", placeholder: "输入观众留言" },
+  {
+    id: "review",
+    label: "直播复盘",
+    placeholder: "输入今天直播的内容、对话和发生的事情",
+  },
+  {
+    id: "coach",
+    label: "话术教练",
+    placeholder: "输入直播间情境，例如：有人嫌贵、冷场、没人留言",
+  },
+];
+const replyStyles = ["亲切", "幽默", "带货", "高情商", "高价值", "宠粉", "留人", "成交"];
+export function StreamAiAssistant() {
+  const [mode, setMode] = useState<AiToolMode>("reply"),
+    [style, setStyle] = useState("高情商"),
+    [input, setInput] = useState(""),
+    [output, setOutput] = useState(""),
+    [recordId, setRecordId] = useState(""),
+    [favorite, setFavorite] = useState(false),
+    [busy, setBusy] = useState(false),
+    [notice, setNotice] = useState("");
+  const connection = useLiveQuery(() => db.aiConnections.get("active"), []);
+  const current = modes.find((x) => x.id === mode)!;
+  const run = async (nextStyle = style, regenerate = false) => {
+    if (!input.trim()) {
+      setNotice("请先输入观众留言或直播情境");
+      return;
+    }
+    setBusy(true);
+    setNotice("");
+    try {
+      const live = await generateWithConnectedAi(mode, input, nextStyle, regenerate ? output : ""),
+        id = uid();
+      setOutput(live.output);
+      setRecordId(id);
+      setFavorite(false);
+      await db.aiToolRecords.add({
+        id,
+        mode,
+        input,
+        output: live.output,
+        provider: live.provider,
+        createdAt: new Date().toISOString(),
+        favorite: false,
+        style: nextStyle,
+      });
+    } catch (error) {
+      setNotice(error instanceof Error ? error.message : "生成失败");
+    } finally {
+      setBusy(false);
+    }
+  };
+  const chooseStyle = (next: string) => {
+    setStyle(next);
+    if (input.trim()) void run(next, true);
+  };
+  const toggleFavorite = async () => {
+    if (!recordId) return;
+    const next = !favorite;
+    await db.aiToolRecords.update(recordId, { favorite: next });
+    setFavorite(next);
+  };
+  return (
+    <section className="phase-panel ai-assistant">
+      <header>
+        <div>
+          <b>直播 AI 助手</b>
+          <p>{connection ? `当前使用 ${connection.provider} · ${connection.model}` : "请先到设置 → AI 中心连接 AI"}</p>
+        </div>
+      </header>
+      <nav>
+        {modes.map((x) => (
+          <button
+            className={mode === x.id ? "active" : ""}
+            onClick={() => {
+              setMode(x.id);
+              setOutput("");
+            }}
+            key={x.id}
+          >
+            {x.label}
+          </button>
+        ))}
+      </nav>
+      {mode === "reply" && (
+        <div className="reply-styles" aria-label="回复风格">
+          {replyStyles.map((x) => (
+            <button key={x} className={style === x ? "active" : ""} disabled={busy} onClick={() => chooseStyle(x)}>
+              {x}
+            </button>
+          ))}
+        </div>
+      )}
+      <Textarea value={input} onChange={(e) => setInput(e.target.value)} placeholder={current.placeholder} className="min-h-32" />
+      <div className="phase-actions">
+        <Button onClick={() => run()} disabled={busy}>
+          {busy ? "生成中…" : "生成内容"}
+        </Button>
+      </div>
+      {notice && (
+        <p className="phase-status" role="status">
+          {notice}
+        </p>
+      )}
+      {output && (
+        <div className="ai-output-card">
+          <div className="ai-output-toolbar">
+            <button onClick={() => navigator.clipboard.writeText(output)}>
+              <Copy />
+              一键复制
+            </button>
+            <button onClick={() => run(style, true)} disabled={busy}>
+              <RefreshCw />
+              重新生成
+            </button>
+            <button className={favorite ? "active" : ""} onClick={toggleFavorite}>
+              <Heart /> {favorite ? "已收藏" : "收藏"}
+            </button>
+          </div>
+          <pre>{output}</pre>
+        </div>
+      )}
+    </section>
+  );
+}
 
-export async function initializeDailyFeatures(){await ensureEnglishDailyPlan(today())}
+export async function initializeDailyFeatures() {
+  await ensureEnglishDailyPlan(today());
+}
 
-export function CompleteDataPanel(){const [status,setStatus]=useState("");const exportData=async()=>{const data=await exportAllData();const url=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:"application/json"}));const link=document.createElement("a");link.href=url;link.download=`personal-workspace-v3-${today()}.json`;link.click();URL.revokeObjectURL(url);setStatus("完整数据已导出")};const importData=async(e:React.ChangeEvent<HTMLInputElement>)=>{try{const file=e.target.files?.[0];if(!file)return;await importAllData(JSON.parse(await file.text()));setStatus("完整数据已导入")}catch(error){setStatus(error instanceof Error?error.message:"导入失败")}};return <section className="phase-panel"><header><div><b>完整数据管理（v3）</b><p>涵盖原有数据、运动打卡、AI 每日英语计划与直播 AI 历史。</p></div></header><div className="phase-actions"><Button onClick={exportData}>导出完整 JSON</Button><label className="import-button">导入完整 JSON<input type="file" accept="application/json" onChange={importData}/></label></div>{status&&<p className="phase-status">{status}</p>}</section>}
+export function CompleteDataPanel() {
+  const [status, setStatus] = useState("");
+  const exportData = async () => {
+    const data = await exportAllData();
+    const url = URL.createObjectURL(new Blob([JSON.stringify(data, null, 2)], { type: "application/json" }));
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `personal-workspace-v3-${today()}.json`;
+    link.click();
+    URL.revokeObjectURL(url);
+    setStatus("完整数据已导出");
+  };
+  const importData = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    try {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      await importAllData(JSON.parse(await file.text()));
+      setStatus("完整数据已导入");
+    } catch (error) {
+      setStatus(error instanceof Error ? error.message : "导入失败");
+    }
+  };
+  return (
+    <section className="phase-panel">
+      <header>
+        <div>
+          <b>完整数据管理（v3）</b>
+          <p>涵盖原有数据、运动打卡、AI 每日英语计划与直播 AI 历史。</p>
+        </div>
+      </header>
+      <div className="phase-actions">
+        <Button onClick={exportData}>导出完整 JSON</Button>
+        <label className="import-button">
+          导入完整 JSON
+          <input type="file" accept="application/json" onChange={importData} />
+        </label>
+      </div>
+      {status && <p className="phase-status">{status}</p>}
+    </section>
+  );
+}

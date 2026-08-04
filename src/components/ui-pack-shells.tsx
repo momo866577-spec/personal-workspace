@@ -5,7 +5,7 @@ import { Bell, Heart, Search } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import type { WorkspaceTheme } from "./workspace-theme-provider";
 
-export type PackPage = "dashboard"|"tasks"|"english"|"workouts"|"periods"|"notes"|"streams"|"gifts"|"settings";
+export type PackPage = "dashboard"|"tasks"|"english"|"workouts"|"nutrition"|"travel"|"periods"|"notes"|"streams"|"gifts"|"settings";
 export type PackNavItem = { id:PackPage; label:string; icon:LucideIcon };
 type Props = { page:PackPage; title:string; nav:PackNavItem[]; go:(page:PackPage)=>void; children:ReactNode; theme:WorkspaceTheme };
 type InstallPromptEvent=Event&{prompt:()=>Promise<void>;userChoice:Promise<{outcome:"accepted"|"dismissed"}>};

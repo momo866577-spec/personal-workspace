@@ -1,5 +1,5 @@
 import Dexie, { type EntityTable } from "dexie";
-import type { AiConnection, AiSecret, AiToolRecord, Contact, EnglishDailyPlan, EnglishEntry, EnglishQuestionBank, GiftRecord, Note, PeriodRecord, Stream, Task, Workout, WorkoutCheckin } from "./types";
+import type { AiConnection, AiSecret, AiToolRecord, Contact, EnglishDailyPlan, EnglishEntry, EnglishQuestionBank, GiftRecord, Note, NutritionRecord, PeriodRecord, Stream, Task, TravelPlan, Workout, WorkoutCheckin } from "./types";
 
 export class WorkspaceDB extends Dexie {
   tasks!: EntityTable<Task, "id">; english!: EntityTable<EnglishEntry, "id">;
@@ -13,6 +13,7 @@ export class WorkspaceDB extends Dexie {
   aiSecrets!: EntityTable<AiSecret, "id">;
   periodRecords!: EntityTable<PeriodRecord, "id">;
   giftRecords!: EntityTable<GiftRecord,"id">;
+  nutritionRecords!: EntityTable<NutritionRecord,"id">; travelPlans!: EntityTable<TravelPlan,"id">;
   constructor() {
     super("personal-workspace");
     this.version(1).stores({
@@ -55,6 +56,9 @@ export class WorkspaceDB extends Dexie {
       workoutCheckins: "date,completed,completedAt", englishDailyPlans: "date,createdAt,level", aiToolRecords: "id,mode,createdAt",
       englishQuestionBanks: "id,name,version,importedAt", aiConnections:"id,provider,status,testedAt", aiSecrets:"id",
       periodRecords:"id,startDate,endDate,flow,updatedAt,*symptoms",giftRecords:"id,date,time,platform,room,username,source,createdAt,*tags",
+    });
+    this.version(7).stores({
+      tasks: "id,due,done,order,createdAt", english: "id,date,completed,createdAt", workouts: "id,date,bodyPart,completed,createdAt", notes: "id,title,category,favorite,pinned,updatedAt,*tags", streams: "id,date,platform,streamer,createdAt", contacts: "id,username,platform,country,importance,createdAt,*tags", workoutCheckins: "date,completed,completedAt", englishDailyPlans: "date,createdAt,level", aiToolRecords: "id,mode,createdAt", englishQuestionBanks: "id,name,version,importedAt", aiConnections:"id,provider,status,testedAt", aiSecrets:"id", periodRecords:"id,startDate,endDate,flow,updatedAt,*symptoms", giftRecords:"id,date,time,platform,room,username,source,createdAt,*tags", nutritionRecords:"id,date,meal,foodName,createdAt", travelPlans:"id,destination,startDate,status,updatedAt"
     });
   }
 }
