@@ -77,10 +77,18 @@ export function AiWorkspaceShell({page,title,nav,go,children}:Props){
   </div>;
 }
 
+export function JellyRailShell({page,title,nav,go,children,theme}:Props){
+  const active=nav.find(item=>item.id===page)??nav[0];
+  return <div className={`jelly-rail-shell ${theme}`}>
+    <aside className="jelly-rail-nav"><button className="jelly-rail-brand" onClick={()=>go("dashboard")} aria-label="返回总览"><Sparkles/><b>工作台</b></button><nav>{nav.map(item=><motion.button whileHover={{y:-2,scale:1.025}} whileTap={{scale:.9,y:2}} transition={{type:"spring",stiffness:430,damping:20}} key={item.id} className={page===item.id?"active":""} aria-current={page===item.id?"page":undefined} onClick={()=>go(item.id)}><span><item.icon/></span><b>{item.label}</b></motion.button>)}</nav></aside>
+    <section className="jelly-rail-stage"><header><div><small>{dateLabel()}</small><h1>{page==="dashboard"?"今日工作台":title}</h1></div><span className="jelly-rail-page-icon"><active.icon/></span></header><main><AnimatePresence mode="wait"><motion.div key={page} initial={{opacity:0,x:18,scale:.985}} animate={{opacity:1,x:0,scale:1}} exit={{opacity:0,x:-10,scale:.99}} transition={{type:"spring",stiffness:300,damping:27}} className="pack-page">{children}</motion.div></AnimatePresence></main></section>
+  </div>;
+}
+
 export const BunnyLifeShell=JellyVisionShell;
 export const CatCafeShell=AppleCalmShell;
 export const PeachBubbleShell=BentoStudioShell;
 export const ForestDiaryShell=FloatingGlassShell;
 export const LittlePlanetShell=NotebookPagesShell;
 export const PetAssistantShell=AiWorkspaceShell;
-export const packShells:Record<WorkspaceTheme,(props:Props)=>ReactNode>={"bunny-life":JellyVisionShell,"cat-cafe":AppleCalmShell,"peach-bubble":BentoStudioShell,"forest-diary":FloatingGlassShell,"little-planet":NotebookPagesShell,"pet-assistant":AiWorkspaceShell};
+export const packShells:Record<WorkspaceTheme,(props:Props)=>ReactNode>={"jelly-blue":JellyRailShell,"jelly-pink":JellyRailShell,"bunny-life":JellyVisionShell,"cat-cafe":AppleCalmShell,"peach-bubble":BentoStudioShell,"forest-diary":FloatingGlassShell,"little-planet":NotebookPagesShell,"pet-assistant":AiWorkspaceShell};
