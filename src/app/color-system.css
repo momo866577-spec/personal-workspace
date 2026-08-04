@@ -76,3 +76,95 @@ button.bg-primary,.premium-button,.phase-actions button{background:linear-gradie
 [data-workspace-theme="jelly-blue"] .jelly-tasks{border-color:#f1b4cc!important;background:linear-gradient(155deg,#ffeaf2,#ffd4e4 52%,#ffc8dc)!important;box-shadow:inset 2px 3px 8px #fff,inset -4px -5px 10px rgba(207,79,135,.12),0 18px 34px -28px #ad386d!important}[data-workspace-theme="jelly-blue"] .jelly-tasks>header{background:linear-gradient(135deg,#e971a3,#bd3f77)!important}[data-workspace-theme="jelly-blue"] .jelly-tasks>div{border-color:#efa8c4!important;background:#f6bfd4!important}[data-workspace-theme="jelly-blue"] .jelly-tasks>div>button,[data-workspace-theme="jelly-blue"] .jelly-tasks>div>button:nth-child(even){background:linear-gradient(105deg,#fff9fc,#ffdeea)!important;color:#6f294a!important}[data-workspace-theme="jelly-blue"] .jelly-tasks em{border-color:#ffd3e3!important;background:linear-gradient(145deg,#ef7cab,#c94a82)!important}
 [data-workspace-theme="jelly-blue"] .jelly-rail-shell :where(input,textarea,[role="combobox"],select){border-color:rgba(207,79,135,.3)!important;background:linear-gradient(145deg,#fff8fb,#ffd7e7)!important;color:#6f294a!important}[data-workspace-theme="jelly-blue"] .jelly-rail-shell [data-slot="checkbox"],[data-workspace-theme="jelly-blue"] .check-big{border-color:#db6c9c!important;background:linear-gradient(145deg,#fff0f6,#ffc2d9)!important}[data-workspace-theme="jelly-blue"] .jelly-rail-shell [data-slot="checkbox"][data-checked],[data-workspace-theme="jelly-blue"] .check-big.done{background:linear-gradient(145deg,#f38ab5,#c8467e)!important}
 [data-workspace-theme="jelly-blue"] .jelly-rail-shell :where(.glass-card,.phase-card,.phase-panel,.english-task-list article,.word-grid section,.content-box,.metric,.ai-output-card,.reply-styles button){border-color:#f2bfd3!important;background:var(--jelly-surface)!important;color:#6f294a!important;box-shadow:var(--jelly-shadow)!important}[data-workspace-theme="jelly-blue"] .jelly-rail-shell :where(.premium-button,.bg-primary,.phase-actions button){background:linear-gradient(145deg,#ee82ae,#c84981)!important;color:#fff!important}
+
+/* Color System V2: fixed module palette. Do not substitute these values. */
+[data-workspace-page="dashboard"]{--module-color:#FF8DBB;--module-strong:#FF5C93;--module-soft:#FFF7FB}
+[data-workspace-page="tasks"]{--module-color:#60A5FA;--module-strong:#60A5FA;--module-soft:#F0F8FF}
+[data-workspace-page="english"]{--module-color:#34D399;--module-strong:#34D399;--module-soft:#ECFDF5}
+[data-workspace-page="workouts"]{--module-color:#FB923C;--module-strong:#FB923C;--module-soft:#FFF7ED}
+[data-workspace-page="notes"]{--module-color:#A78BFA;--module-strong:#A78BFA;--module-soft:#F5F3FF}
+[data-workspace-page="streams"]{--module-color:#F97373;--module-strong:#F97373;--module-soft:#FEF2F2}
+[data-workspace-page="gifts"],[data-workspace-page="contacts"]{--module-color:#FBBF24;--module-strong:#FBBF24;--module-soft:#FFFBEB}
+[data-workspace-page="settings"]{--module-color:#8B5CF6;--module-strong:#8B5CF6;--module-soft:#F5F3FF}
+[data-workspace-page="periods"]{--module-color:#6B7280;--module-strong:#6B7280;--module-soft:#FAFAFA}
+
+/* Neutral product canvas: pink is reserved for dashboard and brand. */
+[data-workspace-page]{background:#FAFAFA!important;color:#252932!important}
+[data-workspace-page="dashboard"]{background:#FFF7FB!important}
+[data-workspace-page] :where(.jelly-rail-stage,.jelly-stage,.apple-stage,.bento-stage,.float-stage,.notebook-paper,.ai-stage){background:#FAFAFA!important}
+[data-workspace-page="dashboard"] :where(.jelly-rail-stage,.jelly-stage,.apple-stage,.bento-stage,.float-stage,.notebook-paper,.ai-stage){background:#FFF7FB!important}
+
+/* Navigation: white surface, gray idle state, exact module color when selected. */
+[data-workspace-page] :where(.jelly-rail-nav,.jelly-dock,.apple-sidebar,.bento-sidebar,.float-rail,.notebook-product>aside,.ai-sidebar){background:linear-gradient(180deg,#FFFFFF,#FAFAFA)!important;border-color:#E5E7EB!important;color:#6B7280!important;box-shadow:8px 0 26px -28px rgba(17,24,39,.35)!important}
+[data-workspace-page] :where(.jelly-rail-nav nav button,.jelly-dock button,.apple-sidebar>button,.bento-sidebar nav button,.float-rail button,.notebook-product aside nav button,.ai-group button){background:transparent!important;color:#6B7280!important;box-shadow:none!important}
+[data-workspace-page] :where(.jelly-rail-nav nav button,.jelly-dock button,.apple-sidebar>button,.bento-sidebar nav button,.float-rail button,.notebook-product aside nav button,.ai-group button) svg{color:#6B7280!important;filter:none!important}
+[data-workspace-page] :where(.jelly-rail-nav nav button,.jelly-dock button,.apple-sidebar>button,.bento-sidebar nav button,.float-rail button,.notebook-product aside nav button,.ai-group button)[aria-current="page"]{border-color:color-mix(in srgb,var(--module-color) 32%,#FFFFFF)!important;background:var(--module-soft)!important;color:var(--module-color)!important;box-shadow:inset 3px 0 var(--module-color)!important}
+[data-workspace-page] :where(.jelly-rail-nav nav button,.jelly-dock button,.apple-sidebar>button,.bento-sidebar nav button,.float-rail button,.notebook-product aside nav button,.ai-group button)[aria-current="page"] svg{color:var(--module-color)!important}
+[data-workspace-page] .jelly-rail-nav nav button>span{border-color:#E5E7EB!important;background:#FFFFFF!important;box-shadow:0 8px 18px -15px rgba(31,41,55,.36)!important}
+[data-workspace-page] .jelly-rail-nav nav button[aria-current="page"]>span{border-color:color-mix(in srgb,var(--module-color) 38%,#FFFFFF)!important;background:var(--module-soft)!important}
+[data-workspace-page] .jelly-rail-brand,[data-workspace-page] .jelly-rail-brand b{color:#FF5C93!important}
+
+/* White cards with a restrained module accent, never full-card color fills. */
+[data-workspace-page] :where(.glass-card,.phase-card,.phase-panel,.task-list-card,.english-daily,.workout-checkin,.period-page,.ai-center-card,.ai-assistant,.jelly-tasks,.jelly-recent,.jelly-quick-pair>button,.content-box,.metric,.english-task-list article,.word-grid section,.ai-output-card,.reply-styles button,.control-metrics article,.control-next){border-color:#E5E7EB!important;border-left:4px solid var(--module-color)!important;background:#FFFFFF!important;color:#252932!important;box-shadow:0 12px 28px -24px rgba(31,41,55,.28)!important}
+[data-workspace-page] :where(.page-head h2,.phase-panel>header b,.glass-card h2,.glass-card h3,.glass-card h4,.task-title){color:#252932!important}
+[data-workspace-page] :where(.icon-orb,.phase-card>svg,.phase-panel>header span,.page-head .eyebrow,.jelly-focus h3:before,.jelly-tasks h3:before,.jelly-recent h3:before){color:var(--module-color)!important}
+[data-workspace-page] .icon-orb{border:1px solid color-mix(in srgb,var(--module-color) 24%,#FFFFFF)!important;background:var(--module-soft)!important}
+[data-workspace-page] :where([data-slot="badge"],.word-pos){border-color:color-mix(in srgb,var(--module-color) 28%,#FFFFFF)!important;background:var(--module-soft)!important;color:color-mix(in srgb,var(--module-color) 78%,#252932)!important}
+[data-workspace-page] :where(.premium-button,.bg-primary,.phase-actions button,.pack-install){border-color:var(--module-color)!important;background:var(--module-color)!important;color:#FFFFFF!important;box-shadow:0 9px 20px -15px var(--module-color)!important}
+[data-workspace-page] :where(input,textarea,[role="combobox"],select){border-color:#D1D5DB!important;background:#FFFFFF!important;color:#252932!important;box-shadow:none!important}
+[data-workspace-page] :where(input,textarea,[role="combobox"],select):focus{border-color:var(--module-color)!important;box-shadow:0 0 0 3px color-mix(in srgb,var(--module-color) 16%,transparent)!important}
+
+/* Dashboard keeps the Sakura Pink hero, while all supporting cards stay white. */
+[data-workspace-page="dashboard"] .jelly-progress-hero{border-color:#FFFFFF!important;background:linear-gradient(135deg,#FF8DBB,#FF5C93)!important;color:#FFFFFF!important;box-shadow:inset 4px 5px 9px rgba(255,255,255,.34),0 18px 32px -25px rgba(255,92,147,.62)!important}
+[data-workspace-page="dashboard"] .jelly-focus>button{border-color:#E5E7EB!important;border-left:4px solid #FF8DBB!important;background:#FFFFFF!important;color:#252932!important;box-shadow:0 12px 28px -24px rgba(31,41,55,.28)!important}
+[data-workspace-page="dashboard"] .jelly-focus>button>span{background:#FFF7FB!important;color:#FF5C93!important;box-shadow:none!important}
+[data-workspace-page="dashboard"] .jelly-tasks>header{background:#FFFFFF!important;color:#252932!important;box-shadow:none!important}
+[data-workspace-page="dashboard"] .jelly-tasks>header h3{color:#252932!important;text-shadow:none!important}
+[data-workspace-page="dashboard"] .jelly-tasks>div,[data-workspace-page="dashboard"] .jelly-tasks>div>button,[data-workspace-page="dashboard"] .jelly-tasks>div>button:nth-child(even){border-color:#E5E7EB!important;background:#FFFFFF!important;color:#252932!important}
+[data-workspace-page="dashboard"] .jelly-tasks em{border-color:#FF8DBB!important;background:#FFFFFF!important;color:#FF5C93!important;box-shadow:none!important}
+
+/* AI elements remain Violet even when embedded in Live or Settings pages. */
+[data-workspace-page] :where(.ai-assistant,.ai-center-card,.ai-output-card){--module-color:#8B5CF6;--module-soft:#F5F3FF;border-left-color:#8B5CF6!important}
+[data-workspace-page] :where(.ai-center-icon,.ai-assistant nav button.active,.reply-styles button.active,.ai-output-toolbar button){border-color:#8B5CF6!important;background:#F5F3FF!important;color:#8B5CF6!important}
+
+/* Dark mode keeps the same identity colors on neutral surfaces. */
+.dark [data-workspace-page],.dark [data-workspace-page] :where(.jelly-rail-stage,.jelly-stage,.apple-stage,.bento-stage,.float-stage,.notebook-paper,.ai-stage){background:#17191D!important;color:#F9FAFB!important}
+.dark [data-workspace-page] :where(.glass-card,.phase-card,.phase-panel,.task-list-card,.english-daily,.workout-checkin,.period-page,.ai-center-card,.ai-assistant,.jelly-tasks,.jelly-recent,.jelly-quick-pair>button,.content-box,.metric,.english-task-list article,.word-grid section,.ai-output-card,.reply-styles button,.control-metrics article,.control-next){border-color:#343840!important;background:#22252A!important;color:#F9FAFB!important}
+
+/* Specificity guard: older pack styles must not repaint V2 pages pink or blue. */
+html[data-workspace-theme] [data-workspace-page] .jelly-rail-stage>header h1{color:var(--module-color)!important}
+html[data-workspace-theme] [data-workspace-page] .jelly-rail-nav nav button{background:transparent!important;color:#6B7280!important;box-shadow:none!important}
+html[data-workspace-theme] [data-workspace-page] .jelly-rail-nav nav button svg{color:#6B7280!important}
+html[data-workspace-theme] [data-workspace-page] .jelly-rail-nav nav button[aria-current="page"]{border-color:color-mix(in srgb,var(--module-color) 32%,#FFFFFF)!important;background:var(--module-soft)!important;color:var(--module-color)!important;box-shadow:inset 3px 0 var(--module-color)!important}
+html[data-workspace-theme] [data-workspace-page] .jelly-rail-nav nav button[aria-current="page"]>span{border-color:color-mix(in srgb,var(--module-color) 35%,#FFFFFF)!important;background:var(--module-soft)!important;color:var(--module-color)!important;box-shadow:none!important}
+html[data-workspace-theme] [data-workspace-page] .jelly-rail-nav nav button[aria-current="page"] svg{color:var(--module-color)!important}
+html[data-workspace-theme] [data-workspace-page] :is(.glass-card,.phase-card,.phase-panel,.task-list-card,.english-daily,.workout-checkin,.period-page,.jelly-tasks,.jelly-recent,.jelly-quick-pair>button,.content-box,.metric,.english-task-list article,.word-grid section,.curriculum-overview,.curriculum-main,.curriculum-levels>span,.curriculum-stats>span,.ai-output-card,.reply-styles button,.control-metrics article,.control-next){border-color:#E5E7EB!important;border-left:4px solid var(--module-color)!important;background:#FFFFFF!important;background-image:none!important;color:#252932!important;box-shadow:0 12px 28px -24px rgba(31,41,55,.28)!important}
+html[data-workspace-theme] [data-workspace-page] :is(.glass-card,.phase-card,.phase-panel,.task-list-card,.english-daily,.workout-checkin,.period-page,.jelly-tasks,.jelly-recent,.jelly-quick-pair>button,.content-box,.metric,.english-task-list article,.word-grid section,.curriculum-overview,.curriculum-main,.curriculum-levels>span,.curriculum-stats>span,.ai-output-card,.reply-styles button,.control-metrics article,.control-next)::before{background:transparent!important}
+html[data-workspace-theme] [data-workspace-page] :is(.page-head h2,.phase-panel h2,.phase-panel h3,.glass-card h2,.glass-card h3,.glass-card h4,.task-title,.curriculum-main b,.curriculum-main span){color:#252932!important}
+html[data-workspace-theme] [data-workspace-page] :is(.premium-button,.bg-primary,.phase-actions button,.pack-install,.task-filter-bar button[data-variant="default"]){border-color:var(--module-color)!important;background:var(--module-color)!important;color:#FFFFFF!important}
+html[data-workspace-theme] [data-workspace-page] :is(.curriculum-progress>i>span,[data-slot="progress-indicator"]){background:var(--module-color)!important;box-shadow:none!important}
+html[data-workspace-theme] [data-workspace-page] :is(.word-grid button,.speak-all,.reserved-mic,.prompt-chips button,.check-big,[data-slot="checkbox"]){border-color:color-mix(in srgb,var(--module-color) 45%,#FFFFFF)!important;background:#FFFFFF!important;color:var(--module-color)!important;box-shadow:none!important}
+html[data-workspace-theme] [data-workspace-page] :is(.check-big.done,[data-slot="checkbox"][data-checked]){background:var(--module-color)!important;color:#FFFFFF!important}
+html[data-workspace-theme] [data-workspace-page="dashboard"] .jelly-quick-pair>button:first-child,html[data-workspace-theme] [data-workspace-page="dashboard"] .jelly-quick-pair>button:last-child{border-color:#E5E7EB!important;border-left:4px solid #FF8DBB!important;background:#FFFFFF!important;background-image:none!important;color:#252932!important;box-shadow:0 12px 28px -24px rgba(31,41,55,.28)!important}
+html[data-workspace-theme] [data-workspace-page="dashboard"] .jelly-tasks{border-color:#E5E7EB!important;border-left:4px solid #FF8DBB!important;background:#FFFFFF!important;background-image:none!important}
+html[data-workspace-theme] [data-workspace-page="dashboard"] .jelly-focus>button{background:#FFFFFF!important;background-image:none!important}
+html[data-workspace-theme] [data-workspace-page] .ai-assistant,html[data-workspace-theme] [data-workspace-page] .ai-center-card,html[data-workspace-theme] [data-workspace-page] .ai-output-card{border-color:#E5E7EB!important;border-left:4px solid #8B5CF6!important;background:#FFFFFF!important;background-image:none!important}
+
+/* Page-scoped navigation colors avoid collisions with legacy icon variables. */
+[data-workspace-page="dashboard"]{--page-color:#FF8DBB;--page-soft:#FFF7FB}
+[data-workspace-page="tasks"]{--page-color:#60A5FA;--page-soft:#F0F8FF}
+[data-workspace-page="english"]{--page-color:#34D399;--page-soft:#ECFDF5}
+[data-workspace-page="workouts"]{--page-color:#FB923C;--page-soft:#FFF7ED}
+[data-workspace-page="notes"]{--page-color:#A78BFA;--page-soft:#F5F3FF}
+[data-workspace-page="streams"]{--page-color:#F97373;--page-soft:#FEF2F2}
+[data-workspace-page="gifts"],[data-workspace-page="contacts"]{--page-color:#FBBF24;--page-soft:#FFFBEB}
+[data-workspace-page="settings"]{--page-color:#8B5CF6;--page-soft:#F5F3FF}
+[data-workspace-page="periods"]{--page-color:#6B7280;--page-soft:#FAFAFA}
+html[data-workspace-theme] [data-workspace-page] .jelly-rail-nav nav button[aria-current="page"]{border-color:color-mix(in srgb,var(--page-color) 32%,#FFFFFF)!important;background:var(--page-soft)!important;color:var(--page-color)!important;box-shadow:inset 3px 0 var(--page-color)!important}
+html[data-workspace-theme] [data-workspace-page] .jelly-rail-nav nav button[aria-current="page"]>span{border-color:color-mix(in srgb,var(--page-color) 35%,#FFFFFF)!important;background:var(--page-soft)!important;color:var(--page-color)!important}
+html[data-workspace-theme] [data-workspace-page] .jelly-rail-nav nav button[aria-current="page"] svg{color:var(--page-color)!important}
+html[data-workspace-theme] [data-workspace-page] :is(.english-daily,.phase-panel,.glass-card,.task-list-card,.workout-checkin,.ai-center-card,.ai-assistant)>header{background:#FFFFFF!important;background-image:none!important;color:#252932!important}
+html[data-workspace-theme] [data-workspace-page="english"] .english-daily button:not(.premium-button){border-color:color-mix(in srgb,#34D399 42%,#FFFFFF)!important;background:#ECFDF5!important;color:#238C69!important;box-shadow:none!important}
+
+/* Section titles carry the same fixed identity color as their module accent. */
+html[data-workspace-theme] [data-workspace-page] :is(.glass-card h2,.glass-card h3,.phase-panel>header b,.task-list-card h3,.english-daily h2,.workout-checkin h2,.period-page h2){color:var(--page-color)!important}
