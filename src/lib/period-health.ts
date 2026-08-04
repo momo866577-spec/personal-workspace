@@ -4,25 +4,39 @@ const day=(value:string)=>new Date(`${value}T00:00:00`).getTime();
 const daysBetween=(a:string,b:string)=>Math.round((day(b)-day(a))/86400000);
 export const periodDuration=(record:PeriodRecord)=>record.endDate?daysBetween(record.startDate,record.endDate)+1:1;
 
+function cycleGroups(records:PeriodRecord[]){
+ const dates=new Set<string>();
+ for(const record of records){
+  const duration=Math.max(1,periodDuration(record));
+  for(let offset=0;offset<duration;offset++)dates.add(new Date(day(record.startDate)+offset*86400000).toLocaleDateString("en-CA"));
+ }
+ const sorted=[...dates].sort();
+ const groups:string[][]=[];
+ for(const date of sorted){const last=groups.at(-1);if(last&&daysBetween(last.at(-1)!,date)===1)last.push(date);else groups.push([date])}
+ return groups;
+}
+
 export type PeriodSummary={cycleCount:number;averageCycle:number|null;averageDuration:number|null;variation:number|null;regularity:"数据不足"|"较规律"|"建议关注";nextEstimate:string|null;alerts:string[]};
 
 export function analyzePeriods(records:PeriodRecord[]):PeriodSummary{
  const rows=[...records].sort((a,b)=>a.startDate.localeCompare(b.startDate));
- const intervals=rows.slice(1).map((row,index)=>daysBetween(rows[index].startDate,row.startDate)).filter(value=>value>0);
- const durations=rows.filter(row=>row.endDate).map(periodDuration);
+ const groups=cycleGroups(rows);
+ const starts=groups.map(group=>group[0]);
+ const intervals=starts.slice(1).map((date,index)=>daysBetween(starts[index],date)).filter(value=>value>0);
+ const durations=groups.map(group=>group.length);
  const averageCycle=intervals.length?Math.round(intervals.reduce((sum,value)=>sum+value,0)/intervals.length):null;
  const averageDuration=durations.length?Math.round(durations.reduce((sum,value)=>sum+value,0)/durations.length*10)/10:null;
  const variation=intervals.length>1?Math.max(...intervals)-Math.min(...intervals):null;
  const regularity=intervals.length<2?"数据不足":intervals.every(value=>value>=21&&value<=35)&&(variation??0)<=9?"较规律":"建议关注";
- const last=rows.at(-1);
- const nextEstimate=last&&averageCycle?new Date(day(last.startDate)+averageCycle*86400000).toLocaleDateString("en-CA"):null;
+ const last=starts.at(-1);
+ const nextEstimate=last&&averageCycle?new Date(day(last)+averageCycle*86400000).toLocaleDateString("en-CA"):null;
  const alerts:string[]=[];
  if(intervals.some(value=>value<21||value>35))alerts.push("记录中出现短于 21 天或长于 35 天的周期");
  if((variation??0)>9)alerts.push("不同周期长度相差超过 9 天");
- if(rows.some(record=>periodDuration(record)>7))alerts.push("有一次经期持续超过 7 天");
+ if(durations.some(duration=>duration>7))alerts.push("有一次经期持续超过 7 天");
  if(rows.some(record=>record.flow==="heavy"&&record.padChanges>=8))alerts.push("有重度流量且一天更换经期用品次数较多的记录");
  if(rows.some(record=>record.pain>=7))alerts.push("有疼痛评分达到 7 分或以上的记录");
- return {cycleCount:rows.length,averageCycle,averageDuration,variation,regularity,nextEstimate,alerts};
+ return {cycleCount:groups.length,averageCycle,averageDuration,variation,regularity,nextEstimate,alerts};
 }
 
 export const periodAdvice={
