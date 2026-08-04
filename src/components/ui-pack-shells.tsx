@@ -80,7 +80,7 @@ export function AiWorkspaceShell({page,title,nav,go,children}:Props){
 export function JellyRailShell({page,title,nav,go,children,theme}:Props){
   return <div className={`jelly-rail-shell ${theme}`} data-workspace-page={page}>
     <aside className="jelly-rail-nav"><button className="jelly-rail-brand" onClick={()=>go("dashboard")} aria-label="返回总览"><i className="workspace-avatar" role="img" aria-label="KK的工作台头像"/><b>KK的工作台</b></button><nav>{nav.map(item=><motion.button data-module={item.id} whileHover={{y:-2,scale:1.025}} whileTap={{scale:.9,y:2}} transition={{type:"spring",stiffness:430,damping:20}} key={item.id} className={page===item.id?"active":""} aria-current={page===item.id?"page":undefined} onClick={()=>go(item.id)}><span><item.icon/></span><b>{item.label}</b></motion.button>)}</nav></aside>
-    <section className="jelly-rail-stage"><header><div><small>{dateLabel()}</small><h1>{page==="dashboard"?"今日工作台":title}</h1></div><span className="jelly-rail-page-icon"><i className="workspace-avatar" role="img" aria-label="KK的工作台头像"/></span></header><main><motion.div key={page} initial={{opacity:.58,x:10,scale:.995}} animate={{opacity:1,x:0,scale:1}} transition={{type:"spring",stiffness:360,damping:32}} className="pack-page">{children}</motion.div></main></section>
+    <section className="jelly-rail-stage"><header><div><small>{dateLabel()}</small><h1>{page==="dashboard"?"今日工作台":title}</h1></div></header><main><motion.div key={page} initial={{opacity:.58,x:10,scale:.995}} animate={{opacity:1,x:0,scale:1}} transition={{type:"spring",stiffness:360,damping:32}} className="pack-page">{children}</motion.div></main></section>
   </div>;
 }
 
