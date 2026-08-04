@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 import type { WorkspaceTheme } from "./workspace-theme-provider";
 
-export type PackPage = "dashboard"|"tasks"|"english"|"workouts"|"notes"|"streams"|"contacts"|"settings";
+export type PackPage = "dashboard"|"tasks"|"english"|"workouts"|"periods"|"notes"|"streams"|"contacts"|"settings";
 export type PackNavItem = { id:PackPage; label:string; icon:LucideIcon };
 type Props = { page:PackPage; title:string; nav:PackNavItem[]; go:(page:PackPage)=>void; children:ReactNode; theme:WorkspaceTheme };
 type InstallPromptEvent=Event&{prompt:()=>Promise<void>;userChoice:Promise<{outcome:"accepted"|"dismissed"}>};
