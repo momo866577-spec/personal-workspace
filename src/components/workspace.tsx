@@ -49,7 +49,7 @@ function Fab({onClick,label="新增"}:{onClick:()=>void;label?:string}) { return
 export function Workspace(){
  const [page,setPage]=useState<Page>("dashboard"); const [mounted,setMounted]=useState(false);
  const {workspaceTheme}=useWorkspaceTheme();
- useEffect(()=>{setMounted(true);initializeDailyFeatures().catch(console.error);if("serviceWorker" in navigator) navigator.serviceWorker.register("/sw.js").catch(()=>{});},[]);
+ useEffect(()=>{setMounted(true);initializeDailyFeatures().catch(()=>{});if("serviceWorker" in navigator) navigator.serviceWorker.register("/sw.js").catch(()=>{});},[]);
  if(!mounted) return <div className="grid min-h-screen place-items-center"><Sparkles className="animate-pulse text-violet-500"/></div>;
  const PackShell=packShells[workspaceTheme];
  const content=page==="dashboard"?<Dashboard go={setPage}/>:page==="tasks"?<Tasks/>:page==="english"?<><EnglishDailyTasks/><English/></>:page==="workouts"?<><WorkoutCheckinPanel/><Workouts/></>:page==="notes"?<Notes/>:page==="streams"?<><StreamAiAssistant/><Streams/></>:page==="contacts"?<Contacts/>:<><AiConnectionCenter/><InstallAppSettings/><CompleteDataPanel/><SettingsPage/></>;

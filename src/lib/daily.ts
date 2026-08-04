@@ -1,9 +1,10 @@
 import { db } from "./db";
-import { ENGLISH_BANK_VERSION, selectLesson } from "./english-question-bank";
-import { today, type CefrLevel, type EnglishDailyItem, type EnglishDailyItemKind, type EnglishPrompt, type Task, type WorkoutCheckin } from "./types";
+import { generateEnglishWithConnectedAi } from "./ai-connection";
+import { today, type CefrLevel, type EnglishDailyItem, type EnglishDailyItemKind, type EnglishDailyPlan, type EnglishPrompt, type Task, type WorkoutCheckin } from "./types";
 
 const describe=(prompts:EnglishPrompt[])=>prompts.map(x=>x.translation?`${x.text}｜${x.translation}`:x.text).join(" · ");
-function itemsFor(date:string,level:CefrLevel,lesson:ReturnType<typeof selectLesson>){
+type AiEnglishContent=Awaited<ReturnType<typeof generateEnglishWithConnectedAi>>["content"];
+function itemsFor(date:string,lesson:AiEnglishContent){
  const rows:{kind:EnglishDailyItemKind;title:string;detail:string;prompts:EnglishPrompt[]}[]=[
   {kind:"words",title:"今日单词",detail:describe(lesson.words),prompts:lesson.words},
   {kind:"sentences",title:"今日短句",detail:describe(lesson.sentences),prompts:lesson.sentences},
@@ -14,20 +15,22 @@ function itemsFor(date:string,level:CefrLevel,lesson:ReturnType<typeof selectLes
  return rows.map(x=>({...x,taskId:`english-daily:${date}:${x.kind}`})) satisfies EnglishDailyItem[];
 }
 
-export async function ensureEnglishDailyPlan(date=today(),level:CefrLevel="A1",replace=false){
- return db.transaction("rw",db.englishDailyPlans,db.tasks,db.englishQuestionBanks,async()=>{
-  const existing=await db.englishDailyPlans.get(date);
-  if(existing&&!replace)return existing;
-  const createdAt=new Date().toISOString(),banks=await db.englishQuestionBanks.toArray(),lesson=selectLesson(date,level,banks);
-  const items=itemsFor(date,level,lesson),count=await db.tasks.count();
+export async function ensureEnglishDailyPlan(date=today(),level:CefrLevel="A1",replace=false,generator=generateEnglishWithConnectedAi){
+ const existing=await db.englishDailyPlans.get(date);if(existing&&!replace&&existing.source?.startsWith("AI 动态生成"))return existing;
+ const key=`${date}:${level}:${replace}`;const active=generationLocks.get(key);if(active)return active;
+ const job=(async()=>{const generated=await generator(level,date);
+ return db.transaction("rw",db.englishDailyPlans,db.tasks,async()=>{
+  const cached=await db.englishDailyPlans.get(date);if(cached&&!replace&&cached.source?.startsWith("AI 动态生成"))return cached;
+  const createdAt=new Date().toISOString(),items=itemsFor(date,generated.content),count=await db.tasks.count();
   const currentTasks=await db.tasks.where("due").equals(date).toArray();
   const done=new Map(currentTasks.filter(x=>x.id.startsWith(`english-daily:${date}:`)).map(x=>[x.id,x.done]));
   const tasks:Task[]=items.map((x,index)=>({id:x.taskId,title:`英语 · ${x.title}`,due:date,done:done.get(x.taskId)||false,order:count+index,createdAt}));
   await db.tasks.bulkPut(tasks);
-  const plan={date,items,createdAt,level,bankVersion:ENGLISH_BANK_VERSION,source:banks.length?"内置 CEFR 题库 + 已导入题库":"内置 CEFR 分级题库"};
+  const plan={date,items,createdAt,level,source:`AI 动态生成 · ${generated.provider}`};
   await db.englishDailyPlans.put(plan);return plan;
- });
+ });})();generationLocks.set(key,job);try{return await job}finally{generationLocks.delete(key)}
 }
+const generationLocks=new Map<string,Promise<EnglishDailyPlan>>();
 export async function changeEnglishLevel(level:CefrLevel,date=today()){return ensureEnglishDailyPlan(date,level,true)}
 export async function toggleEnglishDailyTask(taskId:string,done:boolean){await db.tasks.update(taskId,{done})}
 export async function setWorkoutCheckin(date=today(),completed=true){const row:WorkoutCheckin={date,completed,completedAt:new Date().toISOString()};await db.workoutCheckins.put(row);return row}
