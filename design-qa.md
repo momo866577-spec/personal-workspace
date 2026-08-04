@@ -62,4 +62,27 @@ Previous Jelly Rail dashboard pass: passed.
 - Copy and content: English vocabulary, task data, labels, and controls are unchanged.
 - Console errors: none.
 
+## Blueberry Jelly Desktop Regression
+
+- User report: `design-qa-assets/blue-jelly-desktop-fix/dashboard-before-user.png`
+- Revised implementation: `design-qa-assets/blue-jelly-desktop-fix/dashboard-after.png`
+- Side-by-side comparison: `design-qa-assets/blue-jelly-desktop-fix/dashboard-comparison.png`
+- Source capture: 1917 x 1015 px including browser chrome; the 1917 x 922 app area was normalized for comparison.
+- Test viewport: 1920 x 1080 CSS px, device scale factor 1. Browser capture surface: 1368 x 1072 px.
+- State: light mode, `jelly-blue`, dashboard.
+
+### Comparison history
+
+1. P1: a legacy global `main` margin shifted the desktop workspace away from the navigation rail. Fixed with a theme-scoped desktop layout reset and an explicit 1180 px readable content width.
+2. P1: a broad text-color rule changed the progress and focus-card copy from white to navy. Fixed with component-level contrast tokens for the saturated jelly surfaces.
+3. P2: a legacy global `header` margin also affected nested card headers, making the task title appear detached from its list. Fixed by resetting nested headers inside the themed workspace only.
+
+### Browser evidence
+
+- Main content now begins immediately after the left rail: stage left 147.2 px, main left 179.2 px, page left 180.1 px.
+- Dashboard content width is 1179.4 px and the hero width is 1162.4 px.
+- Progress and focus-card computed text color is `rgb(255, 255, 255)`.
+- Task-card header computed left margin is `0px`.
+- No horizontal overflow was detected.
+
 final result: passed
