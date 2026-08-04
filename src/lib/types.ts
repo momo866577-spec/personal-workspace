@@ -8,6 +8,8 @@ export type Contact = { id: Id; username: string; platform: string; country: str
 export type WorkoutCheckin = { date: string; completed: boolean; completedAt: string };
 export type PeriodFlow = "spotting"|"light"|"medium"|"heavy";
 export type PeriodRecord = { id:Id; startDate:string; endDate?:string; flow:PeriodFlow; padChanges:number; pain:number; color:string; symptoms:string[]; notes:string; createdAt:string; updatedAt:string };
+export type GiftSource="manual"|"bilibili"|"douyin"|"kuaishou"|"youtube"|"twitch";
+export type GiftRecord={id:Id;date:string;time:string;platform:string;room:string;username:string;giftName:string;quantity:number;unitValue:number;notes:string;tags:string[];source:GiftSource;createdAt:string;updatedAt:string};
 export type CefrLevel = "A1" | "A2" | "B1" | "B2" | "C1" | "C2";
 export type EnglishDailyItemKind = "words" | "sentences" | "shadowing" | "speaking" | "listening";
 export type EnglishPrompt = { text: string; translation?: string; phonetic?: string; example?: string; exampleTranslation?: string };
@@ -20,7 +22,7 @@ export type AiToolRecord = { id: Id; mode: AiToolMode; input: string; output: st
 export type AiProviderId = "deepseek"|"doubao"|"openai"|"gemini"|"claude"|"openai-compatible";
 export type AiConnection = { id:"active"; provider:AiProviderId; model:string; baseUrl:string; status:"connected"|"error"; testedAt:string; error?:string };
 export type AiSecret = { id:"active"; key:CryptoKey; cipher:ArrayBuffer; iv:Uint8Array<ArrayBuffer> };
-export type TableName = "tasks" | "english" | "workouts" | "notes" | "streams" | "contacts" | "workoutCheckins" | "englishDailyPlans" | "aiToolRecords" | "englishQuestionBanks" | "periodRecords";
-export type RecordMap = { tasks: Task; english: EnglishEntry; workouts: Workout; notes: Note; streams: Stream; contacts: Contact; workoutCheckins: WorkoutCheckin; englishDailyPlans: EnglishDailyPlan; aiToolRecords: AiToolRecord; englishQuestionBanks:EnglishQuestionBank; periodRecords:PeriodRecord };
+export type TableName = "tasks" | "english" | "workouts" | "notes" | "streams" | "contacts" | "workoutCheckins" | "englishDailyPlans" | "aiToolRecords" | "englishQuestionBanks" | "periodRecords" | "giftRecords";
+export type RecordMap = { tasks: Task; english: EnglishEntry; workouts: Workout; notes: Note; streams: Stream; contacts: Contact; workoutCheckins: WorkoutCheckin; englishDailyPlans: EnglishDailyPlan; aiToolRecords: AiToolRecord; englishQuestionBanks:EnglishQuestionBank; periodRecords:PeriodRecord; giftRecords:GiftRecord };
 export const uid = () => crypto.randomUUID();
 export const today = () => new Date().toLocaleDateString("en-CA");

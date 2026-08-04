@@ -8,7 +8,7 @@ import {
 import type { WorkspaceTheme } from "./workspace-theme-provider";
 import type { EnglishEntry, Note, Stream, Task, Workout } from "@/lib/types";
 
-type Page="dashboard"|"tasks"|"english"|"workouts"|"periods"|"notes"|"streams"|"contacts"|"settings";
+type Page="dashboard"|"tasks"|"english"|"workouts"|"periods"|"notes"|"streams"|"gifts"|"contacts"|"settings";
 export type PackHomeData={tasks:Task[];english:EnglishEntry[];workouts:Workout[];notes:Note[];streams:Stream[];done:number;pct:number;go:(page:Page)=>void;toggle:(task:Task)=>void;phaseTwo:React.ReactNode};
 const dateText=new Intl.DateTimeFormat("zh-CN",{month:"long",day:"numeric",weekday:"long"}).format(new Date());
 

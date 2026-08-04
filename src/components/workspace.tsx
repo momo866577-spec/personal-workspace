@@ -11,7 +11,7 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis } from "recharts";
 import { useTheme } from "next-themes";
-import { Archive, BookOpen, CalendarCheck, Check, Dumbbell, ExternalLink, FileText, Flower2, GripVertical, Heart, Home, Languages, Moon, Paperclip, Pencil, Pin, Plus, Radio, Search, Settings, Sparkles, Star, Sun, Trash2, Users } from "lucide-react";
+import { Archive, BookOpen, CalendarCheck, Check, Dumbbell, ExternalLink, FileText, Flower2, Gift, GripVertical, Heart, Home, Languages, Moon, Paperclip, Pencil, Pin, Plus, Radio, Search, Settings, Sparkles, Star, Sun, Trash2, Users } from "lucide-react";
 import { db } from "@/lib/db";
 import { useWorkspaceTheme, workspaceThemes } from "@/components/workspace-theme-provider";
 import { InstallAppButton, packShells, type PackNavItem } from "@/components/ui-pack-shells";
@@ -31,10 +31,11 @@ import { CompleteDataPanel, DashboardPhaseTwo, EnglishDailyTasks, initializeDail
 import { LanguageBridge } from "@/components/language-bridge";
 import { AiConnectionCenter } from "@/components/ai-connection-center";
 import { PeriodTracker } from "@/components/period-tracker";
+import { GiftAssistant, GiftDashboardCard } from "@/components/gift-assistant";
 
-type Page = "dashboard"|"tasks"|"english"|"workouts"|"periods"|"notes"|"streams"|"contacts"|"settings";
+type Page = "dashboard"|"tasks"|"english"|"workouts"|"periods"|"notes"|"streams"|"gifts"|"contacts"|"settings";
 const nav: {id: Page; label: string; icon: typeof Home}[] = [
-  {id:"dashboard",label:"总览",icon:Home},{id:"tasks",label:"每日计划",icon:CalendarCheck},{id:"english",label:"英语",icon:Languages},{id:"workouts",label:"运动",icon:Dumbbell},{id:"periods",label:"经期记录",icon:Flower2},{id:"notes",label:"备忘录",icon:FileText},{id:"streams",label:"直播复盘",icon:Radio},{id:"contacts",label:"用户管理",icon:Users},{id:"settings",label:"设置",icon:Settings},
+  {id:"dashboard",label:"总览",icon:Home},{id:"tasks",label:"每日计划",icon:CalendarCheck},{id:"english",label:"英语",icon:Languages},{id:"workouts",label:"运动",icon:Dumbbell},{id:"periods",label:"经期记录",icon:Flower2},{id:"notes",label:"备忘录",icon:FileText},{id:"streams",label:"直播复盘",icon:Radio},{id:"gifts",label:"礼物助手",icon:Gift},{id:"contacts",label:"用户管理",icon:Users},{id:"settings",label:"设置",icon:Settings},
 ];
 const dateText = new Intl.DateTimeFormat("zh-CN",{month:"long",day:"numeric"}).format(new Date());
 const weekday = new Intl.DateTimeFormat("zh-CN",{weekday:"long"}).format(new Date());
@@ -55,7 +56,7 @@ export function Workspace(){
  useEffect(()=>{if(mounted)window.scrollTo({top:0,left:0,behavior:"auto"});},[page,mounted]);
  if(!mounted) return <div className="grid min-h-screen place-items-center"><Sparkles className="animate-pulse text-violet-500"/></div>;
  const PackShell=packShells[workspaceTheme];
- const content=page==="dashboard"?<Dashboard go={setPage}/>:page==="tasks"?<Tasks/>:page==="english"?<><EnglishDailyTasks/><English/></>:page==="workouts"?<><WorkoutCheckinPanel/><Workouts/></>:page==="periods"?<PeriodTracker/>:page==="notes"?<Notes/>:page==="streams"?<><StreamAiAssistant/><Streams/></>:page==="contacts"?<Contacts/>:<><AiConnectionCenter/><InstallAppSettings/><CompleteDataPanel/><SettingsPage/></>;
+ const content=page==="dashboard"?<Dashboard go={setPage}/>:page==="tasks"?<Tasks/>:page==="english"?<><EnglishDailyTasks/><English/></>:page==="workouts"?<><WorkoutCheckinPanel/><Workouts/></>:page==="periods"?<PeriodTracker/>:page==="notes"?<Notes/>:page==="streams"?<><StreamAiAssistant/><Streams/></>:page==="gifts"?<GiftAssistant/>:page==="contacts"?<Contacts/>:<><AiConnectionCenter/><InstallAppSettings/><CompleteDataPanel/><SettingsPage/></>;
  return <><LanguageBridge/><PackShell page={page} title={pageTitle[page]} nav={nav as PackNavItem[]} go={setPage} theme={workspaceTheme}><AnimatePresence mode="wait"><motion.div key={`${workspaceTheme}-${page}`} initial={{opacity:0,y:14,scale:.985}} animate={{opacity:1,y:0,scale:1}} exit={{opacity:0,y:-8,scale:.99}} transition={{type:"spring",stiffness:260,damping:25}} className="pack-page mx-auto max-w-7xl">{content}</motion.div></AnimatePresence></PackShell></>
 }
 function InstallAppSettings(){return <Card className="mb-6"><SectionTitle title="安装应用" subtitle="将 Personal Workspace 添加到手机或电脑桌面"/><div className="max-w-xs"><InstallAppButton/></div></Card>}
@@ -63,7 +64,7 @@ function Dashboard({go}:{go:(p:Page)=>void}){
  const tasks=useLiveQuery(()=>db.tasks.where("due").equals(today()).toArray(),[])||[]; const english=useLiveQuery(()=>db.english.where("date").equals(today()).toArray(),[])||[]; const workouts=useLiveQuery(()=>db.workouts.where("date").equals(today()).toArray(),[])||[]; const notes=useLiveQuery(()=>db.notes.orderBy("updatedAt").reverse().limit(3).toArray(),[])||[]; const streams=useLiveQuery(()=>db.streams.orderBy("date").reverse().limit(3).toArray(),[])||[];
  const done=tasks.filter(t=>t.done).length; const pct=tasks.length?Math.round(done/tasks.length*100):0;
  const {workspaceTheme}=useWorkspaceTheme(); const PackHome=packHomes[workspaceTheme];
- return <PackHome tasks={tasks} english={english} workouts={workouts} notes={notes} streams={streams} done={done} pct={pct} go={go} toggle={toggleTask} phaseTwo={<DashboardPhaseTwo/>}/>;
+ return <PackHome tasks={tasks} english={english} workouts={workouts} notes={notes} streams={streams} done={done} pct={pct} go={go} toggle={toggleTask} phaseTwo={<><DashboardPhaseTwo/><GiftDashboardCard open={()=>go("gifts")}/></>}/>;
 }
 
 type HomeData={tasks:Task[];english:EnglishEntry[];workouts:Workout[];notes:Note[];streams:Stream[];done:number;pct:number;go:(p:Page)=>void};
