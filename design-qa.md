@@ -85,4 +85,30 @@ Previous Jelly Rail dashboard pass: passed.
 - Task-card header computed left margin is `0px`.
 - No horizontal overflow was detected.
 
+## Daily Plan Compact Layout Regression
+
+- Source visual truth: `design-qa-assets/daily-plan-compact-fix/before.png`
+- Revised desktop implementation: `design-qa-assets/daily-plan-compact-fix/after.png`
+- Mobile implementation: `design-qa-assets/daily-plan-compact-fix/mobile-after.png`
+- Full-view comparison: `design-qa-assets/daily-plan-compact-fix/comparison.png`
+- Desktop viewport: 1280 x 720 CSS px, device scale factor 1.
+- Mobile viewport: 390 x 844 CSS px, device scale factor 1.
+- State: light mode, `jelly-blue`, daily-plan screen with five generated English tasks.
+
+### Comparison history
+
+1. P1: the 72 px drag icon inflated every task row to 97.6 px. It is now 20 px inside a 32 px hit target; desktop task rows measure about 66.4 px.
+2. P1: page navigation retained the previous document scroll position, placing both daily-plan headings above the viewport. Navigation now resets the document to the top; both headings remain visible after switching from a scrolled settings page.
+3. P1: task names used single-line truncation and became unreadable on the narrow mobile content column. Titles now wrap to two lines and remain readable; mobile rows measure about 71.4 px.
+4. P2: filter spacing and progress spacing were too loose relative to the compact rows. They now use a smaller, consistent rhythm without changing the controls or task behavior.
+
+### Fidelity surfaces
+
+- Typography: titles retain the existing navy hierarchy and use a two-line mobile-safe treatment.
+- Layout: left navigation, page structure, drag order, filters, editing, and deletion remain unchanged; only density and scroll restoration changed.
+- Color and tokens: the existing Blueberry Jelly gradients, edges, shadows, and contrast are unchanged.
+- Image quality: no raster assets were introduced or replaced.
+- Copy and content: task data and labels are unchanged.
+- Browser checks: no horizontal overflow at 1280 x 720 or 390 x 844; scroll reset verified from 572 px to 0 px on navigation.
+
 final result: passed
