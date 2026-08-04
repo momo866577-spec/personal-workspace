@@ -2,8 +2,8 @@ import type { CefrLevel, EnglishLesson, EnglishPrompt, EnglishQuestionBank } fro
 
 export const ENGLISH_BANK_VERSION="cefr-core-2026.1";
 export const ENGLISH_LEVEL_KEY="personal-workspace-cefr-level";
-export const cefrLevels:CefrLevel[]=["A1","A2","B1","B2","C1"];
-export const cefrDescriptions:Record<CefrLevel,string>={A1:"入门：生活中的基础词句",A2:"初级：熟悉场景与简单交流",B1:"中级：独立表达经历与想法",B2:"中高级：清楚讨论抽象主题",C1:"高级：准确、自然地深入表达"};
+export const cefrLevels:CefrLevel[]=["A1","A2","B1","B2","C1","C2"];
+export const cefrDescriptions:Record<CefrLevel,string>={A1:"入门：生活中的基础词句",A2:"初级：熟悉场景与简单交流",B1:"中级：独立表达经历与想法",B2:"中高级：清楚讨论抽象主题",C1:"高级：准确、自然地深入表达",C2:"精通：灵活掌握高阶表达"};
 
 type LevelPool={words:EnglishPrompt[];sentences:EnglishPrompt[];shadowing:EnglishPrompt[];speaking:EnglishPrompt[];listening:EnglishPrompt[]};
 const p=(text:string,translation:string):EnglishPrompt=>({text,translation});
@@ -42,7 +42,8 @@ const pools:Record<CefrLevel,LevelPool>={
   shadowing:[p("A compelling argument acknowledges uncertainty without becoming ambiguous.","有说服力的论证承认不确定性，但不会含糊不清。"),p("The underlying dilemma cannot be resolved within a purely conventional framework.","根本困境无法在纯传统框架内解决。"),p("Subtle distinctions often carry significant practical implications.","细微区别往往带来重要的实际影响。"),p("A viable long-term strategy must be both coherent and sustainable.","可行的长期策略必须兼具连贯性和可持续性。")],
   speaking:[p("Discuss a modern dilemma from two competing perspectives.","从两个相互竞争的视角讨论现代困境。"),p("Challenge a conventional assumption with a coherent argument.","用连贯论证挑战一个传统假设。"),p("Explain the subtle implications of a recent trend.","解释某个近期趋势的微妙影响。"),p("Present a sustainable framework for long-term learning.","提出长期学习的可持续框架。")],
   listening:[p("Listen to an academic discussion and identify implied assumptions.","听学术讨论并识别隐含假设。"),p("Track how a speaker qualifies and revises a claim.","追踪说话者如何限定并修正主张。"),p("Summarize both explicit arguments and underlying implications.","总结明确论点与潜在影响。"),p("Listen for rhetorical contrast, nuance, and stance.","听辨修辞对比、细微差别与立场。")]
- }
+ },
+ C2:{words:[],sentences:[],shadowing:[],speaking:[],listening:[]}
 };
 
 const hash=(value:string)=>[...value].reduce((n,c)=>((n<<5)-n+c.charCodeAt(0))|0,2166136261)>>>0;

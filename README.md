@@ -1,5 +1,11 @@
 # Personal Workspace
 
+## 英语词库来源
+
+英文关卡以 **New General Service List 1.2** 的官方频率顺序为核心。NGSL 由 Charles Browne、Brent Culligan 与 Joseph Phillips 建立，采用 [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/)；音标、词性与简体中文释义来自 [ECDICT](https://github.com/skywind3000/ECDICT)，采用 MIT License。完整说明也保存在 `public/data/ATTRIBUTION.md`。
+
+应用中的 CEFR 学习区间属于产品导航设计，用来帮助使用者逐级推进；它不是 NGSL 或 CEFR 官方提供的逐词等级标签。Oxford 3000 / 5000 仅用于分级方法参考，没有复制 Oxford 的释义或例句内容。
+
 手機優先、離線優先的個人工作台。所有內容預設保存在瀏覽器 IndexedDB，設定保存在 LocalStorage，不依賴雲端服務。
 
 ## 執行

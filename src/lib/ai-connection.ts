@@ -1,5 +1,5 @@
 import { db } from "./db";
-import type { AiConnection, AiProviderId, AiToolMode, CefrLevel, EnglishPrompt } from "./types";
+import type { AiConnection, AiProviderId, AiToolMode } from "./types";
 
 export type ProviderDefinition={id:AiProviderId;name:string;mark:string;color:string;model:string;baseUrl:string;website:string;help:string[];compatible?:boolean};
 export const providerCatalog:ProviderDefinition[]=[
@@ -41,10 +41,5 @@ const cleanReply=(text:string)=>text.split("\n").filter(line=>!/^\s*(作为(?:AI
 export const buildLiveReplyPrompt=(input:string,style="高情商",previous="")=>({system:replySystem,prompt:promptFor("reply",input,style,previous)});
 export const sanitizeLiveReply=cleanReply;
 export async function generateWithConnectedAi(mode:AiToolMode,input:string,style?:string,previous=""){const connection=await db.aiConnections.get("active"),apiKey=await readSavedKey();if(!connection||!apiKey)throw new Error("尚未接入 AI，请先到设置 → AI 中心完成连接");const output=await callProvider(connection,apiKey,promptFor(mode,input,style,previous),800,systemFor(mode),.95);return {output:mode==="reply"?cleanReply(output):output,provider:connection.provider}}
-
-type GeneratedEnglish={words:EnglishPrompt[];sentences:EnglishPrompt[];shadowing:EnglishPrompt;speaking:EnglishPrompt;listening:EnglishPrompt};
-const cleanJson=(value:string)=>{const cleaned=value.replace(/^```(?:json)?\s*/i,"").replace(/\s*```$/i,"").trim(),start=cleaned.indexOf("{"),end=cleaned.lastIndexOf("}");return start>=0&&end>start?cleaned.slice(start,end+1):cleaned};
-function validateEnglish(value:unknown):GeneratedEnglish{const x=value as GeneratedEnglish;if(!x||!Array.isArray(x.words)||x.words.length!==5||!Array.isArray(x.sentences)||x.sentences.length!==3||!x.shadowing||!x.speaking||!x.listening)throw new Error("AI 返回的英语内容格式不完整，请重新生成");for(const word of x.words)if(!word.text||!word.phonetic||!word.translation||!word.example||!word.exampleTranslation)throw new Error("AI 返回的单词资料不完整，请重新生成");return x}
-export async function generateEnglishWithConnectedAi(level:CefrLevel,date:string){const connection=await db.aiConnections.get("active"),apiKey=await readSavedKey();if(!connection||!apiKey)throw new Error("请先到设置 → AI 中心连接 AI，再生成今日英语");const prompt=`为 ${level} 程度学习者生成 ${date} 的每日英语内容，避免陈词滥调并确保自然、实用、难度适合。结构必须是：{"words":[5个{"text":"英文单词","phonetic":"IPA音标","translation":"简体中文","example":"英文例句","exampleTranslation":"例句中文"}],"sentences":[3个{"text":"英文短句","translation":"简体中文"}],"shadowing":{"text":"一段40至70词英文跟读","translation":"简体中文"},"speaking":{"text":"一个英文口语情境或问题","translation":"简体中文提示"},"listening":{"text":"一段50至90词英文听力材料","translation":"简体中文"}}`;const system="你是专业英语课程设计师。只输出合法 JSON，不要 Markdown、前言或解释。必须严格满足字段与数量要求。";let output=await callProvider(connection,apiKey,prompt,2000,system,.65,true);try{return {content:validateEnglish(JSON.parse(cleanJson(output))),provider:connection.provider}}catch{output=await callProvider(connection,apiKey,`${prompt}\n上一次输出格式错误。请重新输出完整合法 JSON，严格检查5个单词、3个短句和其余三个项目。`,2000,system,.55,true);try{return {content:validateEnglish(JSON.parse(cleanJson(output))),provider:connection.provider}}catch(error){throw new Error(error instanceof Error?error.message:"AI 返回格式无法读取，请重新生成")}}}
 
 export class MockAiProvider{async test(){return "AI 已连接"}async generate(mode:AiToolMode,input:string){return `[Mock ${mode}] ${input}`}}
