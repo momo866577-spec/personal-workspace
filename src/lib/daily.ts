@@ -1,9 +1,12 @@
 import { db } from "./db";
-import { completedCurriculumDates, lessonForGroup, NGSL_VERSION } from "./ngsl-curriculum";
-import { today, type EnglishDailyItem, type EnglishDailyItemKind, type EnglishPrompt, type Task, type WorkoutCheckin } from "./types";
+import { completedCurriculumDates, lessonForLevelGroup, NGSL_VERSION, selectableLevels } from "./ngsl-curriculum";
+import { today, type CefrLevel, type EnglishDailyItem, type EnglishDailyItemKind, type EnglishPrompt, type Task, type WorkoutCheckin } from "./types";
+
+export const ENGLISH_LEVEL_KEY="workspace-english-level";
+export function preferredEnglishLevel():CefrLevel{if(typeof window==="undefined")return "B1";const saved=window.localStorage.getItem(ENGLISH_LEVEL_KEY) as CefrLevel|null;return saved&&selectableLevels.includes(saved)?saved:"B1"}
 
 const describe=(prompts:EnglishPrompt[])=>prompts.map(x=>x.translation?`${x.text}｜${x.translation}`:x.text).join(" · ");
-function itemsFor(date:string,lesson:ReturnType<typeof lessonForGroup>){
+function itemsFor(date:string,lesson:ReturnType<typeof lessonForLevelGroup>){
  const rows:{kind:EnglishDailyItemKind;title:string;detail:string;prompts:EnglishPrompt[]}[]=[
   {kind:"words",title:"今日单词",detail:describe(lesson.words),prompts:lesson.words},
   {kind:"sentences",title:"今日短句",detail:describe(lesson.sentences),prompts:lesson.sentences},
@@ -14,17 +17,17 @@ function itemsFor(date:string,lesson:ReturnType<typeof lessonForGroup>){
  return rows.map(x=>({...x,taskId:`english-daily:${date}:${x.kind}`})) satisfies EnglishDailyItem[];
 }
 
-export async function ensureEnglishDailyPlan(date=today(),replace=false){
+export async function ensureEnglishDailyPlan(date=today(),replace=false,requestedLevel: CefrLevel=preferredEnglishLevel()){
  return db.transaction("rw",db.englishDailyPlans,db.tasks,async()=>{
-  const existing=await db.englishDailyPlans.get(date);if(existing&&!replace&&existing.source?.startsWith(NGSL_VERSION))return existing;
-  const plans=await db.englishDailyPlans.toArray(),allTasks=await db.tasks.toArray(),validDates=new Set(plans.filter(x=>x.source?.startsWith(NGSL_VERSION)).map(x=>x.date));
-  const group=completedCurriculumDates(allTasks,validDates).filter(x=>x<date).length,lesson=lessonForGroup(group);
+  const existing=await db.englishDailyPlans.get(date);if(existing&&!replace&&existing.source?.startsWith(NGSL_VERSION)&&existing.level===requestedLevel)return existing;
+  const plans=await db.englishDailyPlans.toArray(),allTasks=await db.tasks.toArray(),validDates=new Set(plans.filter(x=>x.source?.startsWith(NGSL_VERSION)&&x.level===requestedLevel).map(x=>x.date));
+  const group=completedCurriculumDates(allTasks,validDates).filter(x=>x<date).length,lesson=lessonForLevelGroup(requestedLevel,group);
   const createdAt=new Date().toISOString(),items=itemsFor(date,lesson),count=allTasks.length;
   const currentTasks=await db.tasks.where("due").equals(date).toArray();
-  const done=new Map((existing?.source?.startsWith(NGSL_VERSION)?currentTasks:[]).filter(x=>x.id.startsWith(`english-daily:${date}:`)).map(x=>[x.id,x.done]));
+  const done=new Map((existing?.source?.startsWith(NGSL_VERSION)&&existing.level===requestedLevel&&!replace?currentTasks:[]).filter(x=>x.id.startsWith(`english-daily:${date}:`)).map(x=>[x.id,x.done]));
   const tasks:Task[]=items.map((x,index)=>({id:x.taskId,title:`英语 · ${x.title}`,due:date,done:done.get(x.taskId)||false,order:count+index,createdAt}));
   await db.tasks.bulkPut(tasks);
-  const plan={date,items,createdAt,level:lesson.level,bankVersion:`ngsl-1.2:${lesson.start}`,source:`${NGSL_VERSION} · 固定顺序`};
+  const plan={date,items,createdAt,level:lesson.level,bankVersion:`ngsl-1.2:${lesson.level}:${lesson.start}`,source:`${NGSL_VERSION} · CEFR 固定顺序`};
   await db.englishDailyPlans.put(plan);return plan;
  });
 }
