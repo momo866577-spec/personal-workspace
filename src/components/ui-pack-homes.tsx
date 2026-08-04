@@ -1,55 +1,26 @@
 "use client";
 
-import { motion } from "motion/react";
-import {
-  ArrowUpRight, BookOpen, CalendarCheck, CheckCircle2, Clock3, Dumbbell,
-  FileText, Languages, ListTodo, Radio, Sparkles, Star, TrendingUp,
-} from "lucide-react";
+import type { ReactNode } from "react";
+import { BookOpenText, Check, Dumbbell, FileText, Radio, Sparkles, Target } from "lucide-react";
 import type { WorkspaceTheme } from "./workspace-theme-provider";
 import type { EnglishEntry, Note, Stream, Task, Workout } from "@/lib/types";
 
-type Page="dashboard"|"tasks"|"english"|"workouts"|"periods"|"notes"|"streams"|"gifts"|"contacts"|"settings";
-export type PackHomeData={tasks:Task[];english:EnglishEntry[];workouts:Workout[];notes:Note[];streams:Stream[];done:number;pct:number;go:(page:Page)=>void;toggle:(task:Task)=>void;phaseTwo:React.ReactNode};
-const dateText=new Intl.DateTimeFormat("zh-CN",{month:"long",day:"numeric",weekday:"long"}).format(new Date());
+type Page = "dashboard"|"tasks"|"english"|"workouts"|"periods"|"notes"|"streams"|"gifts"|"settings";
+export type PackHomeData={tasks:Task[];english:EnglishEntry[];workouts:Workout[];notes:Note[];streams:Stream[];done:number;pct:number;go:(page:Page)=>void;toggle:(task:Task)=>void;phaseTwo:ReactNode};
 
-export function JellyVisionHome(d:PackHomeData){
-  return <div className="v3-home jelly-home"><section className="jelly-hero"><div><small>{dateText}</small><h2>让今天柔软地展开</h2><p>完成一点，就会亮起一点。</p></div><motion.strong animate={{boxShadow:["0 0 0 0 #ff8db955","0 0 0 14px #ff8db900"]}} transition={{repeat:Infinity,duration:2}}>{d.pct}<i>%</i></motion.strong></section><div className="jelly-orbit"><button onClick={()=>d.go("tasks")}><CalendarCheck/><b>今日计划</b><span>{d.tasks.length-d.done} 项</span></button><button onClick={()=>d.go("english")}><Languages/><b>英语学习</b><span>{d.english.length} 条</span></button><button onClick={()=>d.go("workouts")}><Dumbbell/><b>运动打卡</b><span>{d.workouts.length} 次</span></button></div><section className="jelly-task-pod"><header><span><ListTodo/>今日任务</span><button onClick={()=>d.go("tasks")}>全部 <ArrowUpRight/></button></header>{d.tasks.length?d.tasks.slice(0,4).map(t=><button key={t.id} onClick={()=>d.toggle(t)} className={t.done?"done":""}><i>{t.done?<CheckCircle2/>:<Clock3/>}</i><span><b>{t.title}</b><small>{t.due}</small></span></button>):<p className="pack-empty">今天还没有任务，慢慢开始吧。</p>}</section><div className="pack-phase-slot">{d.phaseTwo}</div></div>;
+function Ring({value}:{value:number}){return <div className="progress-ring" style={{"--progress":`${Math.max(3,value)*3.6}deg`} as React.CSSProperties}><b>{value}%</b><small>今日完成</small></div>}
+function GlassPinkDashboard(data:PackHomeData){
+ const pending=data.tasks.filter(task=>!task.done).slice(0,5);
+ return <div className="dashboard-glass">
+  <section className="progress-hero glass-panel"><div className="hero-copy"><small>今日进度</small><strong>{data.pct}%</strong><p>保持节奏，稳步前进</p></div><div className="hero-track"><i style={{width:`${data.pct}%`}}/></div><div className="hero-stats"><span><Target/><b>{data.done}</b><small>完成任务</small></span><span><FileText/><b>{data.tasks.length-data.done}</b><small>待办任务</small></span><span><Sparkles/><b>{data.english.length}</b><small>学习记录</small></span></div></section>
+  <section className="focus-panel glass-panel"><header><Target/><h2>今日聚焦</h2></header><blockquote>小小的进步，也是向前迈出的一大步。</blockquote><button className="glass-action" onClick={()=>data.go("tasks")}>开始专注</button></section>
+  <section className="today-tasks glass-panel"><header><h2>今日任务</h2><button onClick={()=>data.go("tasks")}>查看全部</button></header><div>{pending.length?pending.map(task=><button className="task-row" key={task.id} onClick={()=>data.toggle(task)}><span><Check/></span><b>{task.title}</b><small>{task.due}</small></button>):<p className="soft-empty">今天的任务都完成啦</p>}</div></section>
+  <section className="period-preview glass-panel"><header><h2>经期记录</h2><button onClick={()=>data.go("periods")}>打开日历</button></header><p>按天记录经量、颜色与身体感受，月历会清楚显示每天状态。</p><button className="glass-action" onClick={()=>data.go("periods")}>记录今天</button></section>
+  <section className="learning-card glass-panel"><header><BookOpenText/><h2>英语学习</h2></header><div><Ring value={Math.min(100,data.english.length*20)}/><p><b>{data.english.length}</b> 条学习记录</p></div><button className="glass-action" onClick={()=>data.go("english")}>继续学习</button></section>
+  <section className="workout-card glass-panel"><header><Dumbbell/><h2>运动打卡</h2></header><div><Ring value={data.workouts.length?100:0}/><p><b>{data.workouts.length}</b> 次运动记录</p></div><button className="glass-action" onClick={()=>data.go("workouts")}>记录运动</button></section>
+  <section className="recent-card glass-panel"><header><FileText/><h2>最近笔记</h2><button onClick={()=>data.go("notes")}>查看全部</button></header>{data.notes.length?<ul>{data.notes.map(note=><li key={note.id}><b>{note.title}</b><small>{new Date(note.updatedAt).toLocaleDateString("zh-CN")}</small></li>)}</ul>:<p className="soft-empty">还没有最近笔记</p>}</section>
+  <section className="stream-card glass-panel"><header><Radio/><h2>最近直播</h2><button onClick={()=>data.go("streams")}>进入复盘</button></header><p>{data.streams.length?`已有 ${data.streams.length} 条近期直播记录` : "完成直播后，在这里快速复盘。"}</p></section>
+  <div className="phase-two-slot">{data.phaseTwo}</div>
+ </div>
 }
-
-export function AppleCalmHome(d:PackHomeData){
-  const first=d.tasks.find(t=>!t.done);
-  return <div className="v3-home apple-home"><section className="apple-today"><small>{dateText}</small><h2>今天</h2><p>{first?`下一件事：${first.title}`:"今天的计划已经完成。"}</p><div><span style={{width:`${d.pct}%`}}/></div></section><div className="apple-widget-row"><button onClick={()=>d.go("tasks")}><span>{d.tasks.length-d.done}</span><small>待办</small></button><button onClick={()=>d.go("english")}><span>{d.english.length}</span><small>学习记录</small></button><button onClick={()=>d.go("workouts")}><span>{d.workouts.length}</span><small>运动</small></button><button onClick={()=>d.go("notes")}><span>{d.notes.length}</span><small>最近笔记</small></button></div><section className="apple-focus"><header><div><Sparkles/><span><b>今日重点</b><small>保持简单，只看下一步</small></span></div><button onClick={()=>d.go("tasks")}>管理</button></header>{d.tasks.slice(0,5).map(t=><label key={t.id}><button onClick={()=>d.toggle(t)} aria-label="切换完成状态">{t.done&&<CheckCircle2/>}</button><span className={t.done?"done":""}>{t.title}</span><small>{t.due}</small></label>)}</section><div className="apple-insight">{d.phaseTwo}</div></div>;
-}
-
-export function BentoStudioHome(d:PackHomeData){
-  return <div className="v3-home bento-home"><section className="bento-lead"><small>{dateText}</small><h2>我的今日拼图</h2><p>每完成一格，今天就更完整。</p><strong>{d.pct}%</strong></section><button className="bento-piece tasks" onClick={()=>d.go("tasks")}><CalendarCheck/><span><small>TASKS</small><b>{d.tasks.length-d.done} 件待完成</b></span><ArrowUpRight/></button><button className="bento-piece learn" onClick={()=>d.go("english")}><BookOpen/><span><small>LEARN</small><b>{d.english.length} 条学习</b></span></button><button className="bento-piece move" onClick={()=>d.go("workouts")}><TrendingUp/><span><small>MOVE</small><b>{d.workouts.length} 次运动</b></span></button><button className="bento-piece notes" onClick={()=>d.go("notes")}><FileText/><span><small>NOTES</small><b>{d.notes.length} 篇笔记</b></span></button><section className="bento-list"><header><b>正在进行</b><button onClick={()=>d.go("tasks")}>打开计划</button></header>{d.tasks.slice(0,3).map((t,index)=><button key={t.id} onClick={()=>d.toggle(t)}><i>{String(index+1).padStart(2,"0")}</i><span className={t.done?"done":""}>{t.title}</span><small>{t.due}</small></button>)}</section><div className="bento-ai">{d.phaseTwo}</div></div>;
-}
-
-export function FloatingGlassHome(d:PackHomeData){
-  return <div className="v3-home floating-home"><section className="floating-intro"><span className="floating-star"><Star/></span><div><small>{dateText}</small><h2>你的轻盈空间</h2><p>把注意力放在此刻最重要的事情上。</p></div><strong>{d.pct}%</strong></section><div className="floating-cards"><motion.button whileHover={{y:-7,rotate:-1}} onClick={()=>d.go("tasks")}><CalendarCheck/><b>今日计划</b><span>{d.tasks.length-d.done} 项等待你</span></motion.button><motion.button whileHover={{y:-7,rotate:1}} onClick={()=>d.go("english")}><Languages/><b>学习空间</b><span>{d.english.length} 条记录</span></motion.button><motion.button whileHover={{y:-7,rotate:-1}} onClick={()=>d.go("workouts")}><Dumbbell/><b>身体节奏</b><span>{d.workouts.length} 次运动</span></motion.button></div><section className="floating-timeline"><h3>今天的轨迹</h3>{d.tasks.slice(0,4).map(t=><button key={t.id} onClick={()=>d.toggle(t)}><i className={t.done?"done":""}/><span><b>{t.title}</b><small>{t.due}</small></span></button>)}</section><div className="floating-advice">{d.phaseTwo}</div></div>;
-}
-
-export function NotebookPagesHome(d:PackHomeData){
-  return <div className="v3-home notebook-home"><div className="notebook-margin"/><section className="notebook-entry"><small>{dateText}</small><h2>今天这一页</h2><p>留下一点进度，也留下一点呼吸。</p></section><section className="notebook-summary"><span><b>{d.done}/{d.tasks.length}</b><small>任务</small></span><span><b>{d.english.length}</b><small>学习</small></span><span><b>{d.workouts.length}</b><small>运动</small></span></section><section className="notebook-checklist"><header><b>TO DO</b><button onClick={()=>d.go("tasks")}>查看清单</button></header>{d.tasks.slice(0,5).map(t=><label key={t.id}><button className={t.done?"checked":""} onClick={()=>d.toggle(t)}>{t.done&&<CheckCircle2/>}</button><span className={t.done?"done":""}>{t.title}</span><small>{t.due}</small></label>)}</section><div className="notebook-quote"><Sparkles/><span>今天也只需要比昨天多走一点点。</span></div><div className="notebook-advice">{d.phaseTwo}</div></div>;
-}
-
-export function AiWorkspaceHome(d:PackHomeData){
-  const current=d.tasks.filter(t=>!t.done).slice(0,3);
-  return <div className="v3-home ai-home"><section className="ai-brief"><div><span><Sparkles/>DAILY BRIEF</span><h2>早上好，这是你的今日工作区</h2><p>{current.length?`还有 ${current.length} 件优先事项需要处理。`:"主要事项已经处理完毕。"}</p></div><strong>{d.pct}%</strong></section><div className="ai-columns"><section className="ai-priority"><header><b>优先队列</b><button onClick={()=>d.go("tasks")}>查看全部</button></header>{current.map((t,index)=><button key={t.id} onClick={()=>d.toggle(t)}><i>P{index+1}</i><span><b>{t.title}</b><small>{t.due}</small></span><CheckCircle2/></button>)}</section><section className="ai-activity"><header><b>工作区</b></header><button onClick={()=>d.go("english")}><Languages/><span><b>英语学习</b><small>{d.english.length} 条记录</small></span><ArrowUpRight/></button><button onClick={()=>d.go("workouts")}><Dumbbell/><span><b>运动打卡</b><small>{d.workouts.length} 次记录</small></span><ArrowUpRight/></button><button onClick={()=>d.go("streams")}><Radio/><span><b>直播复盘</b><small>{d.streams.length} 条记录</small></span><ArrowUpRight/></button></section></div><div className="ai-daily-advice">{d.phaseTwo}</div></div>;
-}
-
-export function JellyRailHome(d:PackHomeData){
-  const pending=d.tasks.filter(task=>!task.done),focus=pending[0];
-  return <div className="jelly-rail-home"><section className="jelly-progress-hero"><div><small>整体进度</small><strong>{d.pct}<i>%</i></strong></div><span style={{"--jelly-progress":`${d.pct*3.6}deg`} as React.CSSProperties}><b>{d.done}/{d.tasks.length||0}</b><small>今日任务</small></span></section><section className="jelly-focus"><h3>今日重点</h3><motion.button whileTap={{scale:.97}} onClick={()=>d.go(focus?"tasks":"english")}><span><Sparkles/></span><div><b>{focus?.title||"完成英语今日学习计划"}</b><small>{focus?"先完成最重要的一件事":"坚持学习，积累每一点进步"}</small></div><ArrowUpRight/></motion.button></section><section className="jelly-tasks"><header><h3>今日任务</h3><button onClick={()=>d.go("tasks")}>查看全部</button></header><div>{pending.length?pending.slice(0,3).map(task=><button key={task.id} onClick={()=>d.toggle(task)}><i/><span><b>{task.title}</b><small>{task.due}</small></span><em>去完成</em></button>):<p className="pack-empty">今天的任务已经完成。</p>}</div></section><div className="jelly-quick-pair"><motion.button whileTap={{scale:.94}} onClick={()=>d.go("english")}><span><Languages/></span><b>英语学习</b><small>{d.english.length} 条学习记录</small><i style={{width:`${Math.min(100,d.english.length*10)}%`}}/></motion.button><motion.button whileTap={{scale:.94}} onClick={()=>d.go("workouts")}><span><Dumbbell/></span><b>运动打卡</b><small>{d.workouts.length} 次运动记录</small><i style={{width:`${Math.min(100,d.workouts.length*10)}%`}}/></motion.button></div><section className="jelly-recent"><header><h3>最近笔记</h3><button onClick={()=>d.go("notes")}>全部</button></header>{d.notes.length?d.notes.slice(0,2).map(note=><button key={note.id} onClick={()=>d.go("notes")}><span><b>{note.title}</b><small>{note.category||"未分类"}</small></span><time>{note.updatedAt.slice(5,10)}</time></button>):<p className="pack-empty">还没有笔记，记录今天的第一个想法吧。</p>}</section><div className="jelly-phase-slot">{d.phaseTwo}</div></div>;
-}
-
-export const packHomes:Record<WorkspaceTheme,(props:PackHomeData)=>React.ReactNode>={
-  "jelly-blue":JellyRailHome,
-  "jelly-pink":JellyRailHome,
-  "bunny-life":JellyVisionHome,
-  "cat-cafe":AppleCalmHome,
-  "peach-bubble":BentoStudioHome,
-  "forest-diary":FloatingGlassHome,
-  "little-planet":NotebookPagesHome,
-  "pet-assistant":AiWorkspaceHome,
-};
+export const packHomes:Record<WorkspaceTheme,(props:PackHomeData)=>ReactNode>={"glass-pink":GlassPinkDashboard};

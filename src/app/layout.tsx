@@ -1,11 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import "./ui-v3.css";
-import "./ui-v3-fixes.css";
-import "./jelly-rail.css";
-import "./live-crm.css";
-import "./color-system.css";
 import { ThemeProvider } from "@/components/theme-provider";
 
 const geistSans = Geist({
@@ -43,7 +38,6 @@ export default function RootLayout({
       suppressHydrationWarning
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <head><script dangerouslySetInnerHTML={{ __html: `(function(){try{var t=localStorage.getItem('workspace-interface-theme');if(['jelly-blue','jelly-pink','bunny-life','cat-cafe','peach-bubble','forest-diary','little-planet','pet-assistant'].includes(t)){document.documentElement.dataset.workspaceTheme=t}else{document.documentElement.dataset.workspaceTheme='jelly-blue'}}catch(e){}})()` }} /></head>
       <body className="min-h-full"><ThemeProvider>{children}</ThemeProvider></body>
     </html>
   );
