@@ -8,7 +8,7 @@ import { LocalRuleProvider } from "../src/lib/ai-provider";
 import { exportAllData, importAllData } from "../src/lib/data-portability";
 import { db } from "../src/lib/db";
 import fs from "node:fs";
-import { deleteAiConnection, MockAiProvider } from "../src/lib/ai-connection";
+import { buildLiveReplyPrompt, deleteAiConnection, MockAiProvider, sanitizeLiveReply } from "../src/lib/ai-connection";
 
 test("IndexedDB v1 upgrades to v4 without losing old rows",async()=>{await Dexie.delete("personal-workspace");const old=new Dexie("personal-workspace");old.version(1).stores({tasks:"id,due,done,order,createdAt",english:"id,date,completed,createdAt",workouts:"id,date,bodyPart,completed,createdAt",notes:"id,title,category,favorite,pinned,updatedAt,*tags",streams:"id,date,platform,streamer,createdAt",contacts:"id,username,platform,country,importance,createdAt,*tags"});await old.table("tasks").add({id:"old-task",title:"保留",due:"2026-08-03",done:false,order:0,createdAt:"x"});old.close();const upgraded=new WorkspaceDB();await upgraded.open();assert.equal((await upgraded.tasks.get("old-task"))?.title,"保留");assert.ok(upgraded.tables.some(x=>x.name==="workoutCheckins"));assert.ok(upgraded.tables.some(x=>x.name==="englishQuestionBanks"));assert.ok(upgraded.tables.some(x=>x.name==="aiSecrets"));upgraded.close()});
 
@@ -19,6 +19,8 @@ test("workout streak, weekly and monthly totals are correct across days",()=>{co
 test("all three local rule AI tools return usable output",async()=>{const provider=new LocalRuleProvider();for(const mode of ["reply","review","coach"] as const){const output=await provider.generate({mode,input:"有人觉得价格太高"});assert.ok(output.length>80)}});
 
 test("AI connection wizard uses Mock Provider without environment variables",async()=>{const mock=new MockAiProvider();assert.equal(await mock.test(),"AI 已连接");assert.match(await mock.generate("reply","你好"),/Mock reply/);await deleteAiConnection()});
+
+test("live reply prompt requests three direct variants and regeneration is unique",()=>{const first=buildLiveReplyPrompt("直播间怎么没人？","留人"),second=buildLiveReplyPrompt("直播间怎么没人？","留人","旧回复");for(const label of ["① 高情商版","② 幽默版","③ 高互动版"])assert.match(first.prompt,new RegExp(label));assert.match(first.system,/每条20～40个中文字/);assert.notEqual(first.prompt,second.prompt);assert.match(second.prompt,/不得复用/);assert.equal(sanitizeLiveReply("作为AI，我建议如下\n① 高情商版\n欢迎回来"),"① 高情商版\n欢迎回来")});
 
 test("v3 JSON exports and imports all old and new tables",async()=>{const exported=await exportAllData();for(const name of ["tasks","english","workouts","notes","streams","contacts","workoutCheckins","englishDailyPlans","aiToolRecords","englishQuestionBanks"])assert.ok(Array.isArray(exported[name]));await importAllData(exported);assert.equal(await db.englishDailyPlans.count(),1);db.close()});
 
