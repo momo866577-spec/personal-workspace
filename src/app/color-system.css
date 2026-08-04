@@ -168,3 +168,39 @@ html[data-workspace-theme] [data-workspace-page="english"] .english-daily button
 
 /* Section titles carry the same fixed identity color as their module accent. */
 html[data-workspace-theme] [data-workspace-page] :is(.glass-card h2,.glass-card h3,.phase-panel>header b,.task-list-card h3,.english-daily h2,.workout-checkin h2,.period-page h2){color:var(--page-color)!important}
+
+/* Color Fix V3: quiet journal surfaces, minimal borders, fixed module accents. */
+[data-workspace-page="dashboard"]{--module-color:#FFB7D5;--module-strong:#FFB7D5;--module-soft:#FFF1F6;--page-color:#FFB7D5;--page-soft:#FFF1F6}
+[data-workspace-page="tasks"]{--module-color:#60A5FA;--module-strong:#60A5FA;--module-soft:#F0F8FF;--page-color:#60A5FA;--page-soft:#F0F8FF}
+[data-workspace-page="english"]{--module-color:#34D399;--module-strong:#34D399;--module-soft:#ECFDF5;--page-color:#34D399;--page-soft:#ECFDF5}
+[data-workspace-page="workouts"]{--module-color:#FB923C;--module-strong:#FB923C;--module-soft:#FFF7ED;--page-color:#FB923C;--page-soft:#FFF7ED}
+[data-workspace-page="notes"]{--module-color:#9CA3AF;--module-strong:#9CA3AF;--module-soft:#F9FAFB;--page-color:#9CA3AF;--page-soft:#F9FAFB}
+[data-workspace-page="streams"]{--module-color:#F97373;--module-strong:#F97373;--module-soft:#FFF4F1;--page-color:#F97373;--page-soft:#FFF4F1}
+[data-workspace-page="gifts"],[data-workspace-page="contacts"]{--module-color:#D6A756;--module-strong:#D6A756;--module-soft:#FFFBEB;--page-color:#D6A756;--page-soft:#FFFBEB}
+[data-workspace-page="settings"]{--module-color:#A78BFA;--module-strong:#A78BFA;--module-soft:#F5F3FF;--page-color:#A78BFA;--page-soft:#F5F3FF}
+
+html[data-workspace-theme] [data-workspace-page],
+html[data-workspace-theme] [data-workspace-page] :is(.jelly-rail-stage,.jelly-stage,.apple-stage,.bento-stage,.float-stage,.notebook-paper,.ai-stage),
+.dark [data-workspace-page],
+.dark [data-workspace-page] :is(.jelly-rail-stage,.jelly-stage,.apple-stage,.bento-stage,.float-stage,.notebook-paper,.ai-stage){background:#FFF8FC!important;color:#374151!important}
+html[data-workspace-theme] [data-workspace-page] :is(.jelly-rail-nav,.jelly-dock,.apple-sidebar,.bento-sidebar,.float-rail,.notebook-product>aside,.ai-sidebar),
+.dark [data-workspace-page] :is(.jelly-rail-nav,.jelly-dock,.apple-sidebar,.bento-sidebar,.float-rail,.notebook-product>aside,.ai-sidebar){border-color:transparent!important;background:#FFF1F6!important;color:#6B7280!important;box-shadow:4px 0 14px rgba(255,183,213,.08)!important}
+
+html[data-workspace-theme] [data-workspace-page] :is(.glass-card,.phase-card,.phase-panel,.task-list-card,.english-daily,.workout-checkin,.period-page,.ai-center-card,.ai-assistant,.jelly-tasks,.jelly-recent,.jelly-quick-pair>button,.content-box,.metric,.english-task-list article,.word-grid section,.curriculum-overview,.curriculum-main,.curriculum-levels>span,.curriculum-stats>span,.ai-output-card,.reply-styles button,.control-metrics article,.control-next),
+.dark [data-workspace-page] :is(.glass-card,.phase-card,.phase-panel,.task-list-card,.english-daily,.workout-checkin,.period-page,.ai-center-card,.ai-assistant,.jelly-tasks,.jelly-recent,.jelly-quick-pair>button,.content-box,.metric,.english-task-list article,.word-grid section,.curriculum-overview,.curriculum-main,.curriculum-levels>span,.curriculum-stats>span,.ai-output-card,.reply-styles button,.control-metrics article,.control-next){border-width:0 0 0 3px!important;border-style:solid!important;border-left-color:var(--module-color)!important;background:#FFFFFF!important;background-image:none!important;color:#374151!important;box-shadow:0 2px 8px rgba(255,183,213,.08)!important}
+html[data-workspace-theme] [data-workspace-page] :is(.glass-card,.phase-card,.phase-panel,.task-list-card,.english-daily,.workout-checkin,.period-page,.ai-center-card,.ai-assistant,.jelly-tasks,.jelly-recent,.jelly-quick-pair>button,.content-box,.metric,.english-task-list article,.word-grid section,.curriculum-overview,.curriculum-main,.curriculum-levels>span,.curriculum-stats>span,.ai-output-card,.reply-styles button,.control-metrics article,.control-next)>header{border:0!important;background:#FFFFFF!important;box-shadow:none!important}
+
+html[data-workspace-theme] [data-workspace-page] :is(input,textarea,[role="combobox"],select,.word-grid button,.speak-all,.reserved-mic,.prompt-chips button,.check-big,[data-slot="checkbox"],[data-slot="badge"],.word-pos){border:0!important;background:var(--module-soft)!important;color:#374151!important;box-shadow:none!important}
+html[data-workspace-theme] [data-workspace-page] :is(input,textarea,[role="combobox"],select):focus{outline:2px solid color-mix(in srgb,var(--module-color) 36%,transparent)!important;outline-offset:1px!important}
+html[data-workspace-theme] [data-workspace-page] :is(.page-head h2,.phase-panel h2,.phase-panel h3,.glass-card h2,.glass-card h3,.glass-card h4,.task-title,.curriculum-main b,.curriculum-main span){color:#374151!important}
+html[data-workspace-theme] [data-workspace-page] :is(p,small,.muted,.text-muted-foreground){color:#6B7280!important}
+
+html[data-workspace-theme] [data-workspace-page] .jelly-rail-nav nav button>span{border:0!important;background:#FFFFFF!important;box-shadow:0 2px 7px rgba(255,183,213,.1)!important}
+html[data-workspace-theme] [data-workspace-page] .jelly-rail-nav nav button[aria-current="page"]{border:0!important;background:var(--page-soft)!important;color:var(--page-color)!important;box-shadow:inset 3px 0 var(--page-color)!important}
+html[data-workspace-theme] [data-workspace-page] .jelly-rail-nav nav button[aria-current="page"]>span{border:0!important;background:#FFFFFF!important;color:var(--page-color)!important;box-shadow:0 2px 7px color-mix(in srgb,var(--page-color) 15%,transparent)!important}
+
+html[data-workspace-theme] [data-workspace-page="dashboard"] .jelly-progress-hero{border:0!important;background:linear-gradient(135deg,#FFD5E6,#FFB7D5)!important;color:#374151!important;box-shadow:0 2px 8px rgba(255,183,213,.12)!important}
+html[data-workspace-theme] [data-workspace-page="dashboard"] .jelly-progress-hero :is(b,strong,span,small){color:#374151!important;text-shadow:none!important}
+html[data-workspace-theme] [data-workspace-page="dashboard"] :is(.jelly-focus>button,.jelly-quick-pair>button:first-child,.jelly-quick-pair>button:last-child,.jelly-tasks){border-width:0 0 0 3px!important;border-left-color:#FFB7D5!important;background:#FFFFFF!important;box-shadow:0 2px 8px rgba(255,183,213,.08)!important}
+
+html[data-workspace-theme] [data-workspace-page] :is(.premium-button,.bg-primary,.phase-actions button,.pack-install,.task-filter-bar button[data-variant="default"]){border:0!important;background:var(--module-color)!important;color:#FFFFFF!important;box-shadow:0 2px 7px color-mix(in srgb,var(--module-color) 18%,transparent)!important}
