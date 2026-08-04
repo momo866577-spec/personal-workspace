@@ -217,3 +217,74 @@ html[data-workspace-theme] [data-workspace-page="dashboard"] .jelly-tasks>div>bu
 html[data-workspace-theme] [data-workspace-page="dashboard"] .jelly-tasks>div>button+button{border-top:0!important;box-shadow:inset 0 1px rgba(255,183,213,.12)!important}
 html[data-workspace-theme] [data-workspace-page="dashboard"] .jelly-focus>button>span{border:0!important;background:linear-gradient(145deg,#FFE3EF,#FFB7D5)!important;color:#FF6F91!important;box-shadow:inset 3px 4px 7px rgba(255,255,255,.8),0 5px 12px rgba(255,183,213,.14)!important}
 html[data-workspace-theme] [data-workspace-page="dashboard"] :is(.jelly-focus h3:before,.jelly-tasks h3:before,.jelly-recent h3:before){border:0!important;background:#FF8FBB!important;box-shadow:0 0 0 4px #FFE8F2,0 2px 8px rgba(255,111,153,.2)!important}
+
+/* UI Color System V4 — the only allowed chromatic scale. */
+html[data-workspace-theme] [data-workspace-page]{
+  --pink-1:#FFF5F9;
+  --pink-2:#FFEAF3;
+  --pink-3:#FFD6E8;
+  --pink-4:#FFBDD8;
+  --pink-5:#FF8DBB;
+  --module-color:#FF8DBB;
+  --module-strong:#FF8DBB;
+  --module-soft:#FFD6E8;
+  --page-color:#FF8DBB;
+  --page-soft:#FFBDD8;
+  background:#FFF5F9!important;
+  color:#000!important;
+}
+
+/* Borders and dividers are forbidden. */
+html[data-workspace-theme] [data-workspace-page] *,
+html[data-workspace-theme] [data-workspace-page] *::before,
+html[data-workspace-theme] [data-workspace-page] *::after{
+  border:0!important;
+  border-width:0!important;
+  border-style:none!important;
+  border-color:transparent!important;
+  outline:0!important;
+}
+/* Specificity lock: legacy pack rules cannot restore a left accent or divider. */
+html[data-workspace-theme] [data-workspace-page] *:not(#v4-no-border),
+html[data-workspace-theme] [data-workspace-page] *:not(#v4-no-border)::before,
+html[data-workspace-theme] [data-workspace-page] *:not(#v4-no-border)::after{border:0!important;border-width:0!important;border-style:none!important;border-color:transparent!important;outline:0!important}
+html[data-workspace-theme] [data-workspace-page] :is(hr,[role="separator"]){display:none!important}
+
+html[data-workspace-theme] [data-workspace-page] :is(.jelly-rail-stage,.jelly-stage,.apple-stage,.bento-stage,.float-stage,.notebook-paper,.ai-stage,.pack-page){background:#FFF5F9!important;color:#000!important}
+html[data-workspace-theme] [data-workspace-page] :is(.jelly-rail-nav,.jelly-dock,.apple-sidebar,.bento-sidebar,.float-rail,.notebook-product>aside,.ai-sidebar){background:#FFEAF3!important;color:#000!important;box-shadow:4px 0 14px rgba(255,141,187,.1)!important}
+
+html[data-workspace-theme] [data-workspace-page] :is(.glass-card,.phase-card,.phase-panel,.task-list-card,.english-daily,.workout-checkin,.period-page,.ai-center-card,.ai-assistant,.jelly-tasks,.jelly-recent,.jelly-quick-pair>button,.content-box,.metric,.english-task-list article,.word-grid section,.curriculum-overview,.curriculum-main,.curriculum-levels>span,.curriculum-stats>span,.ai-output-card,.reply-styles button,.control-metrics article,.control-next,.live-crm-layout>*,.period-calendar,.period-day-editor){background:#FFD6E8!important;background-image:none!important;color:#000!important;box-shadow:0 4px 12px rgba(255,141,187,.1)!important}
+html[data-workspace-theme] [data-workspace-page] :is(.jelly-focus>button,.jelly-progress-hero,.ai-center-card,.ai-assistant,.ai-output-card,.control-next,.today-control-center){background:#FFBDD8!important;background-image:none!important;color:#000!important;box-shadow:0 5px 14px rgba(255,141,187,.12)!important}
+
+html[data-workspace-theme] [data-workspace-page] :is(input,textarea,select,[role="combobox"],.word-grid button,.speak-all,.reserved-mic,.prompt-chips button,.check-big,[data-slot="checkbox"],[data-slot="badge"],.word-pos,.jelly-tasks>div,.jelly-tasks>div>button,.jelly-recent>button){background:#FFEAF3!important;background-image:none!important;color:#000!important;box-shadow:none!important}
+html[data-workspace-theme] [data-workspace-page] :is(input,textarea,select,[role="combobox"]):focus{background:#FFD6E8!important;box-shadow:0 0 0 3px rgba(255,141,187,.18)!important}
+
+html[data-workspace-theme] [data-workspace-page] :is(.premium-button,.bg-primary,.phase-actions button,.pack-install,.task-filter-bar button[data-variant="default"],.jelly-tasks em,.ai-output-toolbar button,[data-slot="checkbox"][data-checked],.check-big.done){background:#FF8DBB!important;background-image:none!important;color:#000!important;box-shadow:0 3px 9px rgba(255,141,187,.16)!important}
+html[data-workspace-theme] [data-workspace-page] :is(.jelly-rail-nav nav button,.jelly-dock button,.apple-sidebar>button,.bento-sidebar nav button,.float-rail button,.notebook-product aside nav button,.ai-group button){background:transparent!important;color:#000!important;box-shadow:none!important}
+html[data-workspace-theme] [data-workspace-page] :is(.jelly-rail-nav nav button,.jelly-dock button,.apple-sidebar>button,.bento-sidebar nav button,.float-rail button,.notebook-product aside nav button,.ai-group button)[aria-current="page"]{background:#FF8DBB!important;color:#000!important;box-shadow:0 4px 10px rgba(255,141,187,.16)!important}
+html[data-workspace-theme] [data-workspace-page] .jelly-rail-nav nav button>span,
+html[data-workspace-theme] [data-workspace-page] .jelly-rail-nav nav button[aria-current="page"]>span{background:#FFD6E8!important;color:#000!important;box-shadow:0 3px 8px rgba(255,141,187,.12)!important}
+
+/* One color for every icon, title, label and progress state. */
+html[data-workspace-theme] [data-workspace-page] :is(svg,.icon-orb,.phase-card>svg,.phase-panel>header span,.page-head .eyebrow,.jelly-focus h3:before,.jelly-tasks h3:before,.jelly-recent h3:before){color:#000!important;filter:none!important}
+html[data-workspace-theme] [data-workspace-page] :is(h1,h2,h3,h4,h5,h6,b,strong,p,small,span,label,time,em,.muted,.text-muted-foreground){color:#000!important;text-shadow:none!important}
+html[data-workspace-theme] [data-workspace-page] :is(.curriculum-progress>i,.jelly-quick-pair>button>i,[data-slot="progress-root"]){background:#FFEAF3!important;box-shadow:none!important}
+html[data-workspace-theme] [data-workspace-page] :is(.curriculum-progress>i>span,[data-slot="progress-indicator"]){background:#FF8DBB!important;box-shadow:none!important}
+
+/* Dashboard follows the same five-level system without gradients or frames. */
+html[data-workspace-theme] [data-workspace-page="dashboard"] .jelly-progress-hero{background:#FFBDD8!important;background-image:none!important;color:#000!important;box-shadow:0 5px 14px rgba(255,141,187,.12)!important}
+html[data-workspace-theme] [data-workspace-page="dashboard"] .jelly-progress-hero:after{box-shadow:none!important}
+html[data-workspace-theme] [data-workspace-page="dashboard"] .jelly-progress-hero>span{background:conic-gradient(#FF8DBB var(--jelly-progress),#FFD6E8 0)!important;box-shadow:0 4px 10px rgba(255,141,187,.14)!important}
+html[data-workspace-theme] [data-workspace-page="dashboard"] .jelly-progress-hero>span:before{background:#FFBDD8!important;box-shadow:none!important}
+html[data-workspace-theme] [data-workspace-page="dashboard"] :is(.jelly-focus>button,.jelly-tasks,.jelly-quick-pair>button:first-child,.jelly-quick-pair>button:last-child,.jelly-recent){background:#FFD6E8!important;background-image:none!important;box-shadow:0 4px 12px rgba(255,141,187,.1)!important}
+html[data-workspace-theme] [data-workspace-page="dashboard"] .jelly-focus>button{background:#FFBDD8!important}
+
+/* V4 specificity lock: older module colors and white surfaces are not allowed back in. */
+html[data-workspace-theme] [data-workspace-page] *:not(#v4-single-pink){color:#000!important;text-shadow:none!important;filter:none!important}
+html[data-workspace-theme] [data-workspace-page] :is(header,footer):not(#v4-single-pink){background:#FFEAF3!important;background-image:none!important;color:#000!important}
+html[data-workspace-theme] [data-workspace-page] :is(button,input,textarea,select,[role="combobox"]):not(#v4-single-pink){background:#FFD6E8!important;background-image:none!important;color:#000!important;box-shadow:none!important}
+html[data-workspace-theme] [data-workspace-page] :is(.jelly-rail-nav nav button,.jelly-dock button,.apple-sidebar>button,.bento-sidebar nav button,.float-rail button,.notebook-product aside nav button,.ai-group button):not(#v4-single-pink){background:transparent!important}
+html[data-workspace-theme] [data-workspace-page] :is(.jelly-rail-nav nav button,.jelly-dock button,.apple-sidebar>button,.bento-sidebar nav button,.float-rail button,.notebook-product aside nav button,.ai-group button)[aria-current="page"]:not(#v4-single-pink){background:#FF8DBB!important;box-shadow:0 4px 10px rgba(255,141,187,.16)!important}
+html[data-workspace-theme] [data-workspace-page] :is(.premium-button,.bg-primary,.phase-actions button,.pack-install,.task-filter-bar button[data-variant="default"],.jelly-tasks em,.ai-output-toolbar button,[data-slot="checkbox"][data-checked],.check-big.done):not(#v4-single-pink){background:#FF8DBB!important;box-shadow:0 3px 9px rgba(255,141,187,.16)!important}
+html[data-workspace-theme] [data-workspace-page] .jelly-tasks i:not(#v4-single-pink){background:#FFD6E8!important;box-shadow:none!important}
+html[data-workspace-theme] [data-workspace-page] svg:not(#v4-single-pink){background:transparent!important;background-image:none!important}
