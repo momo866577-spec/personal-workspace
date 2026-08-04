@@ -3,7 +3,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useLiveQuery } from "dexie-react-hooks";
-import { AnimatePresence, motion } from "motion/react";
+import { motion } from "motion/react";
 import { DndContext, closestCenter, type DragEndEvent } from "@dnd-kit/core";
 import { SortableContext, arrayMove, useSortable, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
@@ -57,7 +57,7 @@ export function Workspace(){
  if(!mounted) return <div className="grid min-h-screen place-items-center"><Sparkles className="animate-pulse text-violet-500"/></div>;
  const PackShell=packShells[workspaceTheme];
  const content=page==="dashboard"?<Dashboard go={setPage}/>:page==="tasks"?<Tasks/>:page==="english"?<><EnglishDailyTasks/><English/></>:page==="workouts"?<><WorkoutCheckinPanel/><Workouts/></>:page==="periods"?<PeriodTracker/>:page==="notes"?<Notes/>:page==="streams"?<><StreamAiAssistant/><Streams/></>:page==="gifts"?<GiftAssistant/>:page==="contacts"?<Contacts/>:<><AiConnectionCenter/><InstallAppSettings/><CompleteDataPanel/><SettingsPage/></>;
- return <><LanguageBridge/><PackShell page={page} title={pageTitle[page]} nav={nav as PackNavItem[]} go={setPage} theme={workspaceTheme}><AnimatePresence mode="wait"><motion.div key={`${workspaceTheme}-${page}`} initial={{opacity:0,y:14,scale:.985}} animate={{opacity:1,y:0,scale:1}} exit={{opacity:0,y:-8,scale:.99}} transition={{type:"spring",stiffness:260,damping:25}} className="pack-page mx-auto max-w-7xl">{content}</motion.div></AnimatePresence></PackShell></>
+ return <><LanguageBridge/><PackShell page={page} title={pageTitle[page]} nav={nav as PackNavItem[]} go={setPage} theme={workspaceTheme}><div className="pack-page mx-auto max-w-7xl">{content}</div></PackShell></>
 }
 function InstallAppSettings(){return <Card className="mb-6"><SectionTitle title="安装应用" subtitle="将 Personal Workspace 添加到手机或电脑桌面"/><div className="max-w-xs"><InstallAppButton/></div></Card>}
 function Dashboard({go}:{go:(p:Page)=>void}){
