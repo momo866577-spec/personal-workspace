@@ -3,7 +3,7 @@
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 
 export const workspaceThemes = [
-  { id: "jelly-blue", name: "蓝莓果冻", note: "蓝色左栏果冻工作台", colors: ["#eef6ff", "#2f80ff", "#9bcaff"] },
+  { id: "jelly-blue", name: "蓝莓果冻", note: "粉色左栏果冻工作台", colors: ["#fff4f8", "#ec6fa4", "#ffc8dc"] },
   { id: "jelly-pink", name: "樱粉果冻", note: "粉色左栏果冻工作台", colors: ["#fff1f7", "#f567a5", "#ffc1dc"] },
   { id: "bunny-life", name: "果冻视界", note: "粉色 VisionOS 三栏果冻工作台", colors: ["#fff2f8", "#ff7fac", "#ffc5dc"] },
   { id: "cat-cafe", name: "晴空留白", note: "蓝色 Apple 双栏轻量空间", colors: ["#f4f9ff", "#76b9f5", "#d7ecff"] },

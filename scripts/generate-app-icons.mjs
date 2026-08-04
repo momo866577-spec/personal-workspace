@@ -39,7 +39,7 @@ for (const [size, name] of normal) {
 for (const size of [192, 512]) {
   const inner = Math.round(size * 0.64);
   const rendered = await sharp(source).resize(inner, inner, { fit: "contain" }).png().toBuffer();
-  await sharp({ create: { width: size, height: size, channels: 4, background: "#5846D9" } })
+  await sharp({ create: { width: size, height: size, channels: 4, background: "#F2A8C5" } })
     .composite([{ input: rendered, gravity: "center" }])
     .png()
     .toFile(join(iconsDir, `icon-maskable-${size}.png`));
