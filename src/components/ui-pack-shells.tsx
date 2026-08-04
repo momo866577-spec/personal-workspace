@@ -3,7 +3,6 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { createPortal } from "react-dom";
-import Image from "next/image";
 import type { LucideIcon } from "lucide-react";
 import {
   ArrowRight, ChevronRight, Command, Download, Grid2X2, LayoutGrid,
@@ -31,7 +30,7 @@ export function InstallAppButton(){
 export function JellyVisionShell({page,title,nav,go,children}:Props){
   const active=nav.find(x=>x.id===page)??nav[0];
   return <div className="v3-shell jelly-product bunny-life">
-    <aside className="jelly-dock"><button className="jelly-logo" onClick={()=>go("dashboard")} aria-label="返回总览"><Image src="/icons/workspace-avatar.png" width={64} height={64} alt="KK的工作台"/><small>KK的工作台</small></button>{nav.map(item=><motion.button whileTap={{scale:.86}} whileHover={{scale:1.08}} key={item.id} className={page===item.id?"active":""} aria-current={page===item.id?"page":undefined} onClick={()=>go(item.id)}><item.icon/><span>{item.label}</span></motion.button>)}</aside>
+    <aside className="jelly-dock"><button className="jelly-logo" onClick={()=>go("dashboard")} aria-label="返回总览"><i className="workspace-avatar" role="img" aria-label="KK的工作台头像"/><small>KK的工作台</small></button>{nav.map(item=><motion.button whileTap={{scale:.86}} whileHover={{scale:1.08}} key={item.id} className={page===item.id?"active":""} aria-current={page===item.id?"page":undefined} onClick={()=>go(item.id)}><item.icon/><span>{item.label}</span></motion.button>)}</aside>
     <nav className="jelly-context"><small>PERSONAL SPACE</small><h2>{active.label}</h2><div className="jelly-bubbles">{nav.slice(0,5).map((item,index)=><button key={item.id} className={page===item.id?"active":""} onClick={()=>go(item.id)}><span>{String(index+1).padStart(2,"0")}</span>{item.label}<ChevronRight/></button>)}</div><div className="jelly-status"><b>今日节奏</b><span>轻盈 · 专注 · 有序</span></div></nav>
     <section className="jelly-stage"><header><div><small>{dateLabel()}</small><h1>{title}</h1></div><button className="jelly-search" aria-label="搜索"><Search/></button></header><main><AnimatePresence mode="wait"><motion.div key={page} initial={{opacity:0,x:22,scale:.98}} animate={{opacity:1,x:0,scale:1}} exit={{opacity:0,x:-14}} transition={{type:"spring",stiffness:280,damping:26}} className="pack-page">{children}</motion.div></AnimatePresence></main></section>
   </div>;
@@ -81,7 +80,7 @@ export function AiWorkspaceShell({page,title,nav,go,children}:Props){
 export function JellyRailShell({page,title,nav,go,children,theme}:Props){
   const active=nav.find(item=>item.id===page)??nav[0];
   return <div className={`jelly-rail-shell ${theme}`}>
-    <aside className="jelly-rail-nav"><button className="jelly-rail-brand" onClick={()=>go("dashboard")} aria-label="返回总览"><Image src="/icons/workspace-avatar.png" width={72} height={72} alt="KK的工作台"/><b>KK的工作台</b></button><nav>{nav.map(item=><motion.button whileHover={{y:-2,scale:1.025}} whileTap={{scale:.9,y:2}} transition={{type:"spring",stiffness:430,damping:20}} key={item.id} className={page===item.id?"active":""} aria-current={page===item.id?"page":undefined} onClick={()=>go(item.id)}><span><item.icon/></span><b>{item.label}</b></motion.button>)}</nav></aside>
+    <aside className="jelly-rail-nav"><button className="jelly-rail-brand" onClick={()=>go("dashboard")} aria-label="返回总览"><i className="workspace-avatar" role="img" aria-label="KK的工作台头像"/><b>KK的工作台</b></button><nav>{nav.map(item=><motion.button whileHover={{y:-2,scale:1.025}} whileTap={{scale:.9,y:2}} transition={{type:"spring",stiffness:430,damping:20}} key={item.id} className={page===item.id?"active":""} aria-current={page===item.id?"page":undefined} onClick={()=>go(item.id)}><span><item.icon/></span><b>{item.label}</b></motion.button>)}</nav></aside>
     <section className="jelly-rail-stage"><header><div><small>{dateLabel()}</small><h1>{page==="dashboard"?"今日工作台":title}</h1></div><span className="jelly-rail-page-icon"><active.icon/></span></header><main><AnimatePresence mode="wait"><motion.div key={page} initial={{opacity:0,x:18,scale:.985}} animate={{opacity:1,x:0,scale:1}} exit={{opacity:0,x:-10,scale:.99}} transition={{type:"spring",stiffness:300,damping:27}} className="pack-page">{children}</motion.div></AnimatePresence></main></section>
   </div>;
 }
