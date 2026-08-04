@@ -4,6 +4,8 @@ import "./globals.css";
 import "./ui-v3.css";
 import "./ui-v3-fixes.css";
 import "./jelly-rail.css";
+import "./live-crm.css";
+import "./color-system.css";
 import { ThemeProvider } from "@/components/theme-provider";
 
 const geistSans = Geist({
