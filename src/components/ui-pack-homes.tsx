@@ -6,6 +6,7 @@ import {
   Check,
   Dumbbell,
   FileText,
+  Flower2,
   Radio,
   Sparkles,
   Target,
@@ -86,10 +87,13 @@ function GlassPinkDashboard(data: PackHomeData) {
       </section>
       <section className="focus-panel glass-panel">
         <header>
-          <Target />
+          <Flower2 className="section-flower" aria-hidden="true" />
           <h2>今日聚焦</h2>
         </header>
-        <blockquote>小小的进步，也是向前迈出的一大步。</blockquote>
+        <div className="focus-quote-wrap">
+          <blockquote className="focus-quote">小小的进步，也是向前迈出的一大步。</blockquote>
+          <Flower2 className="quote-flower" aria-hidden="true" />
+        </div>
         <button className="glass-action" onClick={() => data.go("tasks")}>
           开始专注
         </button>

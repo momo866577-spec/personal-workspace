@@ -1,42 +1,24 @@
-# Design QA — Jelly Pink V3
+# Design QA — Sakura Pink UI
 
-Reference: `codex-clipboard-353f9335-c829-498b-af14-936e195943bc.png`
+## References
 
-Validated on 2026-08-05 against the rendered Personal Workspace application.
+- Target: `C:/Users/User/AppData/Local/Temp/codex-clipboard-e1fc43f2-c63e-4812-90b7-cf1b4b569edf.png`
+- Mobile capture: `design-review/selected-ui-2026-08-06/mobile-playwright.png`
+- Desktop capture: `design-review/selected-ui-2026-08-06/desktop-playwright.png`
 
-## Coverage
+## Review result
 
-- Mobile 390 × 844, tablet 834 × 1112, desktop 1440 × 1024
-- Dashboard, daily plan, English, fitness, nutrition, travel, period calendar, notes, live review, live CRM, and settings
-- Left navigation, active state, cards, child cards, fields, dialogs, buttons, and calendar cells
-- Existing IndexedDB-backed content and application routing
+- Visual direction: passed — sakura accents, raspberry headings, warm burgundy content text, pale-pink labels, and the existing jelly surfaces match the selected direction.
+- Responsive QA: passed at 390×844, 834×1112, and 1440×1000.
+- Page coverage: Dashboard, Daily Plan, English, Workout, Nutrition, Travel, Period, Notes, Live Review, Live CRM, and Settings.
+- Overflow: no horizontal overflow and no out-of-viewport elements on any checked page.
+- Runtime: no browser console or page errors during the page sweep.
+- Scope: layout, feature logic, IndexedDB, CRUD, providers, and user data were not changed.
 
-## Visual comparison
+## Open severity items
 
-- Keeps the reference's permanent narrow left rail and continuous pale-pink paper canvas.
-- Uses distinct pale, blush, and rose-pink surfaces without gray or black surface shading.
-- Major panels, task rows, controls, and calendar cells have independent jelly edges, highlights, blur, and elevation.
-- Mobile retains the full left navigation and scrolls with the document rather than using a nested sidebar scrollbar.
-- Period calendar uses seven explicit columns and readable date cells.
+- P0: none
+- P1: none
+- P2: none
 
-## Interaction
-
-- Navigation switches the existing functional pages without recreating their data logic.
-- Buttons and interactive jelly rows use a short elastic press response.
-- Reduced-motion preferences disable the decorative motion.
-
-## Findings and iteration
-
-- Found a legacy mobile minimum-width rule clipping the period summary badge.
-- Replaced it with V3-owned width and min-width constraints for mobile panels.
-- No horizontal page overflow at the tested mobile, tablet, and desktop widths.
-- Browser console errors: none.
-- Browser console warnings: none.
-
-## Runtime
-
-- ESLint: passed.
-- TypeScript: passed.
-- Production build: passed.
-
-final result: passed
+Final result: passed.
