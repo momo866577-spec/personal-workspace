@@ -97,6 +97,7 @@ import { PeriodTracker } from "@/components/period-tracker";
 import { GiftAssistant, GiftDashboardCard } from "@/components/gift-assistant";
 import { NutritionDashboardCard, NutritionPage, TravelPage } from "@/components/life-modules";
 import { WorkspaceProfileSettings } from "@/components/workspace-profile";
+import { WorkspaceFontSettings } from "@/components/workspace-font-provider";
 
 type Page =
   | "dashboard"
@@ -1748,6 +1749,7 @@ function SettingsPage() {
   return (
     <div>
       <WorkspaceProfileSettings />
+      <WorkspaceFontSettings />
       <Card>
         <div>
           <b>Personal Workspace</b>
