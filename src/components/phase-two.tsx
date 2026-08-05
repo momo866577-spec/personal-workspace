@@ -192,53 +192,58 @@ export function EnglishDailyTasks() {
         </label>
       </div>
       <div className="curriculum-overview">
-        <div className="curriculum-main">
-          <small>目前词库</small>
-          <b>NGSL</b>
-          <span>Oxford 3000 分级参考</span>
-        </div>
-        <div className="curriculum-levels">
-          <span>
-            <small>目前等级</small>
-            <b>CEFR {stats.level}</b>
-          </span>
-          <span>
-            <small>下个等级</small>
-            <b>{stats.nextLevel}</b>
-          </span>
-          <span>
-            <small>当前等级进度</small>
-            <b>
-              {stats.completedWords} / {stats.total}
-            </b>
-          </span>
-        </div>
-        <div className="curriculum-progress">
-          <div>
-            <b>整体进度</b>
-            <span>{stats.percent}%</span>
+        <div className="curriculum-summary-card">
+          <div className="curriculum-main">
+            <small>当前词库</small>
+            <b>NGSL</b>
+            <span>Oxford 3000 分级参考</span>
           </div>
-          <i>
+          <div className="curriculum-route" aria-label={`等级路线：CEFR ${stats.level} 到 ${stats.nextLevel}`}>
+            <small>等级路线</small>
+            <span>
+              <b>CEFR {stats.level}</b>
+            </span>
+            <i aria-hidden="true">↓</i>
+            <span>
+              <b>{stats.nextLevel}</b>
+            </span>
+          </div>
+        </div>
+        <div className="curriculum-progress-card">
+          <b>整体进度</b>
+          <div className="curriculum-progress-values">
+            <span>
+              <small>当前等级进度</small>
+              <strong>{stats.completedWords} / {stats.total}</strong>
+            </span>
+            <span>
+              <small>整体进度</small>
+              <strong>{stats.percent}%</strong>
+            </span>
+          </div>
+          <i className="curriculum-progress-bar">
             <span style={{ width: `${stats.percent}%` }} />
           </i>
         </div>
-        <div className="curriculum-stats">
-          <span>
-            <b>{stats.todayDone}/5</b>
-            <small>今日完成</small>
-          </span>
-          <span>
-            <b>{stats.week}</b>
-            <small>本周完成</small>
-          </span>
-          <span>
-            <b>{stats.streak}</b>
-            <small>连续学习天数</small>
-          </span>
-          <span>
-            <b>{stats.libraryTotal}</b>
-            <small>词库总量</small>
-          </span>
+        <div className="curriculum-stats-card">
+          <div className="curriculum-stats">
+            <span>
+              <b>{stats.todayDone}/5</b>
+              <small>今日完成</small>
+            </span>
+            <span>
+              <b>{stats.week}</b>
+              <small>本周完成</small>
+            </span>
+            <span>
+              <b>{stats.streak}</b>
+              <small>连续学习天数</small>
+            </span>
+            <span>
+              <b>{stats.libraryTotal}</b>
+              <small>词库总量</small>
+            </span>
+          </div>
         </div>
       </div>
       <div className="english-task-list">

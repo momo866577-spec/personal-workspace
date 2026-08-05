@@ -618,7 +618,9 @@
       .english-daily,
       .english-controls,
       .curriculum-overview,
-      .curriculum-levels,
+      .curriculum-summary-card,
+      .curriculum-progress-card,
+      .curriculum-stats-card,
       .curriculum-stats,
       .english-task-list,
       .word-grid,
@@ -652,7 +654,7 @@
       .english-task-list > article,
       .word-grid > section,
       .curriculum-main,
-      .curriculum-levels > span,
+      .curriculum-route > span,
       .curriculum-stats > span
     ) {
     box-sizing: border-box !important;
