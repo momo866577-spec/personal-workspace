@@ -1136,6 +1136,101 @@ textarea {
   }
 }
 
+/* Mobile-only elevation system: one canvas, clearly separated cards, no shadow bands. */
+@media (max-width: 720px) {
+  .glass-app[data-theme="glass-pink"] :is(
+      .glass-panel,
+      [data-slot="card"],
+      .task-list-card,
+      .content-box,
+      .metric,
+      .setting-row,
+      .ai-center-card,
+      .ai-state,
+      .connection-summary,
+      .ai-output-card,
+      .period-calendar,
+      .period-editor,
+      .period-insights > section,
+      .live-crm-toolbar,
+      .live-crm-list,
+      .live-crm-detail,
+      .life-card,
+      .trip-folder,
+      .net-card,
+      .macro-grid article,
+      .travel-asset-grid article,
+      .travel-asset-grid figure,
+      .english-controls,
+      .curriculum-overview,
+      .english-task-list > article,
+      .word-grid > section,
+      .workout-guide-library
+    ) {
+    box-shadow:
+      inset 0 2px 1px rgba(255, 255, 255, 0.96),
+      inset 0 -3px 6px rgba(207, 69, 127, 0.1),
+      0 2px 4px rgba(151, 65, 102, 0.07),
+      0 6px 12px rgba(151, 65, 102, 0.09) !important;
+  }
+
+  .glass-app[data-theme="glass-pink"] :is(
+      .task-row,
+      .task,
+      .hero-stats span,
+      .recent-card li,
+      .control-metrics article,
+      .control-next,
+      .curriculum-main,
+      .curriculum-levels > span,
+      .curriculum-stats > span,
+      .workout-guides a,
+      .food-results button,
+      .food-confirm,
+      .food-row,
+      .timeline article,
+      .trip-folder > footer span,
+      .period-days > button,
+      .period-stats > div span,
+      .period-care > div,
+      .live-crm-list > div,
+      .live-crm-history > article
+    ) {
+    box-shadow:
+      inset 0 1px 1px rgba(255, 255, 255, 0.94),
+      inset 0 -2px 4px rgba(207, 69, 127, 0.08),
+      0 2px 5px rgba(151, 65, 102, 0.08) !important;
+  }
+
+  .glass-app[data-theme="glass-pink"] :is(
+      input:not([type="checkbox"]):not([type="radio"]),
+      textarea,
+      select,
+      [role="combobox"]
+    ) {
+    box-shadow:
+      inset 0 1px 2px rgba(255, 255, 255, 0.94),
+      inset 0 -2px 4px rgba(207, 69, 127, 0.08),
+      0 2px 5px rgba(151, 65, 102, 0.07) !important;
+  }
+
+  .glass-app[data-theme="glass-pink"] :is(
+      [data-slot="button"],
+      .glass-action,
+      .premium-button,
+      .period-save,
+      .weight-buttons button,
+      .camera-button,
+      .travel-assets nav button,
+      .travel-assets nav label
+    ) {
+    box-shadow:
+      inset 0 2px 1px rgba(255, 255, 255, 0.9),
+      inset 0 -3px 5px rgba(174, 42, 98, 0.12),
+      0 3px 7px rgba(151, 65, 102, 0.1) !important;
+  }
+}
+
 /* Dashboard-only hierarchy: the background recedes while existing card colors remain intact. */
 .glass-app[data-theme="glass-pink"]:has(.dashboard-glass) {
   background:
