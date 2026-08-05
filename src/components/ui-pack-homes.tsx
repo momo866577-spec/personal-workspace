@@ -35,7 +35,7 @@ export type PackHomeData = {
   done: number;
   pct: number;
   go: (page: Page) => void;
-  toggle: (task: Task) => void;
+  openTask: (task: Task) => void;
   phaseTwo: ReactNode;
 };
 
@@ -109,7 +109,7 @@ function GlassPinkDashboard(data: PackHomeData) {
               <button
                 className="task-row"
                 key={task.id}
-                onClick={() => data.toggle(task)}
+                onClick={() => data.openTask(task)}
               >
                 <span>
                   <Check />

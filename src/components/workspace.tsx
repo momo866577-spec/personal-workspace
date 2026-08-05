@@ -4,14 +4,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useLiveQuery } from "dexie-react-hooks";
 import { motion } from "motion/react";
-import { DndContext, closestCenter, type DragEndEvent } from "@dnd-kit/core";
-import {
-  SortableContext,
-  arrayMove,
-  useSortable,
-  verticalListSortingStrategy,
-} from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import {
@@ -32,7 +24,6 @@ import {
   FileText,
   Flower2,
   Gift,
-  GripVertical,
   Heart,
   Home,
   Languages,
@@ -143,6 +134,20 @@ const pageTitle: Record<Page, string> = Object.fromEntries(
 ) as Record<Page, string>;
 const cn = (...x: (string | false | undefined)[]) =>
   x.filter(Boolean).join(" ");
+
+const taskDestination = (title: string): Page => {
+  const text = title.toLowerCase().replace(/\s+/g, "");
+  if (/英语|英文|单词|短句|跟读|口语|听力|阅读|english/.test(text)) return "english";
+  if (/旅行|旅游|行程|景点|酒店|饭店|机票|travel/.test(text)) return "travel";
+  if (/备忘|笔记|memo|note/.test(text)) return "notes";
+  if (/运动|健身|跑步|瑜伽|训练|锻炼|workout/.test(text)) return "workouts";
+  if (/饮食|食物|热量|早餐|午餐|晚餐|nutrition/.test(text)) return "nutrition";
+  if (/经期|月经|姨妈|period/.test(text)) return "periods";
+  if (/直播|复盘|话术|投稿|stream/.test(text)) return "streams";
+  if (/客户|粉丝|礼物|crm/.test(text)) return "gifts";
+  if (/设置|ai中心|api/.test(text)) return "settings";
+  return "tasks";
+};
 
 function Card({
   children,
@@ -268,7 +273,7 @@ export function Workspace() {
     page === "dashboard" ? (
       <Dashboard go={setPage} />
     ) : page === "tasks" ? (
-      <Tasks />
+      <Tasks go={setPage} />
     ) : page === "english" ? (
       <>
         <EnglishDailyTasks />
@@ -368,7 +373,7 @@ function Dashboard({ go }: { go: (p: Page) => void }) {
       done={done}
       pct={pct}
       go={go}
-      toggle={toggleTask}
+      openTask={(task) => go(taskDestination(task.title))}
       phaseTwo={
         <>
           <DashboardPhaseTwo />
@@ -380,38 +385,18 @@ function Dashboard({ go }: { go: (p: Page) => void }) {
   );
 }
 
-const toggleTask = (task: Task) =>
-  db.tasks.update(task.id, { done: !task.done });
-
-function SortTask({ task, onEdit }: { task: Task; onEdit: (t: Task) => void }) {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({ id: task.id });
+function TaskRow({ task, open }: { task: Task; open: (t: Task) => void }) {
   return (
     <motion.div
       layout
-      ref={setNodeRef}
-      style={{ transform: CSS.Transform.toString(transform), transition }}
-      className={cn("task", isDragging && "dragging")}
+      className="task"
     >
-      <button
-        {...attributes}
-        {...listeners}
-        className="drag"
-        aria-label={`拖动排序：${task.title}`}
-      >
-        <GripVertical />
-      </button>
       <Checkbox
         checked={task.done}
         onCheckedChange={() => db.tasks.update(task.id, { done: !task.done })}
+        aria-label={`完成：${task.title}`}
       />
-      <div className="min-w-0 flex-1">
+      <button className="task-open" onClick={() => open(task)} aria-label={`打开：${task.title}`}>
         <p
           className={cn(
             "task-title font-medium",
@@ -427,15 +412,7 @@ function SortTask({ task, onEdit }: { task: Task; onEdit: (t: Task) => void }) {
             weekday: "short",
           })}
         </small>
-      </div>
-      <Button
-        size="icon-sm"
-        variant="ghost"
-        onClick={() => onEdit(task)}
-        aria-label={`修改：${task.title}`}
-      >
-        <Pencil />
-      </Button>
+      </button>
       <Button
         size="icon-sm"
         variant="ghost"
@@ -447,11 +424,11 @@ function SortTask({ task, onEdit }: { task: Task; onEdit: (t: Task) => void }) {
     </motion.div>
   );
 }
-function Tasks() {
+function Tasks({ go }: { go: (page: Page) => void }) {
   const all = useLiveQuery(() => db.tasks.orderBy("order").toArray(), []) || [];
   const [filter, setFilter] = useState("today");
   const [open, setOpen] = useState(false);
-  const [edit, setEdit] = useState<Task | null>(null);
+  const [detail, setDetail] = useState<Task | null>(null);
   const visible = all.filter(
     (t) =>
       filter === "all" ||
@@ -463,14 +440,10 @@ function Tasks() {
             new Date(t.due) <= new Date(Date.now() + 7 * 864e5)),
   );
   const done = visible.filter((t) => t.done).length;
-  const end = async (e: DragEndEvent) => {
-    if (!e.over || e.active.id === e.over.id) return;
-    const a = visible.findIndex((x) => x.id === e.active.id),
-      b = visible.findIndex((x) => x.id === e.over!.id);
-    const moved = arrayMove(visible, a, b);
-    await db.transaction("rw", db.tasks, () =>
-      Promise.all(moved.map((t, i) => db.tasks.update(t.id, { order: i }))),
-    );
+  const openTask = (task: Task) => {
+    const destination = taskDestination(task.title);
+    if (destination === "tasks") setDetail(task);
+    else go(destination);
   };
   return (
     <div className="tasks-page">
@@ -480,7 +453,6 @@ function Tasks() {
         action={
           <Fab
             onClick={() => {
-              setEdit(null);
               setOpen(true);
             }}
           />
@@ -514,36 +486,34 @@ function Tasks() {
           value={visible.length ? (done / visible.length) * 100 : 0}
           className="task-progress"
         />
-        <DndContext collisionDetection={closestCenter} onDragEnd={end}>
-          <SortableContext
-            items={visible}
-            strategy={verticalListSortingStrategy}
-          >
-            {visible.length ? (
-              <div className="task-list">
-                {visible.map((t) => (
-                  <SortTask
-                    key={t.id}
-                    task={t}
-                    onEdit={(x) => {
-                      setEdit(x);
-                      setOpen(true);
-                    }}
-                  />
-                ))}
-              </div>
-            ) : (
-              <Empty icon={CalendarCheck} />
-            )}
-          </SortableContext>
-        </DndContext>
+        {visible.length ? (
+          <div className="task-list">
+            {visible.map((task) => (
+              <TaskRow key={task.id} task={task} open={openTask} />
+            ))}
+          </div>
+        ) : (
+          <Empty icon={CalendarCheck} />
+        )}
       </Card>
       <TaskDialog
         open={open}
         setOpen={setOpen}
-        task={edit}
+        task={null}
         count={all.length}
       />
+      <Dialog open={Boolean(detail)} onOpenChange={(value) => !value && setDetail(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{detail?.title}</DialogTitle>
+            <DialogDescription>任务详情</DialogDescription>
+          </DialogHeader>
+          <div className="task-detail">
+            <p><b>日期</b><span>{detail?.due}</span></p>
+            <p><b>状态</b><span>{detail?.done ? "已完成" : "待完成"}</span></p>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

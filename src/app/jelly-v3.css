@@ -285,6 +285,30 @@
   transform: translateY(-2px) scale(1.008);
 }
 
+.glass-app[data-theme="glass-pink"] .task > [data-slot="checkbox"] {
+  width: 30px;
+  height: 30px;
+  flex: 0 0 30px;
+  border: 2px solid rgba(239, 95, 157, .72) !important;
+  border-radius: 999px !important;
+  background: rgba(255, 250, 253, .86) !important;
+  box-shadow: inset 0 2px 2px rgba(255,255,255,.96), 0 4px 10px var(--j-shadow-soft) !important;
+}
+
+.glass-app[data-theme="glass-pink"] .task > [data-slot="checkbox"][data-state="checked"] {
+  color: white !important;
+  background: var(--j-pink) !important;
+}
+
+.glass-app[data-theme="glass-pink"] .task-open {
+  color: var(--j-text) !important;
+  border-radius: 16px;
+}
+
+.glass-app[data-theme="glass-pink"] .task-open:hover {
+  background: rgba(255, 228, 240, .52);
+}
+
 .glass-app[data-theme="glass-pink"] :is(button, [role="button"], select, input, textarea) {
   color: var(--j-text) !important;
 }
@@ -531,6 +555,19 @@
     min-height: 68px;
     padding: 13px 14px;
     border-radius: 20px !important;
+  }
+
+  .glass-app[data-theme="glass-pink"] .task {
+    gap: 8px !important;
+    padding: 12px 10px !important;
+  }
+
+  .glass-app[data-theme="glass-pink"] .task-open {
+    padding-inline: 3px;
+  }
+
+  .glass-app[data-theme="glass-pink"] .task-open .task-title {
+    font-size: 14px;
   }
 
   .glass-app[data-theme="glass-pink"] .period-days {

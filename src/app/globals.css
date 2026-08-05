@@ -600,6 +600,32 @@ svg {
 .task-title {
   margin: 0;
 }
+.task-open {
+  min-width: 0;
+  flex: 1 1 auto;
+  padding: 4px 6px;
+  border: 0;
+  background: transparent;
+  text-align: left;
+}
+.task-open .task-title {
+  overflow-wrap: anywhere;
+  line-height: 1.45;
+}
+.task-open small {
+  display: block;
+  margin-top: 4px;
+}
+.task-detail {
+  display: grid;
+  gap: 10px;
+}
+.task-detail p {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  margin: 0;
+}
 .task small {
   color: var(--muted);
 }
