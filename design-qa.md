@@ -1,46 +1,40 @@
-# Design QA — Glass Pink
+# Design QA — Jelly Pink V3
 
-Reference: `codex-clipboard-1c3ee7f0-5a71-431c-98b5-271e0d869e23.png`
+Reference: `codex-clipboard-353f9335-c829-498b-af14-936e195943bc.png`
 
-Validated on 2026-08-04 against the rendered Personal Workspace application.
+Validated on 2026-08-05 against the rendered Personal Workspace application.
 
 ## Coverage
 
-- Desktop default viewport
-- Tablet 834 × 1194
-- Mobile 390 × 844
-- Dashboard and period calendar
-- Sidebar navigation and active state
-- Existing IndexedDB-driven task content
-- Browser console warnings and errors
+- Mobile 390 × 844, tablet 834 × 1112, desktop 1440 × 1024
+- Dashboard, daily plan, English, fitness, nutrition, travel, period calendar, notes, live review, live CRM, and settings
+- Left navigation, active state, cards, child cards, fields, dialogs, buttons, and calendar cells
+- Existing IndexedDB-backed content and application routing
 
 ## Visual comparison
 
-- Layout preserves the reference's permanent left navigation and layered workspace.
-- Pink-white translucent surfaces, strong blur, inset highlights, and floating shadows establish the selected glass direction.
-- Cards use differentiated opacity and pink tint rather than a single flat background.
-- The period calendar has seven explicit columns, readable weekday labels, distinct date cells, selected/today states, and a flow legend.
-- Exercise uses an abstract dumbbell icon and contains no shoe photograph.
-- The redundant user-management navigation entry is removed; live-customer CRM remains.
+- Keeps the reference's permanent narrow left rail and continuous pale-pink paper canvas.
+- Uses distinct pale, blush, and rose-pink surfaces without gray or black surface shading.
+- Major panels, task rows, controls, and calendar cells have independent jelly edges, highlights, blur, and elevation.
+- Mobile retains the full left navigation and scrolls with the document rather than using a nested sidebar scrollbar.
+- Period calendar uses seven explicit columns and readable date cells.
 
 ## Interaction
 
-- Sidebar navigation switches page state correctly.
-- Selected navigation has a glass highlight and accessible focus treatment.
-- Primary glass actions compress and intensify visually on press.
-- Mobile retains the complete left navigation and scrolls with the page.
+- Navigation switches the existing functional pages without recreating their data logic.
+- Buttons and interactive jelly rows use a short elastic press response.
+- Reduced-motion preferences disable the decorative motion.
 
-## Findings
+## Findings and iteration
 
-- P0: none.
-- P1: none.
-- P2: none after removing the browser-default black focus outline.
-- P3: decorative glass refraction can be tuned further after user review.
+- Found a legacy mobile minimum-width rule clipping the period summary badge.
+- Replaced it with V3-owned width and min-width constraints for mobile panels.
+- No horizontal page overflow at the tested mobile, tablet, and desktop widths.
+- Browser console errors: none.
+- Browser console warnings: none.
 
 ## Runtime
 
-- Console errors: none.
-- Console warnings: none.
 - ESLint: passed.
 - TypeScript: passed.
 - Production build: passed.

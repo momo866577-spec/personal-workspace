@@ -1161,7 +1161,6 @@ textarea {
       .macro-grid article,
       .travel-asset-grid article,
       .travel-asset-grid figure,
-      .english-controls,
       .curriculum-overview,
       .english-task-list > article,
       .word-grid > section,
@@ -3419,5 +3418,157 @@ textarea {
       hsl(var(--mobile-pink-selected-top) / 0.96),
       hsl(var(--mobile-pink-selected-bottom) / 0.94)
     );
+  }
+}
+
+/* Focused hierarchy refinement: one wrapper, one jelly interactive surface. */
+.glass-app[data-theme="glass-pink"] .english-controls {
+  padding: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.glass-app[data-theme="glass-pink"] .english-controls label {
+  padding: 4px 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.glass-app[data-theme="glass-pink"] .english-daily .english-controls select {
+  position: relative;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  min-height: 50px;
+  padding-inline: 16px 42px;
+  border: 2px solid rgba(255, 171, 207, 0.92) !important;
+  outline: none !important;
+  background: linear-gradient(
+    155deg,
+    rgba(255, 255, 255, 1) 0%,
+    rgba(255, 245, 250, 0.98) 42%,
+    rgba(255, 211, 231, 0.88) 100%
+  ) !important;
+  backdrop-filter: blur(20px) saturate(155%);
+  box-shadow:
+    inset 0 3px 2px rgba(255, 255, 255, 1),
+    inset 0 -6px 9px rgba(236, 116, 167, 0.18),
+    0 7px 12px rgba(238, 170, 199, 0.3),
+    0 0 0 2px rgba(255, 234, 243, 0.9) !important;
+  transition:
+    transform 220ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    box-shadow 220ms ease;
+}
+
+.glass-app[data-theme="glass-pink"] .today-tasks > div {
+  gap: 15px;
+}
+
+.glass-app[data-theme="glass-pink"] .task-row {
+  position: relative;
+  overflow: hidden;
+  min-height: 66px;
+  padding: 14px 16px;
+  border-radius: 20px;
+  background: linear-gradient(
+    155deg,
+    rgba(255, 255, 255, 0.98) 0%,
+    rgba(255, 243, 249, 0.94) 46%,
+    rgba(255, 208, 229, 0.8) 100%
+  );
+  backdrop-filter: blur(20px) saturate(155%);
+  box-shadow:
+    inset 0 3px 2px rgba(255, 255, 255, 1),
+    inset 3px 0 3px rgba(255, 255, 255, 0.86),
+    inset -3px 0 4px rgba(221, 91, 146, 0.15),
+    inset 0 -7px 10px rgba(210, 72, 131, 0.2),
+    0 10px 16px rgba(218, 145, 177, 0.3),
+    0 0 0 1px rgba(255, 255, 255, 0.98),
+    0 0 0 4px rgba(246, 176, 206, 0.26) !important;
+  transition:
+    transform 220ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    box-shadow 220ms ease;
+}
+
+.glass-app[data-theme="glass-pink"] .task-row::before {
+  content: "";
+  position: absolute;
+  inset: 2px 12% auto;
+  height: 38%;
+  border-radius: inherit;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.5), transparent);
+  pointer-events: none;
+}
+
+.glass-app[data-theme="glass-pink"] .task-row:active {
+  animation: jelly-button-press 340ms cubic-bezier(0.22, 0.8, 0.3, 1);
+  box-shadow:
+    inset 0 6px 10px rgba(210, 78, 135, 0.18),
+    0 3px 6px rgba(205, 133, 164, 0.18),
+    0 0 0 3px rgba(246, 176, 206, 0.24) !important;
+}
+
+.glass-app[data-theme="glass-pink"] .task-row:hover {
+  transform: translateY(-2px) scale(1.006);
+}
+
+.glass-app[data-theme="glass-pink"] .english-daily .english-controls select:focus {
+  animation: jelly-control-focus 360ms cubic-bezier(0.22, 0.8, 0.3, 1);
+}
+
+@keyframes jelly-button-press {
+  0% { transform: translateY(0) scale(1); }
+  32% { transform: translateY(2px) scale(0.975, 0.94) rotate(-0.35deg); }
+  58% { transform: translateY(-1px) scale(1.018, 1.025) rotate(0.3deg); }
+  78% { transform: translateY(0) scale(0.995, 1.008) rotate(-0.12deg); }
+  100% { transform: translateY(0) scale(1) rotate(0); }
+}
+
+@keyframes jelly-control-focus {
+  0% { transform: scale(1); }
+  40% { transform: scale(0.985, 0.96); }
+  68% { transform: scale(1.018, 1.025); }
+  100% { transform: scale(1); }
+}
+
+@media (max-width: 720px) {
+  .glass-app[data-theme="glass-pink"] .english-controls {
+    padding: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+
+  .glass-app[data-theme="glass-pink"] .english-controls label {
+    padding: 3px 0;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+
+  .glass-app[data-theme="glass-pink"] .task-row {
+    box-shadow:
+      inset 0 3px 2px rgba(255, 255, 255, 1),
+      inset 3px 0 3px rgba(255, 255, 255, 0.84),
+      inset -3px 0 4px rgba(221, 91, 146, 0.15),
+      inset 0 -7px 9px rgba(210, 72, 131, 0.2),
+      0 8px 12px rgba(218, 153, 181, 0.3),
+      0 0 0 1px rgba(255, 255, 255, 0.98),
+      0 0 0 4px rgba(246, 176, 206, 0.27) !important;
+  }
+
+  .glass-app[data-theme="glass-pink"] .english-daily .english-controls select {
+    border-color: rgba(255, 164, 203, 0.94) !important;
+    box-shadow:
+      inset 0 3px 2px rgba(255, 255, 255, 1),
+      inset 0 -6px 9px rgba(239, 125, 174, 0.19),
+      0 6px 10px rgba(238, 179, 204, 0.3),
+      0 0 0 2px rgba(255, 235, 244, 0.94) !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .glass-app[data-theme="glass-pink"] .task-row,
+  .glass-app[data-theme="glass-pink"] .english-daily .english-controls select {
+    animation: none !important;
+    transition: none !important;
   }
 }
