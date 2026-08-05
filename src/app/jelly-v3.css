@@ -110,6 +110,11 @@
   background: var(--j-panel) !important;
 }
 
+/* Keep desktop page titles comfortably inside the rounded top bar. */
+.glass-app[data-theme="glass-pink"] .glass-topbar {
+  padding: 18px 28px !important;
+}
+
 .glass-app[data-theme="glass-pink"] :is(h1, h2, h3, h4, b, strong, label, .eyebrow) {
   color: var(--j-text) !important;
 }
@@ -310,7 +315,7 @@
   .glass-app[data-theme="glass-pink"] {
     grid-template-columns: 104px minmax(0, 1fr) !important;
     gap: 10px !important;
-    padding: 10px 8px 28px !important;
+    padding: calc(env(safe-area-inset-top, 0px) + 12px) 8px 28px !important;
     background: var(--j-paper) !important;
   }
 
