@@ -303,9 +303,9 @@ export function Workspace() {
     ) : (
       <>
         <AiConnectionCenter />
-        <InstallAppSettings />
         <CompleteDataPanel />
         <SettingsPage />
+        <InstallAppSettings />
       </>
     );
   return (
@@ -1746,18 +1746,15 @@ function ContactDialog({
 
 function SettingsPage() {
   return (
-    <>
-      <PageHead title="设置" text="管理工作台外观与保存在本机的偏好。" />
-      <div>
-        <WorkspaceProfileSettings />
-        <Card>
-          <div>
-            <b>Personal Workspace</b>
-            <p>PWA · IndexedDB · 离线优先</p>
-          </div>
-        </Card>
-      </div>
-    </>
+    <div>
+      <WorkspaceProfileSettings />
+      <Card>
+        <div>
+          <b>Personal Workspace</b>
+          <p>PWA · IndexedDB · 离线优先</p>
+        </div>
+      </Card>
+    </div>
   );
 }
 
