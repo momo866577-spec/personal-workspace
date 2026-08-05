@@ -109,11 +109,12 @@
 .glass-app[data-theme="glass-pink"] .brand-profile {
   display: grid;
   justify-items: center;
-  gap: 8px;
+  gap: 3px;
   width: 100%;
 }
 
 .glass-app[data-theme="glass-pink"] .brand-gem {
+  margin: 0 auto !important;
   overflow: hidden;
 }
 
@@ -153,7 +154,7 @@
 
 .glass-app[data-theme="glass-pink"] .profile-settings-copy > p:last-child,
 .glass-app[data-theme="glass-pink"] .workspace-profile-settings small,
-.glass-app[data-theme="glass-pink"] .profile-settings-footer span {
+.glass-app[data-theme="glass-pink"] .profile-card-save span {
   color: var(--j-muted);
 }
 
@@ -168,6 +169,8 @@
   display: grid;
   align-content: start;
   gap: 12px;
+  min-width: 0;
+  overflow: hidden;
   padding: 20px;
   background: var(--j-row) !important;
   border: 2px solid var(--j-edge) !important;
@@ -194,8 +197,8 @@
 }
 
 .glass-app[data-theme="glass-pink"] .profile-avatar-preview svg { width: 36px; height: 36px; }
-.glass-app[data-theme="glass-pink"] .profile-avatar-actions { display: flex; flex-wrap: wrap; gap: 9px; }
-.glass-app[data-theme="glass-pink"] .profile-avatar-actions button { display: inline-flex; align-items: center; gap: 7px; }
+.glass-app[data-theme="glass-pink"] .profile-avatar-actions { display: flex; flex-wrap: wrap; gap: 9px; max-width: 100%; }
+.glass-app[data-theme="glass-pink"] .profile-avatar-actions button { display: inline-flex; flex: 1 1 120px; align-items: center; justify-content: center; gap: 7px; max-width: 100%; min-width: 0; white-space: normal; }
 .glass-app[data-theme="glass-pink"] .profile-avatar-actions svg { width: 17px; height: 17px; }
 
 .glass-app[data-theme="glass-pink"] .profile-preset-picker {
@@ -251,7 +254,7 @@
   box-shadow: inset 0 2px 1px var(--j-white), 0 4px 10px var(--j-shadow-soft);
 }
 
-.glass-app[data-theme="glass-pink"] .profile-name-editor > span { color: var(--j-heading); font-weight: 750; }
+.glass-app[data-theme="glass-pink"] .profile-name-editor > label { color: var(--j-heading); font-weight: 750; }
 .glass-app[data-theme="glass-pink"] .profile-name-editor > div { position: relative; }
 .glass-app[data-theme="glass-pink"] .profile-name-editor input {
   width: 100%;
@@ -263,7 +266,9 @@
   box-shadow: inset 0 2px 5px rgba(214,93,145,.09), 0 4px 10px var(--j-shadow-soft);
 }
 .glass-app[data-theme="glass-pink"] .profile-name-editor b { position: absolute; top: 50%; right: 15px; color: var(--j-muted); transform: translateY(-50%); }
-.glass-app[data-theme="glass-pink"] .profile-settings-footer { display: flex; align-items: center; flex-wrap: wrap; gap: 14px; margin-top: 18px; }
+.glass-app[data-theme="glass-pink"] .profile-card-save { display: grid; justify-items: start; gap: 8px; margin-top: 4px; min-width: 0; }
+.glass-app[data-theme="glass-pink"] .profile-card-save button { max-width: 100%; white-space: normal; }
+.glass-app[data-theme="glass-pink"] .profile-card-save span { min-height: 1.25em; max-width: 100%; overflow-wrap: anywhere; font-size: 12px; }
 
 .glass-app[data-theme="glass-pink"] .glass-topbar,
 .glass-app[data-theme="glass-pink"] .page-head {
@@ -615,6 +620,20 @@
 
   .glass-app[data-theme="glass-pink"] .workspace-profile-settings {
     padding: 18px 14px;
+  }
+
+  .glass-app[data-theme="glass-pink"] .profile-preset-picker > div {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .glass-app[data-theme="glass-pink"] .profile-avatar-actions {
+    flex-direction: column;
+  }
+
+  .glass-app[data-theme="glass-pink"] .profile-avatar-actions button,
+  .glass-app[data-theme="glass-pink"] .profile-card-save button {
+    flex-basis: auto;
+    width: 100%;
   }
 
   .glass-app[data-theme="glass-pink"] .glass-workspace {

@@ -66,33 +66,38 @@ async function compressAvatar(file: File) {
 }
 
 export function WorkspaceProfileSettings() {
-  const current = useWorkspaceProfile();
-  const [name, setName] = useState(current.name);
-  const [avatar, setAvatar] = useState(current.avatar);
-  const [message, setMessage] = useState("");
+  const [name, setName] = useState("");
+  const [avatar, setAvatar] = useState("");
+  const [avatarMessage, setAvatarMessage] = useState("");
+  const [nameMessage, setNameMessage] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    // Mirror changes made through the shared local profile event into the editor draft.
+    const saved = readWorkspaceProfile();
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    setName(current.name);
-    setAvatar(current.avatar);
-  }, [current.name, current.avatar]);
+    setName(saved.name);
+    setAvatar(saved.avatar);
+  }, []);
 
   const pickAvatar = async (file?: File) => {
     if (!file) return;
-    setMessage("正在处理头像…");
+    setAvatarMessage("正在处理头像…");
     try {
       setAvatar(await compressAvatar(file));
-      setMessage("头像已准备，点击保存后生效");
+      setAvatarMessage("头像已准备，点击保存头像后生效");
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : "头像处理失败");
+      setAvatarMessage(error instanceof Error ? error.message : "头像处理失败");
     }
   };
 
-  const save = () => {
-    saveWorkspaceProfile({ name, avatar });
-    setMessage("已保存到这台设备");
+  const saveAvatar = () => {
+    saveWorkspaceProfile({ name: readWorkspaceProfile().name, avatar });
+    setAvatarMessage("头像已保存到这台设备");
+  };
+
+  const saveName = () => {
+    saveWorkspaceProfile({ name, avatar: readWorkspaceProfile().avatar });
+    setNameMessage(name ? "工作台名称已保存" : "名称已清空，不会显示占位");
   };
 
   return (
@@ -139,7 +144,7 @@ export function WorkspaceProfileSettings() {
                   aria-pressed={avatar === preset.src}
                   onClick={() => {
                     setAvatar(preset.src);
-                    setMessage(`已选择${preset.label}，点击保存后生效`);
+                    setAvatarMessage(`已选择${preset.label}，点击保存头像后生效`);
                   }}
                 >
                   <img src={preset.src} alt="" />
@@ -147,12 +152,17 @@ export function WorkspaceProfileSettings() {
               ))}
             </div>
           </div>
+          <div className="profile-card-save">
+            <button type="button" className="glass-action" onClick={saveAvatar}>保存头像</button>
+            <span role="status" aria-live="polite">{avatarMessage}</span>
+          </div>
         </div>
 
-        <label className="profile-name-editor">
-          <span>工作台名称</span>
+        <div className="profile-name-editor">
+          <label htmlFor="workspace-profile-name">工作台名称</label>
           <div>
             <input
+              id="workspace-profile-name"
               value={name}
               onChange={(event) => setName(normalizeWorkspaceName(event.target.value))}
               placeholder="例如：KK的工作台"
@@ -161,12 +171,11 @@ export function WorkspaceProfileSettings() {
             <b>{Array.from(name).length}/{WORKSPACE_NAME_MAX_LENGTH}</b>
           </div>
           <small id="workspace-name-help">最多 8 个字；留空时头像下方不会显示名称或占位。</small>
-        </label>
-      </div>
-
-      <div className="profile-settings-footer">
-        <button type="button" className="glass-action" onClick={save}>保存个性化设置</button>
-        <span role="status" aria-live="polite">{message}</span>
+          <div className="profile-card-save">
+            <button type="button" className="glass-action" onClick={saveName}>保存工作台名称</button>
+            <span role="status" aria-live="polite">{nameMessage}</span>
+          </div>
+        </div>
       </div>
     </section>
   );
