@@ -270,6 +270,12 @@
 }
 
 @media (max-width: 720px) {
+  html,
+  body {
+    touch-action: pan-y;
+    overscroll-behavior-x: none;
+  }
+
   .glass-app[data-theme="glass-pink"] {
     grid-template-columns: 104px minmax(0, 1fr) !important;
     gap: 10px !important;
