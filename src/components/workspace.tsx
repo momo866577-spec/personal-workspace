@@ -96,6 +96,7 @@ import { AiConnectionCenter } from "@/components/ai-connection-center";
 import { PeriodTracker } from "@/components/period-tracker";
 import { GiftAssistant, GiftDashboardCard } from "@/components/gift-assistant";
 import { NutritionDashboardCard, NutritionPage, TravelPage } from "@/components/life-modules";
+import { WorkspaceProfileSettings } from "@/components/workspace-profile";
 
 type Page =
   | "dashboard"
@@ -1746,8 +1747,9 @@ function ContactDialog({
 function SettingsPage() {
   return (
     <>
-      <PageHead title="设置" text="当前为无 UI 功能基线。" />
+      <PageHead title="设置" text="管理工作台外观与保存在本机的偏好。" />
       <div>
+        <WorkspaceProfileSettings />
         <Card>
           <div>
             <b>Personal Workspace</b>

@@ -1,9 +1,11 @@
 "use client";
+/* eslint-disable @next/next/no-img-element */
 
 import { useEffect, useState, type ReactNode } from "react";
 import { Flower2, Heart, Search } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import type { WorkspaceTheme } from "./workspace-theme-provider";
+import { useWorkspaceProfile } from "./workspace-profile";
 
 export type PackPage = "dashboard"|"tasks"|"english"|"workouts"|"nutrition"|"travel"|"periods"|"notes"|"streams"|"gifts"|"settings";
 export type PackNavItem = { id:PackPage; label:string; icon:LucideIcon };
@@ -19,9 +21,15 @@ export function InstallAppButton(){
 }
 
 function GlassPinkShell({page,title,nav,go,children}:Props){
+  const profile=useWorkspaceProfile();
   return <div className="glass-app" data-theme="glass-pink">
     <aside className="glass-sidebar">
-      <button className="brand-gem" onClick={()=>go("dashboard")} aria-label="返回总览"><Heart/></button>
+      <div className="brand-profile">
+        <div className="brand-gem" aria-hidden="true">
+          {profile.avatar?<img src={profile.avatar} alt=""/>:<Heart/>}
+        </div>
+        {profile.name&&<b className="brand-name" title={profile.name}>{profile.name}</b>}
+      </div>
       <nav aria-label="主要功能">{nav.map(({id,label,icon:Icon})=><button key={id} className={page===id?"active":""} aria-current={page===id?"page":undefined} onClick={()=>go(id)}><span><Icon/></span><b>{label}</b></button>)}</nav>
     </aside>
     <div className="glass-workspace">
