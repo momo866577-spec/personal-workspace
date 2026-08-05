@@ -122,6 +122,37 @@
   gap: 22px !important;
 }
 
+/* Keep the jelly highlight centered inside the rim instead of scaling with card height. */
+.glass-app[data-theme="glass-pink"] .glass-panel::before {
+  left: 20px !important;
+  right: 20px !important;
+  top: 10px !important;
+  height: clamp(18px, 8%, 34px) !important;
+  border-radius: 999px !important;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.62) 0%,
+    rgba(255, 255, 255, 0.24) 52%,
+    rgba(255, 255, 255, 0) 100%
+  ) !important;
+  filter: blur(0.6px) !important;
+  opacity: 0.68 !important;
+}
+
+.glass-app[data-theme="glass-pink"] :is(.task-row, .word-grid > section)::before {
+  left: 12px !important;
+  right: 12px !important;
+  top: 7px !important;
+  height: 20px !important;
+  border-radius: 999px !important;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.58),
+    rgba(255, 255, 255, 0)
+  ) !important;
+  opacity: 0.64 !important;
+}
+
 .glass-app[data-theme="glass-pink"] .progress-hero,
 .glass-app[data-theme="glass-pink"] .focus-panel {
   background: var(--j-card-strong) !important;
@@ -318,6 +349,22 @@
     display: grid !important;
     grid-template-columns: minmax(0, 1fr) !important;
     gap: 18px !important;
+  }
+
+  .glass-app[data-theme="glass-pink"] .glass-panel::before {
+    left: 13px !important;
+    right: 13px !important;
+    top: 8px !important;
+    height: 22px !important;
+    opacity: 0.62 !important;
+  }
+
+  .glass-app[data-theme="glass-pink"] :is(.task-row, .word-grid > section)::before {
+    left: 10px !important;
+    right: 10px !important;
+    top: 6px !important;
+    height: 17px !important;
+    opacity: 0.58 !important;
   }
 
   /* Dashboard rhythm: keep headings away from the upper jelly rim. */
