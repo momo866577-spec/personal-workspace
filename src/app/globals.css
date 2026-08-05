@@ -1182,6 +1182,46 @@ textarea {
     0 34px 72px rgba(151, 65, 102, 0.1);
 }
 
+/* Single-canvas surface model: page and section shells never create another sheet. */
+.glass-workspace,
+.glass-workspace > main,
+.pack-page,
+.tasks-page,
+.period-page,
+.period-layout,
+.period-insights,
+.life-page,
+.travel-page,
+.live-crm-page,
+.live-crm-layout,
+.gift-page,
+.gift-assistant,
+.gift-layout,
+.crm-layout,
+.macro-grid,
+.dashboard-glass,
+.phase-two-slot {
+  background: transparent !important;
+}
+
+.page-head,
+.phase-panel,
+.today-control-center,
+.english-daily,
+.workout-checkin,
+.ai-assistant,
+.period-hero,
+.life-hero,
+.live-crm-hero,
+.gift-layout,
+.crm-layout,
+.macro-grid,
+.travel-assets {
+  background: transparent !important;
+  backdrop-filter: none !important;
+  box-shadow: none !important;
+}
+
 .glass-sidebar nav button {
   outline: 0;
 }
