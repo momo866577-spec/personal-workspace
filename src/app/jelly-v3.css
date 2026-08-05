@@ -314,6 +314,19 @@
     gap: 18px !important;
   }
 
+  /* Dashboard rhythm: keep headings away from the upper jelly rim. */
+  .glass-app[data-theme="glass-pink"] .progress-hero {
+    padding: 28px 18px 22px !important;
+  }
+
+  .glass-app[data-theme="glass-pink"] .focus-panel {
+    padding: 26px 18px 22px !important;
+  }
+
+  .glass-app[data-theme="glass-pink"] .focus-panel > header {
+    margin-bottom: 20px !important;
+  }
+
   .glass-app[data-theme="glass-pink"] :is(.glass-panel, .task-list-card, .workout-guide-library, .period-hero, .period-calendar, .period-editor, .ai-center-card, .phase-panel, .page-head) {
     width: 100% !important;
     min-width: 0 !important;
@@ -365,6 +378,139 @@
 
   .glass-app[data-theme="glass-pink"] :is(.form-grid, .travel-asset-grid, .period-insights) {
     grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  /* Mobile containment: narrow workspaces must never inherit desktop minimums. */
+  .glass-app[data-theme="glass-pink"] :is(
+      .pack-page,
+      .pack-page > div,
+      .period-page,
+      .period-layout,
+      .english-daily,
+      .english-controls,
+      .curriculum-overview,
+      .curriculum-levels,
+      .curriculum-stats,
+      .english-task-list,
+      .word-grid,
+      .prompt-chips,
+      .workout-page,
+      .nutrition-page,
+      .travel-page,
+      .notes-page,
+      .stream-page,
+      .gift-page,
+      .settings-page
+    ) {
+    box-sizing: border-box !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+  }
+
+  .glass-app[data-theme="glass-pink"] :is(
+      .glass-panel,
+      .task-list-card,
+      .workout-guide-library,
+      .period-hero,
+      .period-calendar,
+      .period-editor,
+      .period-insights > section,
+      .ai-center-card,
+      .phase-panel,
+      .content-box,
+      .metric,
+      .english-task-list > article,
+      .word-grid > section,
+      .curriculum-main,
+      .curriculum-levels > span,
+      .curriculum-stats > span
+    ) {
+    box-sizing: border-box !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    overflow: clip;
+    backdrop-filter: blur(26px) saturate(168%) !important;
+    box-shadow:
+      inset 0 4px 2px rgba(255, 255, 255, 0.98),
+      inset 3px 0 3px rgba(255, 255, 255, 0.78),
+      inset -3px 0 5px rgba(229, 101, 156, 0.16),
+      inset 0 -9px 15px rgba(231, 105, 159, 0.16),
+      0 10px 20px rgba(229, 137, 176, 0.24),
+      0 0 0 2px rgba(255, 255, 255, 0.96),
+      0 0 0 4px rgba(247, 174, 206, 0.22) !important;
+  }
+
+  .glass-app[data-theme="glass-pink"] :is(
+      h1, h2, h3, h4, p, small, strong, b, em, label, span,
+      button, input, select, textarea
+    ) {
+    min-width: 0;
+    max-width: 100%;
+    overflow-wrap: anywhere;
+  }
+
+  .glass-app[data-theme="glass-pink"] .english-task-list > article {
+    grid-template-columns: 26px minmax(0, 1fr) !important;
+    gap: 10px !important;
+    padding: 14px !important;
+  }
+
+  .glass-app[data-theme="glass-pink"] .english-task-list > article > :is(.speak-all, .reserved-mic) {
+    grid-column: 2 !important;
+    justify-self: start;
+  }
+
+  .glass-app[data-theme="glass-pink"] .word-grid,
+  .glass-app[data-theme="glass-pink"] .prompt-chips {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  .glass-app[data-theme="glass-pink"] .word-grid > section {
+    padding: 14px !important;
+  }
+
+  .glass-app[data-theme="glass-pink"] .word-grid > section > div {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) auto !important;
+    gap: 5px 8px !important;
+  }
+
+  .glass-app[data-theme="glass-pink"] .word-grid > section > div > em {
+    grid-column: 1;
+  }
+
+  .glass-app[data-theme="glass-pink"] .word-grid > section > div > button {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    align-self: center;
+  }
+
+  .glass-app[data-theme="glass-pink"] .prompt-chips button {
+    width: 100% !important;
+    white-space: normal !important;
+    text-align: left;
+  }
+
+  .glass-app[data-theme="glass-pink"] :is(.period-weekdays, .period-days) {
+    width: 100% !important;
+    min-width: 0 !important;
+    grid-template-columns: repeat(7, minmax(0, 1fr)) !important;
+  }
+
+  .glass-app[data-theme="glass-pink"] .period-calendar {
+    padding-inline: 14px !important;
+  }
+
+  .glass-app[data-theme="glass-pink"] .period-calendar > footer {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 8px !important;
+  }
+
+  .glass-app[data-theme="glass-pink"] .period-save {
+    width: 100% !important;
+    white-space: normal !important;
   }
 }
 
