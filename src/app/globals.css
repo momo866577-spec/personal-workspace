@@ -209,9 +209,14 @@ svg {
 }
 .top-actions input {
   width: 100%;
+  padding-inline: 16px !important;
   border: 0;
   outline: 0;
   background: transparent;
+}
+.search input,
+.live-crm-toolbar label input {
+  padding-inline: 16px !important;
 }
 .top-actions label > svg,
 .search > svg,
