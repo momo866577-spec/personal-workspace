@@ -5,7 +5,7 @@ import Dexie from "dexie";
 import { WorkspaceDB } from "../src/lib/db";
 import { ensureEnglishDailyPlan, workoutStats } from "../src/lib/daily";
 import { LocalRuleProvider } from "../src/lib/ai-provider";
-import { dailyFocusMessageCount, getDailyFocusMessage } from "../src/lib/daily-focus";
+import { dailyFocusMessageCount, dailyFocusMessagesAreValid, getDailyFocusMessage } from "../src/lib/daily-focus";
 import { currentTime } from "../src/lib/types";
 import { exportAllData, importAllData } from "../src/lib/data-portability";
 import { db } from "../src/lib/db";
@@ -245,6 +245,7 @@ test("live reply sanitizer always returns exactly three direct answers", () => {
 
 test("daily focus message is stable for one day and advances the next day", () => {
   assert.ok(dailyFocusMessageCount >= 40);
+  assert.equal(dailyFocusMessagesAreValid, true);
   assert.equal(getDailyFocusMessage("2026-08-06"), getDailyFocusMessage("2026-08-06"));
   assert.notEqual(getDailyFocusMessage("2026-08-06"), getDailyFocusMessage("2026-08-07"));
   assert.doesNotMatch(getDailyFocusMessage("2026-08-06"), /走过不少路|继续走一点就好/);
