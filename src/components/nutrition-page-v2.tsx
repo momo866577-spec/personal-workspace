@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useLiveQuery } from "dexie-react-hooks";
-import { Activity, ArrowRight, Camera, CheckCircle2, Flame, Info, Plus, Search, Trash2, Utensils } from "lucide-react";
+import { Activity, ArrowRight, Camera, CheckCircle2, Flame, Info, Plus, Search, Trash2, Upload, Utensils } from "lucide-react";
 import { db } from "@/lib/db";
 import { recognizeFoodCandidates, rememberNutritionFood, scaleFood, searchFoodsWithStatus } from "@/lib/nutrition-provider";
 import { today, uid, type NutritionFood, type NutritionRecord } from "@/lib/types";
@@ -75,6 +75,11 @@ export function NutritionPageV2() {
     } catch (error) { setNotice(error instanceof Error ? error.message : "辨识失败"); }
     finally { setBusy(false); }
   };
+  const chooseImage = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+    void recognize(file);
+  };
   const add = async () => {
     if (!selected || !scaled || grams <= 0) return;
     await rememberNutritionFood(selected);
@@ -125,13 +130,13 @@ export function NutritionPageV2() {
 
     <section className="nutrition-actions">
       <div className="nutrition-search-card"><h3><Search /> 搜索食物</h3><div><Input id="nutrition-search" value={query} onChange={(event) => setQuery(event.target.value)} onKeyDown={(event) => event.key === "Enter" && void search()} placeholder="鸡胸肉、白饭、牛奶……" /><Button onClick={() => void search()} disabled={busy}><ArrowRight /></Button></div></div>
-      <label className="nutrition-photo-card"><Camera /><span><b>拍照辨识</b><small>辨识名称后由数据库计算营养</small></span><ArrowRight /><input type="file" accept="image/*" capture="environment" onChange={(event) => void recognize(event.target.files?.[0])} /></label>
+      <div className="nutrition-photo-card"><Camera /><span><b>照片辨识</b><small>辨识名称后由数据库计算营养</small></span><div className="nutrition-photo-actions"><label><Camera />拍照<input type="file" accept="image/*" capture="environment" onChange={chooseImage} /></label><label><Upload />上传照片<input type="file" accept="image/*" onChange={chooseImage} /></label></div></div>
     </section>
     {notice && <p className="nutrition-notice" role="status">{notice}</p>}
     {foods.length > 0 && <section className="nutrition-results"><h3>选择食物</h3>{foods.map((food) => <button className={selected?.id === food.id ? "active" : ""} key={food.id} onClick={() => setSelected(food)}><b>{food.name}</b><small>{food.brand || food.source}</small><span>{round(food.kcal)} kcal / 100g</span></button>)}</section>}
     {selected && scaled && <section className="nutrition-confirm"><div><b>{selected.name}</b><small>{selected.source}</small></div><select value={meal} onChange={(event) => setMeal(event.target.value as typeof meal)}>{meals.map((item) => <option key={item}>{item}</option>)}</select><div className="nutrition-grams">{[50,100,150,200].map((value) => <button className={grams === value ? "active" : ""} key={value} onClick={() => setGrams(value)}>{value}g</button>)}<Input type="number" min="1" value={grams} onChange={(event) => setGrams(Number(event.target.value))} /></div><p>{round(scaled.kcal)} kcal · 蛋白质 {round(scaled.protein)}g · 碳水 {round(scaled.carbs)}g · 脂肪 {round(scaled.fat)}g</p><Button onClick={() => void add()}><Plus />加入今日饮食</Button></section>}
 
-    <section className="nutrition-week-card"><h3>本周趋势</h3><div className="nutrition-bars">{week.map((item) => <div key={item.date}><span style={{ height: `${Math.max(4, item.value / maxWeek * 100)}%` }} data-today={item.date === today()} /><b>{Math.round(item.value).toLocaleString()}</b><small>{item.label}</small></div>)}</div></section>
+    <section className="nutrition-week-card"><h3>本周趋势</h3><div className="nutrition-bars">{week.map((item) => <div key={item.date}><b>{Math.round(item.value).toLocaleString()}</b><div className="nutrition-bar-track"><span style={{ height: `${Math.max(4, item.value / maxWeek * 100)}%` }} data-today={item.date === today()} /></div><small>{item.label}</small></div>)}</div></section>
     <section className="nutrition-advice-card"><h3>今日建议</h3><strong>净摄入 {Math.round(net).toLocaleString()} kcal，目标范围约 {targets.kcal.toLocaleString()} kcal</strong>{suggestions.map((suggestion) => <p key={suggestion}><CheckCircle2 />{suggestion}</p>)}</section>
   </div>;
 }

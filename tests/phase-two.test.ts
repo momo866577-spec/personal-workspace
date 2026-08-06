@@ -6,6 +6,7 @@ import { WorkspaceDB } from "../src/lib/db";
 import { ensureEnglishDailyPlan, workoutStats } from "../src/lib/daily";
 import { LocalRuleProvider } from "../src/lib/ai-provider";
 import { dailyFocusMessageCount, getDailyFocusMessage } from "../src/lib/daily-focus";
+import { currentTime } from "../src/lib/types";
 import { exportAllData, importAllData } from "../src/lib/data-portability";
 import { db } from "../src/lib/db";
 import fs from "node:fs";
@@ -247,6 +248,11 @@ test("daily focus message is stable for one day and advances the next day", () =
   assert.equal(getDailyFocusMessage("2026-08-06"), getDailyFocusMessage("2026-08-06"));
   assert.notEqual(getDailyFocusMessage("2026-08-06"), getDailyFocusMessage("2026-08-07"));
   assert.doesNotMatch(getDailyFocusMessage("2026-08-06"), /走过不少路|继续走一点就好/);
+});
+
+test("new task default time uses the current local hour and minute", () => {
+  assert.equal(currentTime(new Date(2026, 7, 6, 15, 27, 49)), "15:27");
+  assert.equal(currentTime(new Date(2026, 7, 6, 8, 5, 0)), "08:05");
 });
 
 test("v7 JSON exports and imports all old and new tables", async () => {

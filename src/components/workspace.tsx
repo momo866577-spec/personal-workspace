@@ -58,6 +58,7 @@ import {
 } from "@/components/ui-pack-shells";
 import { packHomes } from "@/components/ui-pack-homes";
 import {
+  currentTime,
   today,
   uid,
   type Contact,
@@ -598,7 +599,7 @@ function TaskDialog({
   useEffect(() => {
     setTitle(task?.title || "");
     setDue(task?.due || today());
-    setTime(task?.time || "");
+    setTime(task ? task.time || "" : currentTime());
   }, [task, open]);
   const save = async () => {
     if (!title.trim()) return;

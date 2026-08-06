@@ -296,3 +296,4 @@ export type RecordMap = {
 };
 export const uid = () => crypto.randomUUID();
 export const today = () => new Date().toLocaleDateString("en-CA");
+export const currentTime = (date = new Date()) => date.toTimeString().slice(0, 5);
