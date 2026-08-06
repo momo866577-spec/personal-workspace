@@ -97,7 +97,7 @@ export function WorkspaceProfileSettings() {
 
   const saveName = () => {
     saveWorkspaceProfile({ name, avatar: readWorkspaceProfile().avatar });
-    setNameMessage(name ? "工作台名称已保存" : "名称已清空，不会显示占位");
+    setNameMessage(name ? "工作台名称已保存，首页标题已更新" : "名称已清空，首页恢复显示今日工作台");
   };
 
   return (
@@ -105,7 +105,7 @@ export function WorkspaceProfileSettings() {
       <div className="profile-settings-copy">
         <p className="eyebrow">工作台个性化</p>
         <h3 id="workspace-profile-title">头像与名称</h3>
-        <p>左上角只负责显示；所有修改都在这里完成，避免误触。</p>
+        <p>头像显示在左侧；工作台名称会显示为首页中央的大标题。</p>
       </div>
 
       <div className="profile-settings-grid">
@@ -170,7 +170,7 @@ export function WorkspaceProfileSettings() {
             />
             <b>{Array.from(name).length}/{WORKSPACE_NAME_MAX_LENGTH}</b>
           </div>
-          <small id="workspace-name-help">最多 8 个字；留空时头像下方不会显示名称或占位。</small>
+          <small id="workspace-name-help">最多 8 个字；保存后显示在首页大标题，留空时显示“今日工作台”。</small>
           <div className="profile-card-save">
             <button type="button" className="glass-action" onClick={saveName}>保存工作台名称</button>
             <span role="status" aria-live="polite">{nameMessage}</span>

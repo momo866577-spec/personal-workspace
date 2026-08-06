@@ -28,12 +28,11 @@ function GlassPinkShell({page,title,nav,go,children}:Props){
         <div className="brand-gem" aria-hidden="true">
           {profile.avatar?<img src={profile.avatar} alt=""/>:<Heart/>}
         </div>
-        {profile.name&&<b className="brand-name" title={profile.name}>{profile.name}</b>}
       </div>
       <nav aria-label="主要功能">{nav.map(({id,label,icon:Icon})=><button key={id} className={page===id?"active":""} aria-current={page===id?"page":undefined} onClick={()=>go(id)}><span><Icon/></span><b>{label}</b></button>)}</nav>
     </aside>
     <div className="glass-workspace">
-      <header className="glass-topbar"><div><small className="topbar-date"><Flower2 aria-hidden="true"/>{new Intl.DateTimeFormat("zh-CN",{month:"long",day:"numeric",weekday:"long"}).format(new Date())}</small><h1 className="topbar-title">{page==="dashboard"?"今日工作台":title}</h1></div><div className="top-actions"><label><Search/><input placeholder="搜索内容、任务、笔记…"/></label></div></header>
+      <header className="glass-topbar"><div><small className="topbar-date"><Flower2 aria-hidden="true"/>{new Intl.DateTimeFormat("zh-CN",{month:"long",day:"numeric",weekday:"long"}).format(new Date())}</small><h1 className="topbar-title">{page==="dashboard"?(profile.name||"今日工作台"):title}</h1></div><div className="top-actions"><label><Search/><input placeholder="搜索内容、任务、笔记…"/></label></div></header>
       <main>{children}</main>
     </div>
   </div>;
