@@ -56,7 +56,7 @@ function Ring({ value }: { value: number }) {
   );
 }
 function GlassPinkDashboard(data: PackHomeData) {
-  const todayTasks = data.tasks.slice(0, 5);
+  const todayTasks = data.tasks.filter((task) => !task.done).slice(0, 5);
   return (
     <div className="dashboard-glass">
       <section className="progress-hero glass-panel">
