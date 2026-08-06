@@ -335,7 +335,7 @@ svg {
   grid-template-columns: repeat(3, 1fr);
   gap: 10px;
 }
-.hero-stats span {
+.hero-stats button {
   min-height: 92px;
   display: grid;
   grid-template-columns: auto 1fr;
@@ -345,6 +345,24 @@ svg {
   border-radius: 22px;
   background: rgba(255, 255, 255, 0.38);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  border: 0;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: transform 180ms ease, box-shadow 180ms ease;
+}
+.hero-stats button:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.95),
+    0 10px 22px rgba(202, 79, 132, 0.14);
+}
+.hero-stats button:active {
+  transform: scale(0.98);
+}
+.hero-stats button:focus-visible {
+  outline: 3px solid rgba(236, 91, 151, 0.34);
+  outline-offset: 3px;
 }
 .hero-stats svg {
   grid-row: 1/3;
@@ -1155,7 +1173,7 @@ textarea {
   .hero-stats {
     grid-template-columns: 1fr;
   }
-  .hero-stats span {
+  .hero-stats button {
     min-height: 64px;
   }
   .page-head {
@@ -1255,7 +1273,7 @@ textarea {
   .glass-app[data-theme="glass-pink"] :is(
       .task-row,
       .task,
-      .hero-stats span,
+      .hero-stats button,
       .recent-card li,
       .control-metrics article,
       .control-next,
@@ -1503,7 +1521,7 @@ textarea {
     0 0 0 1px rgba(255, 255, 255, 0.94),
     0 0 0 3px rgba(246, 178, 206, 0.13) !important;
 }
-.glass-app[data-theme="glass-pink"] .hero-stats span,
+.glass-app[data-theme="glass-pink"] .hero-stats button,
 .glass-app[data-theme="glass-pink"] .task-row,
 .glass-app[data-theme="glass-pink"] .recent-card li,
 .glass-app[data-theme="glass-pink"] .content-box,

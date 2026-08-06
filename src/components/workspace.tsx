@@ -259,6 +259,7 @@ function Fab({
 
 export function Workspace() {
   const [page, setPage] = useState<Page>("dashboard");
+  const [taskStatus, setTaskStatus] = useState<"all" | "done" | "pending">("all");
   const [mounted, setMounted] = useState(false);
   const { workspaceTheme } = useWorkspaceTheme();
   useEffect(() => {
@@ -277,11 +278,19 @@ export function Workspace() {
       </div>
     );
   const PackShell = packShells[workspaceTheme];
+  const go = (nextPage: Page) => {
+    if (nextPage === "tasks") setTaskStatus("all");
+    setPage(nextPage);
+  };
+  const openTaskSummary = (status: "done" | "pending") => {
+    setTaskStatus(status);
+    setPage("tasks");
+  };
   const content =
     page === "dashboard" ? (
-      <Dashboard go={setPage} />
+      <Dashboard go={go} openTaskSummary={openTaskSummary} />
     ) : page === "tasks" ? (
-      <Tasks go={setPage} />
+      <Tasks go={go} status={taskStatus} setStatus={setTaskStatus} />
     ) : page === "english" ? (
       <>
         <EnglishDailyTasks />
@@ -322,7 +331,7 @@ export function Workspace() {
         page={page}
         title={pageTitle[page]}
         nav={nav as PackNavItem[]}
-        go={setPage}
+        go={go}
         theme={workspaceTheme}
       >
         <div className="pack-page mx-auto max-w-7xl">{content}</div>
@@ -343,7 +352,13 @@ function InstallAppSettings() {
     </Card>
   );
 }
-function Dashboard({ go }: { go: (p: Page) => void }) {
+function Dashboard({
+  go,
+  openTaskSummary,
+}: {
+  go: (p: Page) => void;
+  openTaskSummary: (status: "done" | "pending") => void;
+}) {
   const tasks =
     useLiveQuery(() => db.tasks.where("due").equals(today()).toArray(), []) ||
     [];
@@ -381,6 +396,7 @@ function Dashboard({ go }: { go: (p: Page) => void }) {
       done={done}
       pct={pct}
       go={go}
+      openTaskSummary={openTaskSummary}
       openTask={(task) => go(taskDestination(task.title))}
       toggleTask={(task) => db.tasks.update(task.id, { done: !task.done })}
       phaseTwo={
@@ -433,7 +449,15 @@ function TaskRow({ task, open }: { task: Task; open: (t: Task) => void }) {
     </motion.div>
   );
 }
-function Tasks({ go }: { go: (page: Page) => void }) {
+function Tasks({
+  go,
+  status,
+  setStatus,
+}: {
+  go: (page: Page) => void;
+  status: "all" | "done" | "pending";
+  setStatus: (status: "all" | "done" | "pending") => void;
+}) {
   const all = useLiveQuery(() => db.tasks.orderBy("order").toArray(), []) || [];
   const [filter, setFilter] = useState("today");
   const [open, setOpen] = useState(false);
@@ -444,7 +468,7 @@ function Tasks({ go }: { go: (page: Page) => void }) {
     return () =>
       window.removeEventListener(OPEN_TASK_DIALOG_EVENT, showNewTaskDialog);
   }, []);
-  const visible = all.filter(
+  const dateVisible = all.filter(
     (t) =>
       filter === "all" ||
       (filter === "today"
@@ -453,6 +477,9 @@ function Tasks({ go }: { go: (page: Page) => void }) {
           ? t.due === new Date(Date.now() + 864e5).toLocaleDateString("en-CA")
           : new Date(t.due) >= new Date() &&
             new Date(t.due) <= new Date(Date.now() + 7 * 864e5)),
+  );
+  const visible = dateVisible.filter((task) =>
+    status === "all" ? true : status === "done" ? task.done : !task.done,
   );
   const done = visible.filter((t) => t.done).length;
   const openTask = (task: Task) => {
@@ -477,6 +504,20 @@ function Tasks({ go }: { go: (page: Page) => void }) {
               onClick={() => setFilter(x[0])}
             >
               {x[1]}
+            </Button>
+          ))}
+          {[
+            ["all", "全部状态"],
+            ["pending", "待完成"],
+            ["done", "已完成"],
+          ].map(([value, label]) => (
+            <Button
+              key={value}
+              size="sm"
+              variant={status === value ? "default" : "outline"}
+              onClick={() => setStatus(value as "all" | "done" | "pending")}
+            >
+              {label}
             </Button>
           ))}
           <div className="task-completion">

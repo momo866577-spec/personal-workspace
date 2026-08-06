@@ -35,6 +35,7 @@ export type PackHomeData = {
   done: number;
   pct: number;
   go: (page: Page) => void;
+  openTaskSummary: (status: "done" | "pending") => void;
   openTask: (task: Task) => void;
   toggleTask: (task: Task) => void;
   phaseTwo: ReactNode;
@@ -76,21 +77,21 @@ function GlassPinkDashboard(data: PackHomeData) {
           <i style={{ width: `${data.pct}%` }} />
         </div>
         <div className="hero-stats">
-          <span>
+          <button type="button" onClick={() => data.openTaskSummary("done")}>
             <Target />
             <b>{data.done}</b>
             <small>完成任务</small>
-          </span>
-          <span>
+          </button>
+          <button type="button" onClick={() => data.openTaskSummary("pending")}>
             <FileText />
             <b>{data.tasks.length - data.done}</b>
             <small>待办任务</small>
-          </span>
-          <span>
+          </button>
+          <button type="button" onClick={() => data.go("english")}>
             <Sparkles />
             <b>{data.english.length}</b>
             <small>学习记录</small>
-          </span>
+          </button>
         </div>
       </section>
       <section className="focus-panel glass-panel">

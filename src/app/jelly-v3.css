@@ -433,7 +433,7 @@
   pointer-events: none;
 }
 
-.glass-app[data-theme="glass-pink"] :is(.hero-stats span, .recent-card li, .task, .setting-row, .gift-row, .crm-row, .workout-guide-card, .nutrition-food-row, .travel-day, .travel-stop, .period-insights > section, .english-word-card, .english-task-card, .phase-card, .ai-result-card) {
+.glass-app[data-theme="glass-pink"] :is(.hero-stats button, .recent-card li, .task, .setting-row, .gift-row, .crm-row, .workout-guide-card, .nutrition-food-row, .travel-day, .travel-stop, .period-insights > section, .english-word-card, .english-task-card, .phase-card, .ai-result-card) {
   color: var(--j-text) !important;
   background: var(--j-row) !important;
   border: 2px solid var(--j-edge) !important;
