@@ -36,6 +36,7 @@ export type PackHomeData = {
   pct: number;
   go: (page: Page) => void;
   openTask: (task: Task) => void;
+  toggleTask: (task: Task) => void;
   phaseTwo: ReactNode;
 };
 
@@ -55,7 +56,7 @@ function Ring({ value }: { value: number }) {
   );
 }
 function GlassPinkDashboard(data: PackHomeData) {
-  const pending = data.tasks.filter((task) => !task.done).slice(0, 5);
+  const todayTasks = data.tasks.slice(0, 5);
   return (
     <div className="dashboard-glass">
       <section className="progress-hero glass-panel">
@@ -64,7 +65,14 @@ function GlassPinkDashboard(data: PackHomeData) {
           <strong>{data.pct}%</strong>
           <p>保持节奏，稳步前进</p>
         </div>
-        <div className="hero-track">
+        <div
+          className="hero-track"
+          role="progressbar"
+          aria-label="今日任务完成进度"
+          aria-valuemin={0}
+          aria-valuemax={100}
+          aria-valuenow={data.pct}
+        >
           <i style={{ width: `${data.pct}%` }} />
         </div>
         <div className="hero-stats">
@@ -104,19 +112,28 @@ function GlassPinkDashboard(data: PackHomeData) {
           <button onClick={() => data.go("tasks")}>查看全部</button>
         </header>
         <div>
-          {pending.length ? (
-            pending.map((task) => (
-              <button
-                className="task-row"
-                key={task.id}
-                onClick={() => data.openTask(task)}
-              >
-                <span>
-                  <Check />
-                </span>
-                <b>{task.title}</b>
-                <small>{task.due}</small>
-              </button>
+          {todayTasks.length ? (
+            todayTasks.map((task) => (
+              <div className="task-row" data-done={task.done || undefined} key={task.id}>
+                <button
+                  type="button"
+                  className="dashboard-task-check"
+                  aria-label={`${task.done ? "取消完成" : "标记完成"}：${task.title}`}
+                  aria-pressed={task.done}
+                  onClick={() => data.toggleTask(task)}
+                >
+                  {task.done ? <Check /> : null}
+                </button>
+                <button
+                  type="button"
+                  className="dashboard-task-open"
+                  onClick={() => data.openTask(task)}
+                  aria-label={`打开任务：${task.title}`}
+                >
+                  <b>{task.title}</b>
+                  <small>{task.due}</small>
+                </button>
+              </div>
             ))
           ) : (
             <p className="soft-empty">今天的任务都完成啦</p>

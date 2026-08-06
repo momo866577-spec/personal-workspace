@@ -382,6 +382,7 @@ function Dashboard({ go }: { go: (p: Page) => void }) {
       pct={pct}
       go={go}
       openTask={(task) => go(taskDestination(task.title))}
+      toggleTask={(task) => db.tasks.update(task.id, { done: !task.done })}
       phaseTwo={
         <>
           <DashboardPhaseTwo />
