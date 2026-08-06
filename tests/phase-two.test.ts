@@ -61,6 +61,35 @@ test("IndexedDB v1 upgrades to v8 without losing old rows", async () => {
   const upgraded = new WorkspaceDB();
   await upgraded.open();
   assert.equal((await upgraded.tasks.get("old-task"))?.title, "保留");
+  await upgraded.tasks.update("old-task", { due: "2026-08-09", time: "18:30" });
+  assert.deepEqual(
+    await upgraded.tasks.get("old-task").then((item) => [item?.due, item?.time]),
+    ["2026-08-09", "18:30"],
+  );
+  await upgraded.notes.add({
+    id: "scheduled-note",
+    title: "可修改时间的备忘录",
+    content: "内容保留",
+    category: "测试",
+    tags: [],
+    favorite: false,
+    pinned: false,
+    files: [],
+    scheduledDate: "2026-08-10",
+    scheduledTime: "09:15",
+    createdAt: "2026-08-06T00:00:00.000Z",
+    updatedAt: "2026-08-06T00:00:00.000Z",
+  });
+  await upgraded.notes.update("scheduled-note", {
+    scheduledDate: "2026-08-11",
+    scheduledTime: "10:45",
+  });
+  assert.deepEqual(
+    await upgraded.notes
+      .get("scheduled-note")
+      .then((item) => [item?.scheduledDate, item?.scheduledTime]),
+    ["2026-08-11", "10:45"],
+  );
   for (const name of [
     "workoutCheckins",
     "englishQuestionBanks",

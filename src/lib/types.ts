@@ -3,6 +3,7 @@ export type Task = {
   id: Id;
   title: string;
   due: string;
+  time?: string;
   done: boolean;
   order: number;
   createdAt: string;
@@ -41,6 +42,8 @@ export type Note = {
   favorite: boolean;
   pinned: boolean;
   files: { name: string; data: string }[];
+  scheduledDate?: string;
+  scheduledTime?: string;
   createdAt: string;
   updatedAt: string;
 };

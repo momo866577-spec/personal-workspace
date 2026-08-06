@@ -436,6 +436,7 @@ function TaskRow({ task, open }: { task: Task; open: (t: Task) => void }) {
             day: "numeric",
             weekday: "short",
           })}
+          {task.time ? ` · ${task.time}` : ""}
         </small>
       </button>
       <Button
@@ -461,9 +462,13 @@ function Tasks({
   const all = useLiveQuery(() => db.tasks.orderBy("order").toArray(), []) || [];
   const [filter, setFilter] = useState("today");
   const [open, setOpen] = useState(false);
+  const [edit, setEdit] = useState<Task | null>(null);
   const [detail, setDetail] = useState<Task | null>(null);
   useEffect(() => {
-    const showNewTaskDialog = () => setOpen(true);
+    const showNewTaskDialog = () => {
+      setEdit(null);
+      setOpen(true);
+    };
     window.addEventListener(OPEN_TASK_DIALOG_EVENT, showNewTaskDialog);
     return () =>
       window.removeEventListener(OPEN_TASK_DIALOG_EVENT, showNewTaskDialog);
@@ -482,11 +487,7 @@ function Tasks({
     status === "all" ? true : status === "done" ? task.done : !task.done,
   );
   const done = visible.filter((t) => t.done).length;
-  const openTask = (task: Task) => {
-    const destination = taskDestination(task.title);
-    if (destination === "tasks") setDetail(task);
-    else go(destination);
-  };
+  const openTask = (task: Task) => setDetail(task);
   return (
     <div className="tasks-page">
       <Card className="task-list-card">
@@ -544,7 +545,7 @@ function Tasks({
       <TaskDialog
         open={open}
         setOpen={setOpen}
-        task={null}
+        task={edit}
         count={all.length}
       />
       <Dialog open={Boolean(detail)} onOpenChange={(value) => !value && setDetail(null)}>
@@ -555,7 +556,25 @@ function Tasks({
           </DialogHeader>
           <div className="task-detail">
             <p><b>日期</b><span>{detail?.due}</span></p>
+            <p><b>时间</b><span>{detail?.time || "未设置"}</span></p>
             <p><b>状态</b><span>{detail?.done ? "已完成" : "待完成"}</span></p>
+          </div>
+          <div className="task-detail-actions">
+            <Button
+              onClick={() => {
+                if (!detail) return;
+                setEdit(detail);
+                setDetail(null);
+                setOpen(true);
+              }}
+            >
+              <Pencil />修改日期和时间
+            </Button>
+            {detail && taskDestination(detail.title) !== "tasks" && (
+              <Button variant="outline" onClick={() => go(taskDestination(detail.title))}>
+                打开对应功能
+              </Button>
+            )}
           </div>
         </DialogContent>
       </Dialog>
@@ -575,19 +594,22 @@ function TaskDialog({
 }) {
   const [title, setTitle] = useState("");
   const [due, setDue] = useState(today());
+  const [time, setTime] = useState("");
   useEffect(() => {
     setTitle(task?.title || "");
     setDue(task?.due || today());
+    setTime(task?.time || "");
   }, [task, open]);
   const save = async () => {
     if (!title.trim()) return;
     const now = new Date().toISOString();
-    if (task) await db.tasks.update(task.id, { title: title.trim(), due });
+    if (task) await db.tasks.update(task.id, { title: title.trim(), due, time });
     else
       await db.tasks.add({
         id: uid(),
         title: title.trim(),
         due,
+        time,
         done: false,
         order: count,
         createdAt: now,
@@ -613,7 +635,14 @@ function TaskDialog({
         <Input
           type="date"
           value={due}
-          onChange={(e) => setDue(e.target.value)}
+          onInput={(e) => setDue((e.target as HTMLInputElement).value)}
+        />
+      </Field>
+      <Field label="时间">
+        <Input
+          type="time"
+          value={time}
+          onInput={(e) => setTime((e.target as HTMLInputElement).value)}
         />
       </Field>
     </FormDialog>
@@ -1162,6 +1191,11 @@ function Notes() {
                     )}
                   </div>
                   <h3 className="text-lg font-semibold">{n.title}</h3>
+                  <small className="note-schedule">
+                    <CalendarCheck />
+                    {n.scheduledDate || new Date(n.createdAt).toLocaleDateString("en-CA")}
+                    {` · ${n.scheduledTime || new Date(n.createdAt).toTimeString().slice(0, 5)}`}
+                  </small>
                 </div>
                 <button
                   onClick={() =>
@@ -1231,6 +1265,8 @@ function NoteDialog({
     favorite: false,
     pinned: false,
     files: [] as { name: string; data: string }[],
+    scheduledDate: today(),
+    scheduledTime: new Date().toTimeString().slice(0, 5),
   };
   const [f, setF] = useState(empty);
   useEffect(
@@ -1245,6 +1281,12 @@ function NoteDialog({
               favorite: value.favorite,
               pinned: value.pinned,
               files: value.files,
+              scheduledDate:
+                value.scheduledDate ||
+                new Date(value.createdAt).toLocaleDateString("en-CA"),
+              scheduledTime:
+                value.scheduledTime ||
+                new Date(value.createdAt).toTimeString().slice(0, 5),
             }
           : empty,
       ),
@@ -1287,6 +1329,24 @@ function NoteDialog({
           <Input
             value={f.category}
             onChange={(e) => setF({ ...f, category: e.target.value })}
+          />
+        </Field>
+        <Field label="日期">
+          <Input
+            type="date"
+            value={f.scheduledDate}
+            onInput={(e) =>
+              setF({ ...f, scheduledDate: (e.target as HTMLInputElement).value })
+            }
+          />
+        </Field>
+        <Field label="时间">
+          <Input
+            type="time"
+            value={f.scheduledTime}
+            onInput={(e) =>
+              setF({ ...f, scheduledTime: (e.target as HTMLInputElement).value })
+            }
           />
         </Field>
         <div className="md:col-span-2">
@@ -1838,10 +1898,10 @@ function Stat({
 function Actions({ edit, del }: { edit: () => void; del: () => void }) {
   return (
     <div className="flex">
-      <Button variant="ghost" size="icon-sm" onClick={edit}>
+      <Button variant="ghost" size="icon-sm" onClick={edit} aria-label="编辑">
         <Pencil />
       </Button>
-      <Button variant="ghost" size="icon-sm" onClick={del}>
+      <Button variant="ghost" size="icon-sm" onClick={del} aria-label="删除">
         <Trash2 />
       </Button>
     </div>
