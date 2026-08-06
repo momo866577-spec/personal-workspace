@@ -218,15 +218,27 @@ test("AI connection wizard uses Mock Provider without environment variables", as
 test("live reply prompt requests three direct variants and regeneration is unique", () => {
   const first = buildLiveReplyPrompt("直播间怎么没人？", "留人"),
     second = buildLiveReplyPrompt("直播间怎么没人？", "留人", "旧回复");
-  for (const label of ["① 高情商版", "② 幽默版", "③ 高互动版"])
+  for (const label of ["回答1：", "回答2：", "回答3："])
     assert.match(first.prompt, new RegExp(label));
   assert.match(first.system, /每条20～40个中文字/);
   assert.notEqual(first.prompt, second.prompt);
   assert.match(second.prompt, /不得复用/);
-  assert.equal(
-    sanitizeLiveReply("作为AI，我建议如下\n① 高情商版\n欢迎回来"),
-    "① 高情商版\n欢迎回来",
-  );
+  const sanitized = sanitizeLiveReply("作为AI，我建议如下\n① 欢迎回来", "欢迎回来");
+  assert.equal(sanitized.split("\n").length, 3);
+  assert.match(sanitized, /^回答1：欢迎回来/);
+});
+
+test("live reply sanitizer always returns exactly three direct answers", () => {
+  const single = sanitizeLiveReply("作为AI，我建议如下\n宝宝别无聊啦，我们马上换个有趣的话题！", "好无聊哦");
+  const lines = single.split("\n");
+  assert.equal(lines.length, 3);
+  assert.match(lines[0], /^回答1：/);
+  assert.match(lines[1], /^回答2：/);
+  assert.match(lines[2], /^回答3：/);
+  assert.doesNotMatch(single, /作为AI|我建议|以下提供/);
+
+  const many = sanitizeLiveReply("① 第一条\n② 第二条\n③ 第三条\n④ 多余内容", "测试");
+  assert.deepEqual(many.split("\n"), ["回答1：第一条", "回答2：第二条", "回答3：第三条"]);
 });
 
 test("v7 JSON exports and imports all old and new tables", async () => {
