@@ -243,9 +243,10 @@ test("live reply sanitizer always returns exactly three direct answers", () => {
 });
 
 test("daily focus message is stable for one day and advances the next day", () => {
-  assert.ok(dailyFocusMessageCount >= 28);
+  assert.ok(dailyFocusMessageCount >= 40);
   assert.equal(getDailyFocusMessage("2026-08-06"), getDailyFocusMessage("2026-08-06"));
   assert.notEqual(getDailyFocusMessage("2026-08-06"), getDailyFocusMessage("2026-08-07"));
+  assert.doesNotMatch(getDailyFocusMessage("2026-08-06"), /走过不少路|继续走一点就好/);
 });
 
 test("v7 JSON exports and imports all old and new tables", async () => {
