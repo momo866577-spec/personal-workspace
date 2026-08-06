@@ -1,6 +1,6 @@
 "use client";
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useEffect, useMemo, useState, type CSSProperties } from "react";
+import { useMemo, useState, type CSSProperties } from "react";
 import { useLiveQuery } from "dexie-react-hooks";
 import { Check, CheckCircle2, Copy, Dumbbell, FileText, Heart, Languages, Mic, Radio, RefreshCw, Sparkles, Volume2 } from "lucide-react";
 import { db } from "@/lib/db";
@@ -82,19 +82,15 @@ export function DashboardPhaseTwo() {
   );
 }
 
-const VOICE_KEY = "workspace-english-voice";
-const VOICE_POLICY_KEY = "workspace-english-voice-policy";
-const VOICE_POLICY_VERSION = "legacy-first-en-us-v1";
-const englishVoices = () =>
-  typeof window === "undefined" || !("speechSynthesis" in window)
-    ? []
-    : window.speechSynthesis.getVoices().filter((x) => x.lang.startsWith("en"));
 const selectedVoice = () => {
-  const voices = englishVoices(),
-    saved = typeof window !== "undefined" ? localStorage.getItem(VOICE_KEY) : null;
-  return voices.find((x) => x.voiceURI === saved) || voices.find((x) => x.lang.startsWith("en-US")) || voices[0];
+  if (typeof window === "undefined" || !("speechSynthesis" in window)) return undefined;
+  const voices = window.speechSynthesis.getVoices().filter((voice) => /^en(?:-|_)/i.test(voice.lang));
+  return (
+    voices.find((voice) => voice.default) ||
+    voices.find((voice) => voice.localService && /^en-US$/i.test(voice.lang)) ||
+    voices.find((voice) => voice.localService)
+  );
 };
-const voiceLabel = (voice: SpeechSynthesisVoice, recommendedUri: string) => `${voice.voiceURI === recommendedUri ? "原版推荐 · " : ""}${voice.name} · ${voice.lang}`;
 const speak = (text: string) => {
   if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
   window.speechSynthesis.cancel();
@@ -111,27 +107,7 @@ export function EnglishDailyTasks() {
     todayTasks = useLiveQuery(() => db.tasks.where("due").equals(today()).toArray(), []) || [],
     allTasks = useLiveQuery(() => db.tasks.toArray(), []) || [],
     plans = useLiveQuery(() => db.englishDailyPlans.toArray(), []) || [];
-  const [level, setLevel] = useState<CefrLevel>(preferredEnglishLevel),
-    [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]),
-    [voiceUri, setVoiceUri] = useState("");
-  useEffect(() => {
-    const refresh = () => {
-      const rows = englishVoices();
-      const policyIsCurrent = localStorage.getItem(VOICE_POLICY_KEY) === VOICE_POLICY_VERSION;
-      const saved = policyIsCurrent ? localStorage.getItem(VOICE_KEY) : null;
-      const originalDefault = rows.find((voice) => voice.lang.startsWith("en-US")) || rows[0];
-      const active = rows.find((voice) => voice.voiceURI === saved) || originalDefault;
-      setVoices(rows);
-      setVoiceUri(active?.voiceURI || "");
-      if (active) {
-        localStorage.setItem(VOICE_KEY, active.voiceURI);
-        localStorage.setItem(VOICE_POLICY_KEY, VOICE_POLICY_VERSION);
-      }
-    };
-    refresh();
-    speechSynthesis.addEventListener?.("voiceschanged", refresh);
-    return () => speechSynthesis.removeEventListener?.("voiceschanged", refresh);
-  }, []);
+  const [level, setLevel] = useState<CefrLevel>(preferredEnglishLevel);
   const validDates = new Set(plans.filter((x) => x.source?.startsWith(NGSL_VERSION) && x.level === level).map((x) => x.date)),
     stats = curriculumStats(allTasks, validDates, today(), level),
     changeLevel = async (next: CefrLevel) => {
@@ -167,27 +143,6 @@ export function EnglishDailyTasks() {
                 {x} {x === "A1" ? "初学" : x === "A2" ? "基础" : x === "B1" ? "中级（默认）" : x === "B2" ? "中高级" : "高级"}
               </option>
             ))}
-          </select>
-        </label>
-        <label>
-          标准英语发音
-          <select
-            value={voiceUri}
-            onChange={(e) => {
-              setVoiceUri(e.target.value);
-              localStorage.setItem(VOICE_KEY, e.target.value);
-              window.setTimeout(() => speak("Hello. This is your standard English pronunciation voice."), 80);
-            }}
-          >
-            {voices.length ? (
-              voices.map((x) => (
-                <option key={x.voiceURI} value={x.voiceURI}>
-                  {voiceLabel(x, (voices.find((voice) => voice.lang.startsWith("en-US")) || voices[0])?.voiceURI || "")}
-                </option>
-              ))
-            ) : (
-              <option value="">设备默认英语语音</option>
-            )}
           </select>
         </label>
       </div>
