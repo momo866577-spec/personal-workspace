@@ -23,6 +23,7 @@ import {
 import { travelProvider } from "@/lib/travel-provider";
 import { today, uid, type NutritionFood, type TravelPlan } from "@/lib/types";
 import { Button } from "@/components/ui/button";
+import { NutritionPageV2 } from "@/components/nutrition-page-v2";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -32,7 +33,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 const n = (x: number) => Math.round(x * 10) / 10;
-export function NutritionPage() {
+export function NutritionPageLegacy() {
   const rows =
       useLiveQuery(
         () => db.nutritionRecords.where("date").equals(today()).toArray(),
@@ -256,6 +257,10 @@ export function NutritionPage() {
       </section>
     </div>
   );
+}
+
+export function NutritionPage() {
+  return <NutritionPageV2 />;
 }
 
 export function TravelPage() {

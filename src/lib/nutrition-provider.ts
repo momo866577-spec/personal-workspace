@@ -7,33 +7,59 @@ export interface NutritionProvider {
   name: string;
   search(query: string): Promise<NutritionFood[]>;
 }
-const common: NutritionFood[] = [
-  ["chicken", "鸡胸肉", 165, 31, 0, 3.6],
-  ["rice", "白饭", 130, 2.7, 28, 0.3],
-  ["sweet-potato", "地瓜", 86, 1.6, 20.1, 0.1],
-  ["milk", "牛奶", 61, 3.2, 4.8, 3.3],
-  ["egg", "鸡蛋", 143, 12.6, 0.7, 9.5],
-  ["banana", "香蕉", 89, 1.1, 22.8, 0.3],
-  ["broccoli", "花椰菜", 34, 2.8, 6.6, 0.4],
-  ["tofu", "豆腐", 76, 8.1, 1.9, 4.8],
-  ["salmon", "鲑鱼", 208, 20, 0, 13],
-  ["oats", "燕麦", 389, 16.9, 66.3, 6.9],
-].map(([id, name, kcal, protein, carbs, fat]) => ({
-  id: String(id),
-  name: String(name),
-  servingGrams: 100,
-  kcal: Number(kcal),
-  protein: Number(protein),
-  carbs: Number(carbs),
-  fat: Number(fat),
-  source: "USDA 标准值参考",
+type CatalogRow = [string, string, string[], number, number, number, number];
+const catalogRows: CatalogRow[] = [
+  ["chicken-breast", "鸡胸肉", ["雞胸肉", "鸡肉", "chicken breast"], 165, 31, 0, 3.6],
+  ["rice-white", "白米饭", ["白飯", "米饭", "白饭", "rice"], 130, 2.7, 28, 0.3],
+  ["rice-brown", "糙米饭", ["糙米", "brown rice"], 123, 2.7, 25.6, 1],
+  ["sweet-potato", "地瓜", ["红薯", "番薯", "sweet potato"], 86, 1.6, 20.1, 0.1],
+  ["potato", "马铃薯", ["土豆", "洋芋", "potato"], 87, 1.9, 20.1, 0.1],
+  ["milk", "全脂牛奶", ["牛奶", "鲜奶", "milk"], 61, 3.2, 4.8, 3.3],
+  ["soy-milk", "无糖豆浆", ["豆浆", "豆奶", "soy milk"], 33, 2.9, 1.7, 1.6],
+  ["egg", "鸡蛋", ["蛋", "水煮蛋", "egg"], 143, 12.6, 0.7, 9.5],
+  ["banana", "香蕉", ["banana"], 89, 1.1, 22.8, 0.3],
+  ["apple", "苹果", ["蘋果", "apple"], 52, 0.3, 13.8, 0.2],
+  ["orange", "橙子", ["柳橙", "橘子", "orange"], 47, 0.9, 11.8, 0.1],
+  ["broccoli", "西兰花", ["花椰菜", "青花菜", "broccoli"], 34, 2.8, 6.6, 0.4],
+  ["spinach", "菠菜", ["spinach"], 23, 2.9, 3.6, 0.4],
+  ["cabbage", "高丽菜", ["卷心菜", "包菜", "cabbage"], 25, 1.3, 5.8, 0.1],
+  ["tofu", "板豆腐", ["豆腐", "tofu"], 76, 8.1, 1.9, 4.8],
+  ["salmon", "鲑鱼", ["三文鱼", "鮭魚", "salmon"], 208, 20, 0, 13],
+  ["tuna", "金枪鱼", ["鮪魚", "吞拿鱼", "tuna"], 132, 28, 0, 1.3],
+  ["shrimp", "虾仁", ["虾", "蝦仁", "shrimp"], 99, 24, 0.2, 0.3],
+  ["pork-loin", "猪里脊", ["里肌肉", "猪肉", "pork loin"], 143, 26, 0, 3.5],
+  ["beef", "瘦牛肉", ["牛肉", "beef"], 250, 26, 0, 15],
+  ["oats", "燕麦片", ["燕麦", "麦片", "oats"], 379, 13.2, 67.7, 6.5],
+  ["bread-whole", "全麦面包", ["全麥吐司", "全麦吐司", "whole wheat bread"], 247, 13, 41, 4.2],
+  ["noodles", "熟面条", ["面条", "麵條", "noodles"], 138, 4.5, 25, 2.1],
+  ["corn", "玉米", ["甜玉米", "corn"], 96, 3.4, 21, 1.5],
+  ["avocado", "牛油果", ["酪梨", "avocado"], 160, 2, 8.5, 14.7],
+  ["yogurt", "原味酸奶", ["优格", "優格", "酸奶", "yogurt"], 61, 3.5, 4.7, 3.3],
+  ["almonds", "杏仁", ["扁桃仁", "almond"], 579, 21.2, 21.6, 49.9],
+  ["peanuts", "花生", ["peanut"], 567, 25.8, 16.1, 49.2],
+  ["edamame", "毛豆", ["枝豆", "edamame"], 121, 11.9, 8.9, 5.2],
+  ["pumpkin", "南瓜", ["pumpkin"], 26, 1, 6.5, 0.1],
+  ["mushroom", "蘑菇", ["香菇", "菇", "mushroom"], 22, 3.1, 3.3, 0.3],
+  ["cucumber", "黄瓜", ["小黄瓜", "cucumber"], 15, 0.7, 3.6, 0.1],
+];
+export const bundledNutritionCatalog: NutritionFood[] = catalogRows.map(([id, name, aliases, kcal, protein, carbs, fat]) => ({
+  id: `usda-local:${id}`, name, aliases, servingGrams: 100, kcal, protein, carbs, fat,
+  source: "USDA FoodData Central", category: "基础食材", sourceRef: "https://fdc.nal.usda.gov/",
 }));
+export async function ensureNutritionCatalog() {
+  if (!db.isOpen()) await db.open();
+  if (await db.nutritionFoods.count()) return;
+  await db.nutritionFoods.bulkPut(bundledNutritionCatalog);
+}
 export class LocalNutritionProvider implements NutritionProvider {
   id = "local-usda";
-  name = "本机常用食物库";
+  name = "本机 USDA 食物库";
   async search(query: string) {
     const q = query.trim().toLowerCase();
-    return common.filter((x) => x.name.includes(q) || x.id.includes(q));
+    await ensureNutritionCatalog();
+    if (!q) return [];
+    const foods = await db.nutritionFoods.toArray();
+    return foods.filter((x) => [x.name, x.brand || "", ...(x.aliases || [])].some((term) => term.toLowerCase().includes(q)));
   }
 }
 export class OpenFoodFactsProvider implements NutritionProvider {
@@ -156,14 +182,26 @@ export const nutritionProviders: NutritionProvider[] = [
   new LocalNutritionProvider(),
   new OpenFoodFactsProvider(),
 ];
-export async function searchFoods(query: string) {
+export type NutritionSearchResult = { foods: NutritionFood[]; warnings: string[] };
+export async function searchFoodsWithStatus(query: string): Promise<NutritionSearchResult> {
+  const local = await nutritionProviders[0].search(query);
+  if (local.length) return { foods: local, warnings: [] };
   const results: NutritionFood[] = [];
-  for (const provider of nutritionProviders) {
+  const warnings: string[] = [];
+  for (const provider of nutritionProviders.slice(1)) {
     try {
       results.push(...(await provider.search(query)));
-    } catch {}
+    } catch (error) {
+      warnings.push(`${provider.name}：${error instanceof Error ? error.message : "查询失败"}`);
+    }
   }
-  return Array.from(new Map(results.map((x) => [x.id, x])).values());
+  return { foods: Array.from(new Map(results.map((x) => [x.id, x])).values()), warnings };
+}
+export async function searchFoods(query: string) {
+  return (await searchFoodsWithStatus(query)).foods;
+}
+export async function rememberNutritionFood(food: NutritionFood) {
+  await db.nutritionFoods.put({ ...food, category: food.category || (food.source === "Open Food Facts" ? "包装食品" : "自定义") });
 }
 export function scaleFood(food: NutritionFood, grams: number) {
   const ratio = grams / food.servingGrams;

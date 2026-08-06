@@ -13,18 +13,20 @@ export const allTableNames = [
   "periodRecords",
   "giftRecords",
   "nutritionRecords",
+  "nutritionFoods",
+  "nutritionRecipes",
   "travelPlans",
 ] as const;
 export async function exportAllData() {
   const data: Record<string, unknown> = {
-    version: 6,
+    version: 7,
     exportedAt: new Date().toISOString(),
   };
   for (const name of allTableNames) data[name] = await db.table(name).toArray();
   return data;
 }
 export async function importAllData(value: Record<string, unknown>) {
-  if (![1, 2, 3, 4, 5, 6].includes(Number(value.version)))
+  if (![1, 2, 3, 4, 5, 6, 7].includes(Number(value.version)))
     throw new Error("不支持的备份版本");
   const names = allTableNames.filter((name) => Array.isArray(value[name]));
   if (!allTableNames.slice(0, 6).every((name) => Array.isArray(value[name])))

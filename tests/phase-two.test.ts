@@ -34,7 +34,7 @@ import {
   scaleFood,
 } from "../src/lib/nutrition-provider";
 
-test("IndexedDB v1 upgrades to v7 without losing old rows", async () => {
+test("IndexedDB v1 upgrades to v8 without losing old rows", async () => {
   await Dexie.delete("personal-workspace");
   const old = new Dexie("personal-workspace");
   old
@@ -68,6 +68,8 @@ test("IndexedDB v1 upgrades to v7 without losing old rows", async () => {
     "periodRecords",
     "giftRecords",
     "nutritionRecords",
+    "nutritionFoods",
+    "nutritionRecipes",
     "travelPlans",
   ])
     assert.ok(upgraded.tables.some((x) => x.name === name));
@@ -198,7 +200,7 @@ test("live reply prompt requests three direct variants and regeneration is uniqu
   );
 });
 
-test("v6 JSON exports and imports all old and new tables", async () => {
+test("v7 JSON exports and imports all old and new tables", async () => {
   const exported = await exportAllData();
   for (const name of [
     "tasks",
@@ -214,6 +216,8 @@ test("v6 JSON exports and imports all old and new tables", async () => {
     "periodRecords",
     "giftRecords",
     "nutritionRecords",
+    "nutritionFoods",
+    "nutritionRecipes",
     "travelPlans",
   ])
     assert.ok(Array.isArray(exported[name]));
@@ -232,6 +236,8 @@ test("nutrition database scales macros by confirmed grams", async () => {
   assert.equal(Math.round(result.protein * 10) / 10, 46.5);
   assert.equal(Math.round(result.carbs * 10) / 10, 0);
   assert.equal(Math.round(result.fat * 10) / 10, 5.4);
+  assert.equal((await provider.search("白饭"))[0]?.name, "白米饭");
+  assert.ok((await db.nutritionFoods.count()) >= 30);
 });
 
 test("gift platform architecture defaults to manual and reserves five providers", async () => {

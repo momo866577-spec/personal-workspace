@@ -120,6 +120,18 @@ export type NutritionFood = {
   carbs: number;
   fat: number;
   source: string;
+  aliases?: string[];
+  category?: "基础食材" | "包装食品" | "自定义";
+  sourceRef?: string;
+};
+export type NutritionRecipe = {
+  id: Id;
+  name: string;
+  aliases: string[];
+  ingredients: Array<{ foodId: string; foodName: string; grams: number }>;
+  servingGrams: number;
+  createdAt: string;
+  updatedAt: string;
 };
 export type NutritionRecord = {
   id: Id;
@@ -258,6 +270,8 @@ export type TableName =
   | "periodRecords"
   | "giftRecords"
   | "nutritionRecords"
+  | "nutritionFoods"
+  | "nutritionRecipes"
   | "travelPlans";
 export type RecordMap = {
   tasks: Task;
@@ -273,6 +287,8 @@ export type RecordMap = {
   periodRecords: PeriodRecord;
   giftRecords: GiftRecord;
   nutritionRecords: NutritionRecord;
+  nutritionFoods: NutritionFood;
+  nutritionRecipes: NutritionRecipe;
   travelPlans: TravelPlan;
 };
 export const uid = () => crypto.randomUUID();
