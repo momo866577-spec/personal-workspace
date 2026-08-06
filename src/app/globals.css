@@ -198,8 +198,8 @@ svg {
   height: 48px;
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 0 17px;
+  gap: 12px;
+  padding: 0 24px;
   border-radius: 18px;
   background: rgba(255, 255, 255, 0.55);
   backdrop-filter: blur(20px);
@@ -212,6 +212,11 @@ svg {
   border: 0;
   outline: 0;
   background: transparent;
+}
+.top-actions label > svg,
+.search > svg,
+.live-crm-toolbar label > svg {
+  flex: 0 0 auto;
 }
 .top-actions button {
   width: 48px;
@@ -740,8 +745,8 @@ svg {
 .search {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 0 12px;
+  gap: 12px;
+  padding: 0 20px;
   border-radius: 17px;
   background: rgba(255, 255, 255, 0.45);
 }
@@ -2150,7 +2155,8 @@ textarea {
 .live-crm-toolbar label {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
+  padding-left: 10px;
   min-width: 0;
 }
 .live-crm-toolbar input {
