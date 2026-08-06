@@ -5,6 +5,7 @@ import Dexie from "dexie";
 import { WorkspaceDB } from "../src/lib/db";
 import { ensureEnglishDailyPlan, workoutStats } from "../src/lib/daily";
 import { LocalRuleProvider } from "../src/lib/ai-provider";
+import { dailyFocusMessageCount, getDailyFocusMessage } from "../src/lib/daily-focus";
 import { exportAllData, importAllData } from "../src/lib/data-portability";
 import { db } from "../src/lib/db";
 import fs from "node:fs";
@@ -239,6 +240,12 @@ test("live reply sanitizer always returns exactly three direct answers", () => {
 
   const many = sanitizeLiveReply("① 第一条\n② 第二条\n③ 第三条\n④ 多余内容", "测试");
   assert.deepEqual(many.split("\n"), ["回答1：第一条", "回答2：第二条", "回答3：第三条"]);
+});
+
+test("daily focus message is stable for one day and advances the next day", () => {
+  assert.ok(dailyFocusMessageCount >= 28);
+  assert.equal(getDailyFocusMessage("2026-08-06"), getDailyFocusMessage("2026-08-06"));
+  assert.notEqual(getDailyFocusMessage("2026-08-06"), getDailyFocusMessage("2026-08-07"));
 });
 
 test("v7 JSON exports and imports all old and new tables", async () => {

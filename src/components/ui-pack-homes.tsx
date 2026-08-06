@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import type { WorkspaceTheme } from "./workspace-theme-provider";
 import type { EnglishEntry, Note, Stream, Task, Workout } from "@/lib/types";
+import { getDailyFocusMessage } from "@/lib/daily-focus";
 
 type Page =
   | "dashboard"
@@ -100,7 +101,7 @@ function GlassPinkDashboard(data: PackHomeData) {
           <h2>今日聚焦</h2>
         </header>
         <div className="focus-quote-wrap">
-          <blockquote className="focus-quote">小小的进步，也是向前迈出的一大步。</blockquote>
+          <blockquote className="focus-quote" suppressHydrationWarning>{getDailyFocusMessage()}</blockquote>
           <Flower2 className="quote-flower" aria-hidden="true" />
         </div>
         <button className="glass-action" onClick={() => data.go("tasks")}>
