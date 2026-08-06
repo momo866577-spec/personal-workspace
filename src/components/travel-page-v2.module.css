@@ -1,0 +1,184 @@
+.page {
+  display: grid;
+  gap: 18px;
+  min-width: 0;
+  color: #8f1748;
+}
+
+.toolbar,
+.createPanel,
+.empty,
+.routePanel,
+.schedulePanel,
+.budgetPanel,
+.quickPanel,
+.assetPanel {
+  border: 1px solid rgba(255, 146, 190, 0.34);
+  border-radius: 28px;
+  background: rgba(255, 250, 252, 0.7);
+  box-shadow: inset 0 1px 0 #fff, 0 14px 34px rgba(211, 78, 132, 0.08);
+  backdrop-filter: blur(18px) saturate(118%);
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 14px 16px;
+}
+
+.tripPicker {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.tripPicker > svg {
+  width: 40px;
+  height: 40px;
+  flex: 0 0 auto;
+  padding: 10px;
+  border-radius: 15px;
+  background: rgba(255, 218, 233, 0.8);
+}
+
+.tripPicker select {
+  width: 100%;
+  min-width: 0;
+  max-width: min(52vw, 540px);
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-weight: 800;
+  outline: none;
+}
+
+.pickerCopy { display: grid; gap: 3px; min-width: 0; }
+.pickerCopy small { overflow: hidden; color: #bd5a82; text-overflow: ellipsis; white-space: nowrap; }
+
+.createPanel { padding: 22px; }
+.createPanel > header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+.createPanel h2 { margin: 3px 0 0; font-size: 24px; }
+.createPanel header svg { width: 42px; height: 42px; padding: 10px; border-radius: 15px; background: #ffd9e9; }
+.formGrid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-bottom: 14px; }
+.formGrid label { display: grid; gap: 7px; font-size: 13px; font-weight: 750; }
+.formGrid input { background: rgba(255,255,255,.72); }
+.error { margin-top: 10px; color: #b42318; font-weight: 700; }
+
+.empty { min-height: 420px; display: grid; place-items: center; align-content: center; gap: 12px; padding: 32px; text-align: center; }
+.empty > svg { width: 58px; height: 58px; padding: 14px; border-radius: 20px; background: #ffddeb; }
+.empty h2, .empty p { margin: 0; }
+
+.routePanel { padding: 22px; overflow: hidden; }
+.routePanel > header { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; }
+.routePanel > header > div { display: grid; gap: 4px; }
+.routePanel > header span,
+.budgetPanel header span { display: flex; align-items: center; gap: 8px; font-size: 21px; font-weight: 850; }
+.routePanel > header svg,
+.budgetPanel header svg { width: 22px; }
+.routePanel header small { color: #bd5a82; }
+.routePanel nav { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+.routePanel nav a { display: flex; align-items: center; gap: 5px; min-height: 38px; padding: 0 12px; border-radius: 14px; background: rgba(255,255,255,.72); color: inherit; box-shadow: inset 0 1px 0 #fff, 0 5px 14px rgba(205,70,124,.08); font-size: 13px; }
+.routePanel nav a svg { width: 16px; }
+
+.routeScroller { overflow-x: auto; overscroll-behavior-inline: contain; scrollbar-width: thin; scrollbar-color: #ee78a8 transparent; padding: 24px 4px 10px; }
+.routeTrack { display: flex; min-width: max-content; margin: 0; padding: 0; list-style: none; }
+.routeTrack li { position: relative; display: grid; justify-items: center; gap: 6px; width: clamp(118px, 17vw, 190px); padding: 0 12px; text-align: center; }
+.routeTrack li:not(:last-child)::after { content: ""; position: absolute; z-index: 0; left: calc(50% + 18px); top: 15px; width: calc(100% - 36px); border-top: 2px dashed rgba(230, 86, 145, .42); }
+.routeTrack li > span { z-index: 1; width: 31px; height: 31px; display: grid; place-items: center; border-radius: 50%; background: linear-gradient(145deg,#ff9cc4,#df447e); color: #fff; box-shadow: inset 0 2px 2px rgba(255,255,255,.7), 0 6px 14px rgba(211,66,124,.2); font-weight: 850; }
+.routeTrack li b { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.routeTrack time { font-size: 12px; color: #bd5a82; }
+.routeEmpty, .softEmpty { margin: 24px 0 4px; padding: 20px; border-radius: 18px; background: rgba(255,237,245,.68); text-align: center; color: #a45a78; }
+.scrollHint { display: block; margin-top: 6px; text-align: right; color: #bd5a82; }
+
+.dayTabs { display: flex; gap: 10px; overflow-x: auto; padding: 2px; scrollbar-width: none; }
+.dayTabs::-webkit-scrollbar { display: none; }
+.dayTabs button { flex: 0 0 min(180px, 38vw); min-height: 58px; display: flex; align-items: center; justify-content: center; gap: 8px; border: 1px solid rgba(255,160,199,.3); border-radius: 19px; background: rgba(255,250,252,.68); color: inherit; box-shadow: inset 0 1px #fff, 0 6px 17px rgba(211,78,132,.07); font-weight: 800; }
+.dayTabs button small { color: #bd5a82; font-weight: 600; }
+.dayTabs .activeDay { background: linear-gradient(160deg,rgba(255,220,235,.94),rgba(255,245,249,.86)); box-shadow: inset 0 2px 1px #fff, 0 8px 22px rgba(211,78,132,.13); }
+
+.schedulePanel { padding: 20px; }
+.schedulePanel > header { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 12px; }
+.schedulePanel h2 { margin: 0; font-size: 20px; }
+.schedulePanel header span { color: #bd5a82; font-size: 13px; }
+.scheduleList { overflow: hidden; border-radius: 20px; background: rgba(255,255,255,.45); }
+.scheduleRow { display: grid; grid-template-columns: 82px 32px minmax(0,1fr) 38px auto; align-items: center; gap: 10px; min-width: 0; padding: 15px 16px; }
+.scheduleRow + .scheduleRow { border-top: 1px solid rgba(229,104,155,.14); }
+.scheduleRow time { font-weight: 750; }
+.scheduleRow time small { display: block; margin-top: 3px; color: #bd5a82; font-weight: 550; }
+.stopNumber { width: 30px; height: 30px; display: grid; place-items: center; border-radius: 50%; background: #ffe2ee; font-weight: 850; }
+.stopContent { min-width: 0; }
+.stopContent b, .stopContent p, .stopContent small { display: block; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.stopContent p { margin: 3px 0; color: #9d526f; font-size: 13px; }
+.stopContent small { color: #bd7692; }
+.scheduleRow > button, .rowActions button { width: 36px; height: 36px; display: grid; place-items: center; border: 0; border-radius: 13px; background: rgba(255,235,243,.75); color: inherit; }
+.scheduleRow button svg { width: 17px; }
+.rowActions { display: flex; gap: 4px; }
+.rowActions button:disabled { opacity: .32; }
+
+.budgetPanel { padding: 22px; }
+.budgetPanel > header { display: flex; align-items: flex-end; justify-content: space-between; gap: 14px; }
+.budgetPanel header > div { display: grid; gap: 8px; }
+.budgetPanel header strong { font-size: 34px; }
+.budgetPanel header p { margin: 0; color: #a75173; }
+.progressTrack { height: 18px; overflow: hidden; margin: 18px 0; border-radius: 99px; background: rgba(244,190,212,.46); box-shadow: inset 0 2px 4px rgba(178,55,105,.08); }
+.progressTrack i { display: grid; place-items: center; height: 100%; min-width: 0; border-radius: inherit; background: linear-gradient(90deg,#f37eae,#d93172); color: white; font-size: 11px; font-style: normal; font-weight: 800; transition: width .35s ease; }
+.expenseGrid { display: grid; grid-template-columns: repeat(5,minmax(0,1fr)); gap: 8px; }
+.expenseGrid label { display: grid; grid-template-columns: auto 1fr; align-items: center; gap: 6px; padding: 10px; border-radius: 16px; background: rgba(255,246,250,.8); }
+.expenseGrid label svg { width: 17px; }
+.expenseGrid label span { font-size: 12px; font-weight: 750; }
+.expenseGrid input { grid-column: 1/-1; height: 34px; padding-inline: 8px; background: rgba(255,255,255,.72); text-align: center; }
+
+.quickPanel { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); padding: 12px; }
+.quickPanel > button, .quickPanel > label, .quickPanel > details > summary { min-height: 68px; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 10px; border: 0; background: transparent; color: inherit; cursor: pointer; font-weight: 800; list-style: none; }
+.quickPanel > :not(:first-child) { border-left: 1px solid rgba(229,104,155,.13); }
+.quickPanel svg { width: 20px; }
+.quickPanel > details { position: relative; }
+.quickPanel details > div { position: absolute; z-index: 5; right: 0; top: calc(100% + 8px); width: min(320px,75vw); padding: 14px; border-radius: 16px; background: #fff5f9; box-shadow: 0 14px 32px rgba(151,49,89,.16); }
+.quickPanel details p { margin: 5px 0; }
+
+.assetPanel { padding: 20px; }
+.assetPanel h2 { margin: 0 0 12px; font-size: 20px; }
+.assetPanel > div { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 10px; }
+.assetPanel article, .assetPanel figure { min-width: 0; margin: 0; padding: 12px; border-radius: 16px; background: rgba(255,255,255,.62); }
+.assetPanel article { display: grid; gap: 4px; }
+.assetPanel article p { margin: 0; color: #9d526f; }
+.assetPanel img { width: 100%; height: 120px; object-fit: cover; border-radius: 12px; }
+.assetPanel figcaption { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12px; }
+.deleteTrip { justify-self: end; display: flex; align-items: center; gap: 6px; border: 0; background: transparent; color: #b15a78; }
+.deleteTrip svg { width: 16px; }
+
+@media (hover:hover) {
+  .dayTabs button:hover, .routePanel nav a:hover, .scheduleRow > button:hover, .rowActions button:hover, .quickPanel > button:hover, .quickPanel > label:hover, .quickPanel summary:hover { transform: translateY(-1px); background-color: rgba(255,224,237,.72); }
+}
+
+@media (max-width: 820px) {
+  .formGrid { grid-template-columns: 1fr 1fr; }
+  .expenseGrid { grid-template-columns: repeat(3,minmax(0,1fr)); }
+  .assetPanel > div { grid-template-columns: 1fr 1fr; }
+}
+
+@media (max-width: 560px) {
+  .page { gap: 14px; }
+  .toolbar { align-items: stretch; flex-direction: column; }
+  .toolbar > button { width: 100%; }
+  .tripPicker select { max-width: 100%; }
+  .formGrid { grid-template-columns: 1fr; }
+  .routePanel, .schedulePanel, .budgetPanel { padding: 16px; border-radius: 23px; }
+  .routePanel > header { align-items: stretch; flex-direction: column; }
+  .routePanel nav { flex-wrap: nowrap; justify-content: flex-start; }
+  .routePanel nav a { min-width: 0; padding-inline: 8px; font-size: 12px; white-space: nowrap; }
+  .routeTrack li { width: 124px; }
+  .scheduleRow { grid-template-columns: 58px 28px minmax(0,1fr) 34px; padding: 13px 10px; gap: 7px; }
+  .rowActions { grid-column: 3/-1; justify-content: flex-end; }
+  .budgetPanel > header { align-items: flex-start; flex-direction: column; }
+  .expenseGrid { grid-template-columns: 1fr 1fr; }
+  .quickPanel { grid-template-columns: 1fr 1fr; }
+  .quickPanel > :not(:first-child) { border-left: 0; }
+  .quickPanel > :nth-child(even) { border-left: 1px solid rgba(229,104,155,.13); }
+  .quickPanel > :nth-child(n+3) { border-top: 1px solid rgba(229,104,155,.13); }
+}

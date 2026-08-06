@@ -24,6 +24,7 @@ import { travelProvider } from "@/lib/travel-provider";
 import { today, uid, type NutritionFood, type TravelPlan } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { NutritionPageV2 } from "@/components/nutrition-page-v2";
+import { TravelPageV2 } from "@/components/travel-page-v2";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -263,7 +264,7 @@ export function NutritionPage() {
   return <NutritionPageV2 />;
 }
 
-export function TravelPage() {
+export function TravelPageLegacy() {
   const plans =
     useLiveQuery(
       () => db.travelPlans.orderBy("updatedAt").reverse().toArray(),
@@ -643,6 +644,10 @@ export function TravelPage() {
       ))}
     </div>
   );
+}
+
+export function TravelPage() {
+  return <TravelPageV2 />;
 }
 
 export function NutritionDashboardCard({ open }: { open: () => void }) {
