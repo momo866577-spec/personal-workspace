@@ -40,7 +40,6 @@ export function PeriodTracker(){
  const toggleSymptom=(symptom:string)=>setForm(value=>({...value,symptoms:value.symptoms.includes(symptom)?value.symptoms.filter(x=>x!==symptom):[...value.symptoms,symptom]}));
  const analyzeWithAi=async()=>{setBusy(true);setNotice("");try{if(!connection)throw new Error("尚未连接 AI，请先到设置 → AI 中心完成连接");const apiKey=await readSavedKey();if(!apiKey)throw new Error("AI 密钥不可用，请到设置 → AI 中心重新连接");const result=await callProvider(connection,apiKey,periodAiPrompt(records,summary),700,periodAiSystemPrompt(),.25);setAiOutput(cleanPeriodAiOutput(result))}catch(error){setNotice(error instanceof Error?error.message:"AI 分析失败")}finally{setBusy(false)}};
  return <div className="period-page">
-  <section className="period-hero"><div><small>PRIVATE · LOCAL FIRST</small><h2>经期日历</h2><p>按天记录经量、颜色和身体感受，让周期分析更准确。</p></div><span><Droplets/><b>{summary.regularity}</b></span></section>
   <MonthCalendar month={month} records={records} selected={selected} onSelect={selectDate} onMove={offset=>setMonth(value=>new Date(value.getFullYear(),value.getMonth()+offset,1))}/>
   <div className="period-layout">
    <section className="period-editor"><header><div><CalendarDays/><span><b>{selected} · 当天记录</b><small>{selectedRecord?"这一天已有记录，可以继续修改":"填写后会标记在上方月历"}</small></span></div>{selectedRecord&&<button className="period-delete-day" onClick={remove}><Trash2/>删除当天</button>}</header>

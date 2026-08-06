@@ -4,6 +4,12 @@
 import { useEffect, useMemo, useState } from "react";
 import { useLiveQuery } from "dexie-react-hooks";
 import { motion } from "motion/react";
+import {
+  OPEN_NOTE_DIALOG_EVENT,
+  OPEN_TASK_DIALOG_EVENT,
+  OPEN_WORKOUT_DIALOG_EVENT,
+  WORKSPACE_SEARCH_EVENT,
+} from "@/lib/workspace-events";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import {
@@ -431,6 +437,12 @@ function Tasks({ go }: { go: (page: Page) => void }) {
   const [filter, setFilter] = useState("today");
   const [open, setOpen] = useState(false);
   const [detail, setDetail] = useState<Task | null>(null);
+  useEffect(() => {
+    const showNewTaskDialog = () => setOpen(true);
+    window.addEventListener(OPEN_TASK_DIALOG_EVENT, showNewTaskDialog);
+    return () =>
+      window.removeEventListener(OPEN_TASK_DIALOG_EVENT, showNewTaskDialog);
+  }, []);
   const visible = all.filter(
     (t) =>
       filter === "all" ||
@@ -449,17 +461,6 @@ function Tasks({ go }: { go: (page: Page) => void }) {
   };
   return (
     <div className="tasks-page">
-      <PageHead
-        title="每日计划"
-        text="用清楚的优先顺序，让每一天更有掌控感。"
-        action={
-          <Fab
-            onClick={() => {
-              setOpen(true);
-            }}
-          />
-        }
-      />
       <Card className="task-list-card">
         <div className="task-filter-bar">
           {[
@@ -813,6 +814,15 @@ function Workouts() {
   const [open, setOpen] = useState(false);
   const [edit, setEdit] = useState<Workout | null>(null);
   const [guide, setGuide] = useState({ bodyPart: "全身", exercise: "训练" });
+  useEffect(() => {
+    const showWorkoutDialog = () => {
+      setEdit(null);
+      setOpen(true);
+    };
+    window.addEventListener(OPEN_WORKOUT_DIALOG_EVENT, showWorkoutDialog);
+    return () =>
+      window.removeEventListener(OPEN_WORKOUT_DIALOG_EVENT, showWorkoutDialog);
+  }, []);
   const chart = useMemo(
     () =>
       Object.values(
@@ -829,19 +839,6 @@ function Workouts() {
   );
   return (
     <>
-      <PageHead
-        title="运动锻炼"
-        text="追踪训练量，让进步看得见。"
-        action={
-          <Fab
-            onClick={() => {
-              setEdit(null);
-              setOpen(true);
-            }}
-            label="记录运动"
-          />
-        }
-      />
       <Card className="workout-guide-library">
         <SectionTitle
           title="推荐教程"
@@ -1079,6 +1076,22 @@ function Notes() {
   const [q, setQ] = useState("");
   const [open, setOpen] = useState(false);
   const [edit, setEdit] = useState<Note | null>(null);
+  useEffect(() => {
+    const showNoteDialog = () => {
+      setEdit(null);
+      setOpen(true);
+    };
+    const updateNoteSearch = (event: Event) => {
+      const detail = (event as CustomEvent<{ page: string; query: string }>).detail;
+      if (detail?.page === "notes") setQ(detail.query);
+    };
+    window.addEventListener(OPEN_NOTE_DIALOG_EVENT, showNoteDialog);
+    window.addEventListener(WORKSPACE_SEARCH_EVENT, updateNoteSearch);
+    return () => {
+      window.removeEventListener(OPEN_NOTE_DIALOG_EVENT, showNoteDialog);
+      window.removeEventListener(WORKSPACE_SEARCH_EVENT, updateNoteSearch);
+    };
+  }, []);
   const shown = items
     .filter((n) =>
       [n.title, n.content, n.category, ...n.tags]
@@ -1089,27 +1102,6 @@ function Notes() {
     .sort((a, b) => Number(b.pinned) - Number(a.pinned));
   return (
     <>
-      <PageHead
-        title="备忘录"
-        text="捕捉想法，建立属于你的第二大脑。"
-        action={
-          <Fab
-            onClick={() => {
-              setEdit(null);
-              setOpen(true);
-            }}
-            label="新增笔记"
-          />
-        }
-      />
-      <div className="mb-6 max-w-md search">
-        <Search />
-        <Input
-          value={q}
-          onChange={(e) => setQ(e.target.value)}
-          placeholder="搜索标题、内容、分类或标签"
-        />
-      </div>
       <div className="columns-1 gap-4 md:columns-2 xl:columns-3">
         {shown.length ? (
           shown.map((n) => (

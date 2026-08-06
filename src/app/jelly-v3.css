@@ -306,6 +306,30 @@
   text-wrap: balance;
 }
 
+.glass-app[data-theme="glass-pink"] .topbar-add-action {
+  width: auto !important;
+  min-width: 108px;
+  height: 48px;
+  padding: 0 22px;
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: white !important;
+  font-weight: 700;
+  background: linear-gradient(180deg, #ff9bc2 0%, var(--j-pink) 62%, #e9478b 100%) !important;
+  border-radius: 999px !important;
+  box-shadow:
+    inset 0 3px 2px rgba(255, 255, 255, 0.78),
+    inset 0 -5px 8px rgba(181, 28, 91, 0.14),
+    0 8px 18px rgba(235, 71, 139, 0.24) !important;
+}
+
+.glass-app[data-theme="glass-pink"] .topbar-add-action svg {
+  width: 18px;
+  height: 18px;
+}
+
 .glass-app[data-theme="glass-pink"] :is(h1, h2, h3, h4, b, strong, label, .eyebrow) {
   color: var(--j-heading) !important;
 }
@@ -681,6 +705,13 @@
 
   .glass-app[data-theme="glass-pink"] .top-actions label {
     display: none !important;
+  }
+
+  .glass-app[data-theme="glass-pink"] .topbar-add-action {
+    min-width: 82px;
+    height: 42px;
+    padding: 0 14px;
+    font-size: 14px;
   }
 
   .glass-app[data-theme="glass-pink"] .dashboard-glass {
