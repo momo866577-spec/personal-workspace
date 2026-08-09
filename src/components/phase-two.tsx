@@ -4,7 +4,7 @@ import { useMemo, useState, type CSSProperties } from "react";
 import { useLiveQuery } from "dexie-react-hooks";
 import { Check, CheckCircle2, Copy, Dumbbell, FileText, Heart, Languages, Mic, Radio, RefreshCw, Sparkles, Volume2 } from "lucide-react";
 import { db } from "@/lib/db";
-import { generateWithConnectedAi } from "@/lib/ai-connection";
+import { generateWithConnectedAi, liveReplyStyles } from "@/lib/ai-connection";
 import { ENGLISH_LEVEL_KEY, ensureEnglishDailyPlan, preferredEnglishLevel, setWorkoutCheckin, toggleEnglishDailyTask, workoutStats } from "@/lib/daily";
 import { curriculumStats, NGSL_VERSION, selectableLevels } from "@/lib/ngsl-curriculum";
 import { today, uid, type AiToolMode, type CefrLevel } from "@/lib/types";
@@ -325,7 +325,6 @@ const modes: { id: AiToolMode; label: string; placeholder: string }[] = [
     placeholder: "输入直播间情境，例如：有人嫌贵、冷场、没人留言",
   },
 ];
-const replyStyles = ["亲切", "幽默", "带货", "高情商", "高价值", "宠粉", "留人", "成交"];
 export function StreamAiAssistant() {
   const [mode, setMode] = useState<AiToolMode>("reply"),
     [style, setStyle] = useState("高情商"),
@@ -400,7 +399,7 @@ export function StreamAiAssistant() {
       </nav>
       {mode === "reply" && (
         <div className="reply-styles" aria-label="回复风格">
-          {replyStyles.map((x) => (
+          {liveReplyStyles.map((x) => (
             <button key={x} className={style === x ? "active" : ""} disabled={busy} onClick={() => chooseStyle(x)}>
               {x}
             </button>

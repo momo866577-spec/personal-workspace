@@ -35,7 +35,13 @@ export async function testAiConnection(config:Pick<AiConnection,"provider"|"mode
 export async function saveAiConnection(config:Pick<AiConnection,"provider"|"model"|"baseUrl">,apiKey:string){await encryptAndSaveKey(apiKey);const row:AiConnection={id:"active",...config,status:"connected",testedAt:new Date().toISOString()};await db.aiConnections.put(row);return row}
 
 const replySystem="你是一位直播高情商话术专家。使用者输入的是直播情境。请直接输出可以在直播间立即说出口的三条回复。必须恰好三条，不多不少。不要解释，不要分析，不要前言，不要后记，不要小标题。严禁出现‘作为AI’、‘作为直播助手’、‘以下提供’、‘我建议’。严格使用三行格式：回答1：内容、回答2：内容、回答3：内容。每条20～40个中文字，可直接复制。";
-const promptFor=(mode:AiToolMode,input:string,style="高情商",previous="")=>mode==="reply"?`观众留言：${input}\n回复风格：${style}\n生成批次：${crypto.randomUUID()}\n${previous?`上一次内容如下，三条都必须换一种说法，不得复用句式或关键词：\n${previous}\n`:""}只输出以下三行，不得添加任何其他文字：\n回答1：可以直接对观众说的话\n回答2：可以直接对观众说的话\n回答3：可以直接对观众说的话`:mode==="review"?`分析以下直播记录：${input}\n请用清晰小标题给出做得好的地方、需要改善、可替换说法、提高互动率、提高停留率和最终复盘结论。不要自我介绍，不要写无意义前言。`:`直播情境：${input}\n直接给出最佳回复、第二种回复、高情商版、幽默版、带货版、引导成交版，并在每条后用一句短句说明有效原因。不要自我介绍或写前言。`;
+export const liveReplyStyles=["亲切","幽默","谢榜","高情商","高价值","宠粉","留人","夸夸句"] as const;
+const replyStyleRule=(style:string)=>style==="谢榜"
+ ? "根据输入的榜单、昵称、名次或礼物进行感谢；每条都要点出对方的支持与陪伴，适合直播间当场谢榜。"
+ :style==="夸夸句"
+  ? "围绕输入的观众、昵称、行为或特点进行具体夸赞；自然、有细节、不尴尬，不要只说空泛的‘你好棒’。"
+  :`严格使用${style}风格，三条表达角度必须不同。`;
+const promptFor=(mode:AiToolMode,input:string,style="高情商",previous="")=>mode==="reply"?`观众留言或对象资料：${input}\n回复风格：${style}\n风格执行规则：${replyStyleRule(style)}\n生成批次：${crypto.randomUUID()}\n${previous?`上一次内容如下，三条都必须换一种说法，不得复用句式或关键词：\n${previous}\n`:""}只输出以下三行，不得添加任何其他文字：\n回答1：可以直接对观众说的话\n回答2：可以直接对观众说的话\n回答3：可以直接对观众说的话`:mode==="review"?`分析以下直播记录：${input}\n请用清晰小标题给出做得好的地方、需要改善、可替换说法、提高互动率、提高停留率和最终复盘结论。不要自我介绍，不要写无意义前言。`:`直播情境：${input}\n直接给出最佳回复、第二种回复、高情商版、幽默版、带货版、引导成交版，并在每条后用一句短句说明有效原因。不要自我介绍或写前言。`;
 const systemFor=(mode:AiToolMode)=>mode==="reply"?replySystem:mode==="review"?"你是专业直播运营复盘顾问。直接进行具体复盘，不要自我介绍或空泛客套。":"你是专业直播话术教练。输出实战话术与简短理由，不要自我介绍或空泛客套。";
 const replyFallbacks=(input:string)=>{
  const subject=input.trim().replace(/[“”"']/g,"").slice(0,24)||"这条留言";

@@ -13,6 +13,7 @@ import fs from "node:fs";
 import {
   buildLiveReplyPrompt,
   deleteAiConnection,
+  liveReplyStyles,
   MockAiProvider,
   sanitizeLiveReply,
 } from "../src/lib/ai-connection";
@@ -228,6 +229,13 @@ test("live reply prompt requests three direct variants and regeneration is uniqu
   const sanitized = sanitizeLiveReply("作为AI，我建议如下\n① 欢迎回来", "欢迎回来");
   assert.equal(sanitized.split("\n").length, 3);
   assert.match(sanitized, /^回答1：欢迎回来/);
+});
+
+test("live reply styles replace sales actions with thanks and praise", () => {
+  assert.deepEqual([...liveReplyStyles], ["亲切", "幽默", "谢榜", "高情商", "高价值", "宠粉", "留人", "夸夸句"]);
+  assert.doesNotMatch(liveReplyStyles.join(" "), /带货|成交/);
+  assert.match(buildLiveReplyPrompt("榜一小美送了礼物", "谢榜").prompt, /当场谢榜/);
+  assert.match(buildLiveReplyPrompt("小美今天一直陪伴", "夸夸句").prompt, /具体夸赞/);
 });
 
 test("live reply sanitizer always returns exactly three direct answers", () => {
