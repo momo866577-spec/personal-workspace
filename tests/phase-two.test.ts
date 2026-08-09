@@ -17,7 +17,7 @@ import {
   MockAiProvider,
   sanitizeLiveReply,
   extractLiveReplies,
-  liveRepliesAreCompleteAndFresh,
+  liveRepliesAreFresh,
   formatAiProviderError,
 } from "../src/lib/ai-connection";
 import {
@@ -221,14 +221,17 @@ test("AI connection wizard uses Mock Provider without environment variables", as
   await deleteAiConnection();
 });
 
-test("live reply prompt requests three direct variants and regeneration is unique", () => {
+test("live reply prompt requests three concise answers in one request", () => {
   const first = buildLiveReplyPrompt("直播间怎么没人？", "留人"),
     second = buildLiveReplyPrompt("直播间怎么没人？", "留人", "旧回复");
   for (const label of ["回答1：", "回答2：", "回答3："])
     assert.match(first.prompt, new RegExp(label));
-  assert.match(first.system, /每条20～40个中文字/);
+  assert.match(first.system, /3条回复/);
+  assert.match(first.system, /仅用简体中文/);
+  assert.ok(first.system.length + first.prompt.length < 260);
+  assert.doesNotMatch(first.prompt, /生成批次|randomUUID/);
   assert.notEqual(first.prompt, second.prompt);
-  assert.match(second.prompt, /不得复用/);
+  assert.match(second.prompt, /避开旧句/);
   const sanitized = sanitizeLiveReply("作为AI，我建议如下\n① 欢迎回来");
   assert.equal(sanitized.split("\n").length, 1);
   assert.match(sanitized, /^回答1：欢迎回来/);
@@ -241,7 +244,7 @@ test("live reply styles replace sales actions with thanks and praise", () => {
   assert.match(buildLiveReplyPrompt("小美今天一直陪伴", "夸夸句").prompt, /具体夸赞/);
 });
 
-test("live reply sanitizer never pads missing AI answers with unrelated templates", () => {
+test("live reply sanitizer returns three real AI answers without template padding", () => {
   const single = sanitizeLiveReply("作为AI，我建议如下\n宝宝别无聊啦，我们马上换个有趣的话题！");
   const lines = single.split("\n");
   assert.equal(lines.length, 1);
@@ -251,8 +254,8 @@ test("live reply sanitizer never pads missing AI answers with unrelated template
   const many = sanitizeLiveReply("① 第一条\n② 第二条\n③ 第三条\n④ 多余内容");
   assert.deepEqual(many.split("\n"), ["回答1：第一条", "回答2：第二条", "回答3：第三条"]);
   assert.deepEqual(extractLiveReplies("回答1：谢榜一姐 回答2：谢谢陪伴 回答3：今晚有你真好"), ["谢榜一姐", "谢谢陪伴", "今晚有你真好"]);
-  assert.equal(liveRepliesAreCompleteAndFresh("回答1：新一\n回答2：新二\n回答3：新三", "回答1：旧一\n回答2：旧二\n回答3：旧三"), true);
-  assert.equal(liveRepliesAreCompleteAndFresh("回答1：旧一\n回答2：新二\n回答3：新三", "回答1：旧一\n回答2：旧二\n回答3：旧三"), false);
+  assert.equal(liveRepliesAreFresh("回答1：新一\n回答2：新二\n回答3：新三", "回答1：旧一\n回答2：旧二\n回答3：旧三"), true);
+  assert.equal(liveRepliesAreFresh("回答1：旧一\n回答2：新二\n回答3：新三", "回答1：旧一\n回答2：旧二\n回答3：旧三"), false);
 });
 
 test("AI provider errors are converted to concise Chinese guidance", () => {
