@@ -43,32 +43,38 @@ const replyStyleRule=(style:string)=>style==="谢榜"
   :`严格使用${style}风格，三条表达角度必须不同。`;
 const promptFor=(mode:AiToolMode,input:string,style="高情商",previous="")=>mode==="reply"?`观众留言或对象资料：${input}\n回复风格：${style}\n风格执行规则：${replyStyleRule(style)}\n生成批次：${crypto.randomUUID()}\n${previous?`上一次内容如下，三条都必须换一种说法，不得复用句式或关键词：\n${previous}\n`:""}只输出以下三行，不得添加任何其他文字：\n回答1：可以直接对观众说的话\n回答2：可以直接对观众说的话\n回答3：可以直接对观众说的话`:mode==="review"?`分析以下直播记录：${input}\n请用清晰小标题给出做得好的地方、需要改善、可替换说法、提高互动率、提高停留率和最终复盘结论。不要自我介绍，不要写无意义前言。`:`直播情境：${input}\n直接给出最佳回复、第二种回复、高情商版、幽默版、带货版、引导成交版，并在每条后用一句短句说明有效原因。不要自我介绍或写前言。`;
 const systemFor=(mode:AiToolMode)=>mode==="reply"?replySystem:mode==="review"?"你是专业直播运营复盘顾问。直接进行具体复盘，不要自我介绍或空泛客套。":"你是专业直播话术教练。输出实战话术与简短理由，不要自我介绍或空泛客套。";
-const replyFallbacks=(input:string)=>{
- const subject=input.trim().replace(/[“”"']/g,"").slice(0,24)||"这条留言";
- return [
-  `收到你说“${subject}”啦，哪里想调整直接告诉我，我马上安排～`,
-  `这条反馈我接住了，给我一个机会，现在就把直播间气氛拉回来！`,
-  `大家也有同感吗？刷个1告诉我，接下来就按你们想看的内容来！`,
- ];
-};
-const cleanReply=(text:string,input="")=>{
+export const extractLiveReplies=(text:string)=>{
  const withoutFiller=text
   .replace(/```(?:text|markdown)?/gi,"")
+  .replace(/\s+(?=(?:(?:回答|答案|回复)\s*)?[①②③]|(?:回答|答案|回复)\s*[1-3]\s*[：:、.)）-])/g,"\n")
   .split("\n")
   .map(line=>line.trim())
   .filter(line=>line&&!/^(作为(?:AI|直播助手)|以下提供|我建议|建议如下|当然可以|没问题)/.test(line))
   .join("\n");
- const replies=withoutFiller
+ return withoutFiller
   .split(/\n+/)
   .map(line=>line.replace(/^(?:回答|答案|回复)?\s*[①②③1-3一二三]\s*[：:、.)）-]?\s*/,"").trim())
   .filter(line=>line&&!/^(高情商版|幽默版|高互动版|亲切版|互动版)\s*[：:]?$/.test(line))
-  .filter((line,index,all)=>all.indexOf(line)===index)
-  .slice(0,3);
- for(const fallback of replyFallbacks(input))if(replies.length<3&&!replies.includes(fallback))replies.push(fallback);
- return replies.slice(0,3).map((reply,index)=>`回答${index+1}：${reply}`).join("\n");
+  .filter((line,index,all)=>all.indexOf(line)===index);
 };
+export const liveRepliesAreCompleteAndFresh=(text:string,previous="")=>{
+ const replies=extractLiveReplies(text),oldReplies=extractLiveReplies(previous);
+ return replies.length===3&&replies.every(reply=>!oldReplies.includes(reply));
+};
+const cleanReply=(text:string)=>extractLiveReplies(text).slice(0,3).map((reply,index)=>`回答${index+1}：${reply}`).join("\n");
 export const buildLiveReplyPrompt=(input:string,style="高情商",previous="")=>({system:replySystem,prompt:promptFor("reply",input,style,previous)});
 export const sanitizeLiveReply=cleanReply;
-export async function generateWithConnectedAi(mode:AiToolMode,input:string,style?:string,previous=""){const connection=await db.aiConnections.get("active"),apiKey=await readSavedKey();if(!connection||!apiKey)throw new Error("尚未接入 AI，请先到设置 → AI 中心完成连接");const output=await callProvider(connection,apiKey,promptFor(mode,input,style,previous),800,systemFor(mode),.95);return {output:mode==="reply"?cleanReply(output,input):output,provider:connection.provider}}
+export async function generateWithConnectedAi(mode:AiToolMode,input:string,style="高情商",previous=""){
+ const connection=await db.aiConnections.get("active"),apiKey=await readSavedKey();
+ if(!connection||!apiKey)throw new Error("尚未接入 AI，请先到设置 → AI 中心完成连接");
+ let output=await callProvider(connection,apiKey,promptFor(mode,input,style,previous),800,systemFor(mode),.95);
+ if(mode==="reply"&&!liveRepliesAreCompleteAndFresh(output,previous)){
+  const failedOutput=output;
+  const repairPrompt=`${promptFor(mode,input,style,previous)}\n\n刚才的输出不合格：\n${failedOutput}\n\n请重新生成三条全新的${style}回复。每一条都必须紧扣“${input.trim()}”和${style}风格，三条彼此不同，也不得与上一次内容相同。只输出回答1、回答2、回答3三行。`;
+  output=await callProvider(connection,apiKey,repairPrompt,800,systemFor(mode),1);
+ }
+ if(mode==="reply"&&!liveRepliesAreCompleteAndFresh(output,previous))throw new Error("AI 未按要求返回三条不同且符合主题的回复，请点击重新生成再试一次");
+ return {output:mode==="reply"?cleanReply(output):output,provider:connection.provider};
+}
 
 export class MockAiProvider{async test(){return "AI 已连接"}async generate(mode:AiToolMode,input:string){return `[Mock ${mode}] ${input}`}}

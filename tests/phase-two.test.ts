@@ -16,6 +16,8 @@ import {
   liveReplyStyles,
   MockAiProvider,
   sanitizeLiveReply,
+  extractLiveReplies,
+  liveRepliesAreCompleteAndFresh,
 } from "../src/lib/ai-connection";
 import {
   curriculumStats,
@@ -226,8 +228,8 @@ test("live reply prompt requests three direct variants and regeneration is uniqu
   assert.match(first.system, /每条20～40个中文字/);
   assert.notEqual(first.prompt, second.prompt);
   assert.match(second.prompt, /不得复用/);
-  const sanitized = sanitizeLiveReply("作为AI，我建议如下\n① 欢迎回来", "欢迎回来");
-  assert.equal(sanitized.split("\n").length, 3);
+  const sanitized = sanitizeLiveReply("作为AI，我建议如下\n① 欢迎回来");
+  assert.equal(sanitized.split("\n").length, 1);
   assert.match(sanitized, /^回答1：欢迎回来/);
 });
 
@@ -238,17 +240,18 @@ test("live reply styles replace sales actions with thanks and praise", () => {
   assert.match(buildLiveReplyPrompt("小美今天一直陪伴", "夸夸句").prompt, /具体夸赞/);
 });
 
-test("live reply sanitizer always returns exactly three direct answers", () => {
-  const single = sanitizeLiveReply("作为AI，我建议如下\n宝宝别无聊啦，我们马上换个有趣的话题！", "好无聊哦");
+test("live reply sanitizer never pads missing AI answers with unrelated templates", () => {
+  const single = sanitizeLiveReply("作为AI，我建议如下\n宝宝别无聊啦，我们马上换个有趣的话题！");
   const lines = single.split("\n");
-  assert.equal(lines.length, 3);
+  assert.equal(lines.length, 1);
   assert.match(lines[0], /^回答1：/);
-  assert.match(lines[1], /^回答2：/);
-  assert.match(lines[2], /^回答3：/);
   assert.doesNotMatch(single, /作为AI|我建议|以下提供/);
 
-  const many = sanitizeLiveReply("① 第一条\n② 第二条\n③ 第三条\n④ 多余内容", "测试");
+  const many = sanitizeLiveReply("① 第一条\n② 第二条\n③ 第三条\n④ 多余内容");
   assert.deepEqual(many.split("\n"), ["回答1：第一条", "回答2：第二条", "回答3：第三条"]);
+  assert.deepEqual(extractLiveReplies("回答1：谢榜一姐 回答2：谢谢陪伴 回答3：今晚有你真好"), ["谢榜一姐", "谢谢陪伴", "今晚有你真好"]);
+  assert.equal(liveRepliesAreCompleteAndFresh("回答1：新一\n回答2：新二\n回答3：新三", "回答1：旧一\n回答2：旧二\n回答3：旧三"), true);
+  assert.equal(liveRepliesAreCompleteAndFresh("回答1：旧一\n回答2：新二\n回答3：新三", "回答1：旧一\n回答2：旧二\n回答3：旧三"), false);
 });
 
 test("daily focus message is stable for one day and advances the next day", () => {
