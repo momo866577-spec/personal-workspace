@@ -20,7 +20,20 @@ export async function encryptAndSaveKey(apiKey:string){
 export async function readSavedKey(){const secret=await db.aiSecrets.get("active");if(!secret)return null;const plain=await crypto.subtle.decrypt({name:"AES-GCM",iv:secret.iv},secret.key,secret.cipher);return decoder.decode(plain)}
 export async function deleteAiConnection(){await db.transaction("rw",db.aiConnections,db.aiSecrets,async()=>{await db.aiConnections.delete("active");await db.aiSecrets.delete("active")})}
 
-const errorMessage=async(response:Response)=>{let detail="";try{const body=await response.json() as {error?:{message?:string}|string;message?:string};detail=typeof body.error==="string"?body.error:body.error?.message||body.message||""}catch{}return detail||`HTTP ${response.status}`};
+export const formatAiProviderError=(status:number,detail="")=>{
+ const normalized=detail.toLowerCase();
+ if(status===429||/quota|rate.?limit|too many requests/.test(normalized)){
+  const seconds=detail.match(/retry in\s+([\d.]+)s/i)?.[1];
+  return seconds
+   ? `AI 请求次数已达上限，请约 ${Math.ceil(Number(seconds))} 秒后再试；若持续出现，请到设置 → AI 中心更换模型或服务商。`
+   : "AI 请求次数或免费额度已达上限，请稍后再试；若持续出现，请到设置 → AI 中心更换模型或服务商。";
+ }
+ if(/insufficient balance|insufficient quota|billing|credit/.test(normalized))return "AI 账户余额或额度不足，请到服务商后台检查额度，或在设置 → AI 中心更换服务商。";
+ if(status===401||status===403||/invalid.*(?:key|token)|unauthorized|forbidden/.test(normalized))return "AI API Key 无效或没有此模型权限，请到设置 → AI 中心重新测试连接。";
+ if(status>=500)return "AI 服务商暂时不可用，请稍后再试。";
+ return detail&&/[^\x00-\x7F]/.test(detail)?detail:`AI 请求失败（HTTP ${status}），请稍后再试或到设置 → AI 中心检查连接。`;
+};
+const errorMessage=async(response:Response)=>{let detail="";try{const body=await response.json() as {error?:{message?:string}|string;message?:string};detail=typeof body.error==="string"?body.error:body.error?.message||body.message||""}catch{}return formatAiProviderError(response.status,detail)};
 export async function callProvider(connection:Pick<AiConnection,"provider"|"model"|"baseUrl">,apiKey:string,prompt:string,maxTokens=800,system?:string,temperature=.75,json=false){
  const base=connection.baseUrl.replace(/\/$/,"");let response:Response;
  try{
@@ -67,13 +80,8 @@ export const sanitizeLiveReply=cleanReply;
 export async function generateWithConnectedAi(mode:AiToolMode,input:string,style="高情商",previous=""){
  const connection=await db.aiConnections.get("active"),apiKey=await readSavedKey();
  if(!connection||!apiKey)throw new Error("尚未接入 AI，请先到设置 → AI 中心完成连接");
- let output=await callProvider(connection,apiKey,promptFor(mode,input,style,previous),800,systemFor(mode),.95);
- if(mode==="reply"&&!liveRepliesAreCompleteAndFresh(output,previous)){
-  const failedOutput=output;
-  const repairPrompt=`${promptFor(mode,input,style,previous)}\n\n刚才的输出不合格：\n${failedOutput}\n\n请重新生成三条全新的${style}回复。每一条都必须紧扣“${input.trim()}”和${style}风格，三条彼此不同，也不得与上一次内容相同。只输出回答1、回答2、回答3三行。`;
-  output=await callProvider(connection,apiKey,repairPrompt,800,systemFor(mode),1);
- }
- if(mode==="reply"&&!liveRepliesAreCompleteAndFresh(output,previous))throw new Error("AI 未按要求返回三条不同且符合主题的回复，请点击重新生成再试一次");
+ const output=await callProvider(connection,apiKey,promptFor(mode,input,style,previous),800,systemFor(mode),.95);
+ if(mode==="reply"&&!liveRepliesAreCompleteAndFresh(output,previous))throw new Error("AI 本次没有返回三条不同且符合主题的回复，请稍后点击重新生成；系统不会用无关模板补齐。");
  return {output:mode==="reply"?cleanReply(output):output,provider:connection.provider};
 }
 

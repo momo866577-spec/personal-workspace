@@ -18,6 +18,7 @@ import {
   sanitizeLiveReply,
   extractLiveReplies,
   liveRepliesAreCompleteAndFresh,
+  formatAiProviderError,
 } from "../src/lib/ai-connection";
 import {
   curriculumStats,
@@ -252,6 +253,13 @@ test("live reply sanitizer never pads missing AI answers with unrelated template
   assert.deepEqual(extractLiveReplies("回答1：谢榜一姐 回答2：谢谢陪伴 回答3：今晚有你真好"), ["谢榜一姐", "谢谢陪伴", "今晚有你真好"]);
   assert.equal(liveRepliesAreCompleteAndFresh("回答1：新一\n回答2：新二\n回答3：新三", "回答1：旧一\n回答2：旧二\n回答3：旧三"), true);
   assert.equal(liveRepliesAreCompleteAndFresh("回答1：旧一\n回答2：新二\n回答3：新三", "回答1：旧一\n回答2：旧二\n回答3：旧三"), false);
+});
+
+test("AI provider errors are converted to concise Chinese guidance", () => {
+  assert.match(formatAiProviderError(429, "You exceeded your current quota. Please retry in 13.069s."), /14 秒后再试/);
+  assert.doesNotMatch(formatAiProviderError(429, "You exceeded your current quota."), /You exceeded|https?:\/\//);
+  assert.match(formatAiProviderError(401, "Invalid API key"), /API Key 无效/);
+  assert.match(formatAiProviderError(402, "Insufficient Balance"), /余额或额度不足/);
 });
 
 test("daily focus message is stable for one day and advances the next day", () => {
