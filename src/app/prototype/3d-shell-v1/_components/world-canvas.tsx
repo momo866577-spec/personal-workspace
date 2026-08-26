@@ -36,7 +36,7 @@ function CameraController({
   workMode,
   reducedMotion,
 }: Pick<WorldCanvasProps, "activeAnchor" | "activeSpace" | "workMode" | "reducedMotion">) {
-  const { camera } = useThree();
+  const { camera, invalidate } = useThree();
   const cameraRef = useRef(camera);
   const lookAt = useRef(new THREE.Vector3(0, 0.6, 0));
   const targetPosition = useMemo(() => {
@@ -85,6 +85,13 @@ function CameraController({
       lookAt.current.lerp(targetLookAt, 1 - Math.exp(-MOTION.cameraDamping * delta));
     }
     activeCamera.lookAt(lookAt.current);
+    if (
+      workMode &&
+      (activeCamera.position.distanceToSquared(targetPosition) > 0.0001 ||
+        lookAt.current.distanceToSquared(targetLookAt) > 0.0001)
+    ) {
+      invalidate();
+    }
   });
 
   return null;
@@ -399,7 +406,7 @@ export function WorldCanvas(props: WorldCanvasProps) {
     <Canvas
       dpr={props.mobile ? [1, 1.15] : [1, 1.5]}
       camera={{ position: [0.2, 1.65, 7.4], fov: props.mobile ? 48 : 42, near: 0.1, far: 60 }}
-      frameloop={props.visible ? "always" : "never"}
+      frameloop={props.visible ? (props.workMode ? "demand" : "always") : "never"}
       gl={{ antialias: !props.mobile, powerPreference: "high-performance", alpha: false }}
       shadows={!props.mobile}
       onCreated={({ gl, scene }) => {
