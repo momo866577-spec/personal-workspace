@@ -2,311 +2,192 @@
 
 import dynamic from "next/dynamic";
 import {
-  ArrowDown,
-  ChevronLeft,
-  ChevronRight,
-  CornerUpLeft,
-  Map,
-  Mouse,
-  Sparkles,
-  X,
+  ArrowDown, ArrowLeft, ArrowRight, Bell, CalendarDays, Check, ChevronRight,
+  Clock3, Home, Sparkles,
 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import styles from "../experience.module.css";
-import { ANCHORS, MOTION, PLANNING_FEATURES, type AnchorId } from "../_lib/experience-config";
+import {
+  HOME_FEATURES, MOTION, SPACES, SPACE_ORDER,
+} from "../_lib/experience-config";
 import { useExperience } from "../_lib/use-experience";
 import { DailyPlanPanel } from "./daily-plan-panel";
+import { FeatureDetailPanel } from "./feature-detail-panel";
 
-const WorldCanvas = dynamic(
-  () => import("./world-canvas").then((module) => module.WorldCanvas),
-  { ssr: false },
-);
+const WorldCanvas = dynamic(() => import("./world-canvas").then((module) => module.WorldCanvas), { ssr: false });
+
+const TODAY_TASKS = [
+  { time: "09:30", title: "回覆合作信件", done: true },
+  { time: "11:00", title: "英語聽力 15 分鐘", done: true },
+  { time: "14:00", title: "專案頁面校對", done: false },
+  { time: "17:30", title: "河濱快走", done: false },
+] as const;
 
 export function ExperienceShell() {
-  const { state, ready, enter, goToAnchor, enterPlanning, enterFeature, back } = useExperience();
-  const [quickJumpOpen, setQuickJumpOpen] = useState(false);
-  const [featureNote, setFeatureNote] = useState<string | null>(null);
+  const { state, ready, enter, goHome, enterSpace, enterFeature, back } = useExperience();
+  const [now, setNow] = useState<Date | null>(null);
   const [reducedMotion, setReducedMotion] = useState(false);
   const [mobile, setMobile] = useState(false);
   const [documentVisible, setDocumentVisible] = useState(true);
   const gestureLockedUntil = useRef(0);
-  const pointerStart = useRef<number | null>(null);
-  const activeAnchor = ANCHORS.find((anchor) => anchor.id === state.activeAnchor) ?? ANCHORS[0];
-  const activeIndex = activeAnchor.index;
+  const pointerStart = useRef<{ x: number; time: number } | null>(null);
+  const activeDefinition = SPACES.find((space) => space.id === state.activeSpace) ?? null;
+  const activeIndex = activeDefinition?.index ?? -1;
 
   useEffect(() => {
-    const timer = window.setTimeout(ready, 650);
+    const readyTimer = window.setTimeout(ready, 580);
+    const initialClockTimer = window.setTimeout(() => setNow(new Date()), 0);
+    const clockTimer = window.setInterval(() => setNow(new Date()), 1000);
     const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
     const mobileQuery = window.matchMedia("(max-width: 720px)");
     const updateMotion = () => setReducedMotion(motionQuery.matches);
     const updateMobile = () => setMobile(mobileQuery.matches);
     const updateVisibility = () => setDocumentVisible(document.visibilityState === "visible");
-    updateMotion();
-    updateMobile();
+    updateMotion(); updateMobile(); updateVisibility();
     motionQuery.addEventListener("change", updateMotion);
     mobileQuery.addEventListener("change", updateMobile);
     document.addEventListener("visibilitychange", updateVisibility);
     return () => {
-      window.clearTimeout(timer);
+      window.clearTimeout(readyTimer); window.clearTimeout(initialClockTimer); window.clearInterval(clockTimer);
       motionQuery.removeEventListener("change", updateMotion);
       mobileQuery.removeEventListener("change", updateMobile);
       document.removeEventListener("visibilitychange", updateVisibility);
     };
   }, [ready]);
 
+  const moveBy = useCallback((direction: 1 | -1) => {
+    if (state.activeSpace === "home" || state.workMode || state.entrance !== "entered") return;
+    const moment = Date.now();
+    if (moment < gestureLockedUntil.current) return;
+    const nextIndex = Math.max(0, Math.min(SPACE_ORDER.length - 1, activeIndex + direction));
+    if (nextIndex === activeIndex) return;
+    gestureLockedUntil.current = moment + (reducedMotion ? 300 : MOTION.gestureLockMs);
+    enterSpace(SPACE_ORDER[nextIndex]);
+  }, [activeIndex, enterSpace, reducedMotion, state.activeSpace, state.entrance, state.workMode]);
+
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        setQuickJumpOpen(false);
-        back();
-      }
-      if (state.entrance !== "entered" || state.activeSpace !== "main" || state.workMode) return;
-      if (event.key === "ArrowDown" || event.key === "ArrowRight") {
-        event.preventDefault();
-        const next = ANCHORS[Math.min(ANCHORS.length - 1, activeIndex + 1)];
-        goToAnchor(next.id);
-      }
-      if (event.key === "ArrowUp" || event.key === "ArrowLeft") {
-        event.preventDefault();
-        const previous = ANCHORS[Math.max(0, activeIndex - 1)];
-        goToAnchor(previous.id);
-      }
+      if (event.key === "Escape") { back(); return; }
+      if (state.entrance !== "entered" || state.workMode) return;
+      if (event.key === "Home") { event.preventDefault(); goHome(); return; }
+      if (event.key === "ArrowRight") { event.preventDefault(); moveBy(1); }
+      if (event.key === "ArrowLeft") { event.preventDefault(); moveBy(-1); }
     };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [activeIndex, back, goToAnchor, state.activeSpace, state.entrance, state.workMode]);
+  }, [back, goHome, moveBy, state.entrance, state.workMode]);
 
-  const moveBy = useCallback(
-    (direction: 1 | -1) => {
-      if (state.activeSpace !== "main" || state.workMode || state.entrance !== "entered") return;
-      const now = Date.now();
-      if (now < gestureLockedUntil.current) return;
-      const nextIndex = Math.max(0, Math.min(ANCHORS.length - 1, activeIndex + direction));
-      if (nextIndex === activeIndex) return;
-      gestureLockedUntil.current = now + (reducedMotion ? 340 : MOTION.gestureLockMs);
-      goToAnchor(ANCHORS[nextIndex].id);
-    }, [activeIndex, goToAnchor, reducedMotion, state.activeSpace, state.entrance, state.workMode],
-  );
-
-  const handleFeatureSelect = useCallback(
-    (featureId: (typeof PLANNING_FEATURES)[number]["id"]) => {
-      if (featureId === "daily-plan") {
-        enterFeature(featureId);
-        return;
-      }
-      const feature = PLANNING_FEATURES.find((item) => item.id === featureId);
-      setFeatureNote(`${feature?.title ?? "此功能"}將在下一版接上正式內容。`);
-      window.setTimeout(() => setFeatureNote(null), 2400);
-    },
-    [enterFeature],
-  );
-
-  const anchorLabel = useMemo(
-    () => `${String(activeIndex + 1).padStart(2, "0")} / ${String(ANCHORS.length).padStart(2, "0")}`,
-    [activeIndex],
-  );
-
-  function jump(anchor: AnchorId) {
-    goToAnchor(anchor);
-    setQuickJumpOpen(false);
-  }
+  const dateText = useMemo(() => now?.toLocaleDateString("zh-TW", { month: "long", day: "numeric", weekday: "long" }) ?? "載入今日資訊", [now]);
+  const timeText = useMemo(() => now?.toLocaleTimeString("zh-TW", { hour: "2-digit", minute: "2-digit", hour12: false }) ?? "--:--", [now]);
 
   return (
     <main
-      className={`${styles.shell} ${state.workMode ? styles.workMode : ""}`}
+      className={`${styles.shell} ${state.activeSpace === "home" ? styles.homeMode : styles.spaceMode} ${state.workMode ? styles.workMode : ""}`}
       onWheel={(event) => {
-        if (state.workMode || state.activeSpace !== "main") return;
-        if (Math.abs(event.deltaY) < MOTION.wheelThreshold) return;
-        moveBy(event.deltaY > 0 ? 1 : -1);
+        if (state.workMode || state.activeSpace === "home") return;
+        const intent = Math.abs(event.deltaX) > Math.abs(event.deltaY) ? event.deltaX : event.shiftKey ? event.deltaY : 0;
+        if (Math.abs(intent) >= MOTION.wheelThreshold) moveBy(intent > 0 ? 1 : -1);
       }}
       onPointerDown={(event) => {
-        if (state.workMode) return;
-        if (!mobile && event.pointerType !== "touch") return;
-        pointerStart.current = event.clientY;
+        if (state.workMode || state.activeSpace === "home") return;
+        if (event.pointerType === "mouse" && event.button !== 0) return;
+        pointerStart.current = { x: event.clientX, time: performance.now() };
       }}
       onPointerUp={(event) => {
-        if (state.workMode || pointerStart.current === null) return;
-        const delta = pointerStart.current - event.clientY;
+        if (state.workMode || !pointerStart.current || state.activeSpace === "home") return;
+        const delta = pointerStart.current.x - event.clientX;
+        const elapsed = Math.max(1, performance.now() - pointerStart.current.time);
+        const velocity = Math.abs(delta) / elapsed;
         pointerStart.current = null;
-        if (Math.abs(delta) >= MOTION.swipeThreshold) moveBy(delta > 0 ? 1 : -1);
+        if (Math.abs(delta) >= MOTION.swipeThreshold || (Math.abs(delta) >= 24 && velocity >= MOTION.swipeVelocity)) moveBy(delta > 0 ? 1 : -1);
       }}
-      data-anchor={state.activeAnchor}
+      onPointerCancel={() => { pointerStart.current = null; }}
       data-space={state.activeSpace}
       data-work-mode={state.workMode}
     >
       <div className={`${styles.canvasLayer} ${state.workMode ? styles.canvasSubdued : ""}`}>
-        <WorldCanvas
-          activeAnchor={state.activeAnchor}
-          activeSpace={state.activeSpace}
-          activeFeature={state.activeFeature}
-          workMode={state.workMode}
-          reducedMotion={reducedMotion}
-          mobile={mobile}
-          visible={documentVisible}
-          onAnchorSelect={goToAnchor}
-          onEnterPlanning={enterPlanning}
-          onFeatureSelect={handleFeatureSelect}
-        />
+        <WorldCanvas activeSpace={state.activeSpace} workMode={state.workMode} reducedMotion={reducedMotion} mobile={mobile} visible={documentVisible} onSpaceSelect={enterSpace} />
       </div>
 
       {state.entrance !== "entered" && (
         <section className={`${styles.entrance} ${state.entrance === "ready" ? styles.entranceReady : ""}`}>
-          <div className={styles.entranceMark} aria-hidden="true">
-            <span />
-            <i />
-          </div>
-          <p>PERSONAL SPACE</p>
-          <h1>讓生活與工作，<br />回到同一個空間。</h1>
-          {state.entrance === "loading" ? (
-            <div className={styles.loadingLine}>
-              <span />
-              Loading space
-            </div>
-          ) : (
-            <button className={styles.enterButton} onClick={enter}>
-              <span>Enter Workspace</span>
-              <ArrowDown />
-            </button>
+          <div className={styles.entranceMark} aria-hidden="true"><span /><i /></div>
+          <p>PERSONAL WORKSPACE · V2</p>
+          <h1>今天要處理的事，<br />都在同一個空間。</h1>
+          {state.entrance === "loading" ? <div className={styles.loadingLine}><span />Loading home</div> : (
+            <button className={styles.enterButton} onClick={enter} data-testid="enter-workspace"><span>進入 3D 總控首頁</span><ArrowDown /></button>
           )}
-          <small>3D INTERACTIVE UX SHELL · V1</small>
+          <small>HOME · SIX SPACES · DIRECT ACCESS</small>
         </section>
       )}
 
       {state.entrance === "entered" && !state.workMode && (
         <>
           <header className={styles.topBar}>
-            <div className={styles.brand}>
-              <span className={styles.brandMark}><i /></span>
-              <div>
-                <strong>PERSONAL SPACE</strong>
-                <small>GUIDED WORKSPACE</small>
-              </div>
-            </div>
-            {state.activeSpace === "planning" && (
-              <button className={styles.backButton} onClick={back} data-testid="space-back">
-                <CornerUpLeft />
-                <span>回到主世界</span>
-              </button>
-            )}
+            <div className={styles.brand}><span className={styles.brandMark}><i /></span><div><strong>PERSONAL SPACE</strong><small>3D CONTROL HOME</small></div></div>
+            {state.activeSpace !== "home" && <button className={styles.homeButton} onClick={goHome} data-testid="go-home"><Home /><span>HOME</span></button>}
           </header>
 
-          {state.activeSpace === "main" ? (
-            <section className={styles.anchorStory} aria-live="polite">
-              <span className={styles.kicker}>{activeAnchor.eyebrow}</span>
-              <activeAnchor.icon className={styles.storyIcon} aria-hidden="true" />
-              <h1>{activeAnchor.title}</h1>
-              <p>{activeAnchor.description}</p>
-              {activeAnchor.id === "planning" ? (
-                <button className={styles.primaryAction} onClick={enterPlanning} data-testid="enter-planning">
-                  <span>進入 Planning 空間</span>
-                  <ChevronRight />
-                </button>
-              ) : (
-                <div className={styles.scrollHint}>
-                  <Mouse />
-                  <span>{mobile ? "向上滑動，前往下一站" : "滾動，前往下一站"}</span>
-                </div>
-              )}
-            </section>
-          ) : (
-            <section className={styles.planningOverlay}>
-              <div className={styles.spaceHeading}>
-                <span className={styles.kicker}>PLANNING SPACE</span>
-                <h1>把今天放回手上。</h1>
-                <p>選一個工作裝置，讓空間慢慢退到身後。</p>
+          {state.activeSpace === "home" ? (
+            <section className={styles.homeDashboard} aria-label="3D 個人工作台總控首頁">
+              <div className={styles.todayHero}>
+                <span className={styles.kicker}>TODAY · PERSONAL CONTROL</span>
+                <div className={styles.dateLine}><span>{dateText}</span><strong>{timeText}</strong></div>
+                <h1>王先生，<br />今天走到 <em>57%</em>。</h1>
+                <p><Sparkles /> 下午專注處理專案，傍晚留給身體。</p>
+                <div className={styles.progressBar}><i /></div>
               </div>
-              <div className={styles.featureRail}>
-                {PLANNING_FEATURES.map((feature, index) => (
-                  <button
-                    key={feature.id}
-                    className={`${styles.featureButton} ${index === 0 ? styles.featurePrimary : ""}`}
-                    onClick={() => handleFeatureSelect(feature.id)}
-                    data-testid={feature.id === "daily-plan" ? "open-daily-plan" : undefined}
-                  >
-                    <feature.icon />
-                    <span>
-                      <small>{feature.label}</small>
-                      <strong>{feature.title}</strong>
-                      <em>{feature.description}</em>
-                    </span>
-                    <ChevronRight />
-                  </button>
-                ))}
-              </div>
-            </section>
-          )}
 
-          {state.activeSpace === "main" && (
-            <nav className={styles.anchorProgress} aria-label="空間進度">
-              <button onClick={() => moveBy(-1)} disabled={activeIndex === 0} aria-label="上一站">
-                <ChevronLeft />
-              </button>
-              <div>
-                <span>{anchorLabel}</span>
+              <div className={styles.todayFlow}>
+                <header><span><Clock3 /> 今天 4 件事</span><button onClick={() => enterSpace("planning")}>完整計畫 <ChevronRight /></button></header>
                 <div>
-                  {ANCHORS.map((anchor) => (
-                    <button
-                      key={anchor.id}
-                      aria-label={`前往 ${anchor.title}`}
-                      className={anchor.id === state.activeAnchor ? styles.progressActive : ""}
-                      onClick={() => jump(anchor.id)}
-                    />
-                  ))}
+                  {TODAY_TASKS.map((task) => <button key={task.time} onClick={() => enterSpace(task.title.includes("英語") ? "learning" : task.title.includes("快走") ? "exercise" : "planning")}><span className={task.done ? styles.taskDone : ""}>{task.done ? <Check /> : null}</span><time>{task.time}</time><strong>{task.title}</strong></button>)}
                 </div>
               </div>
-              <button
-                onClick={() => moveBy(1)}
-                disabled={activeIndex === ANCHORS.length - 1}
-                aria-label="下一站"
-              >
-                <ChevronRight />
-              </button>
+
+              <div className={styles.infoRibbon}>
+                <button onClick={() => enterSpace("planning")}><CalendarDays /><span><small>下一個行程</small><strong>14:00 專案校對</strong><em>本週共 8 個行程</em></span></button>
+                <button onClick={() => enterSpace("planning")}><Bell /><span><small>通知摘要</small><strong>3 則待查看</strong><em>1 則需要今天回覆</em></span></button>
+              </div>
+
+              <nav className={styles.portalField} aria-label="全部功能入口">
+                <header><span className={styles.kicker}>ALL PORTALS</span><strong>直接前往</strong></header>
+                <div>
+                  {HOME_FEATURES.map((feature, index) => <button key={feature.id} onClick={() => enterSpace(feature.target)} style={{ "--portal-tone": feature.tone, "--portal-index": index } as React.CSSProperties} data-testid={`portal-${feature.id}`}><feature.icon /><span>{feature.title}</span><ChevronRight /></button>)}
+                </div>
+              </nav>
+            </section>
+          ) : activeDefinition ? (
+            <section className={styles.spaceOverlay} style={{ "--space-accent": activeDefinition.accent, "--space-secondary": activeDefinition.accentSecondary } as React.CSSProperties}>
+              <div className={styles.spaceHeading}>
+                <span className={styles.kicker}>{activeDefinition.eyebrow}</span>
+                <activeDefinition.icon className={styles.spaceIcon} />
+                <h1>{activeDefinition.zhTitle}</h1>
+                <p>{activeDefinition.description}</p>
+                <button className={styles.primaryAction} onClick={() => enterFeature(activeDefinition.detailFeature)} data-testid={`open-${activeDefinition.detailFeature}`}><span>{activeDefinition.detailLabel}</span><ChevronRight /></button>
+              </div>
+              <div className={styles.spaceSummary}>
+                <div className={styles.metricOrb}><strong>{activeDefinition.metric}</strong><span>{activeDefinition.metricLabel}</span></div>
+                <div>{activeDefinition.summary.map((item, index) => <button key={item} onClick={() => enterFeature(activeDefinition.detailFeature)}><span>{String(index + 1).padStart(2, "0")}</span><strong>{item}</strong><ChevronRight /></button>)}</div>
+              </div>
+            </section>
+          ) : null}
+
+          {activeDefinition && (
+            <nav className={styles.spaceNavigator} aria-label="功能空間切換">
+              <button onClick={() => moveBy(-1)} disabled={activeIndex === 0} aria-label="上一個空間"><ArrowLeft /></button>
+              <div><span>{activeIndex + 1} / {SPACES.length}</span>{SPACES.map((space) => <button key={space.id} className={space.id === state.activeSpace ? styles.spaceActive : ""} onClick={() => enterSpace(space.id)} aria-label={`前往${space.zhTitle}`} />)}</div>
+              <button onClick={() => moveBy(1)} disabled={activeIndex === SPACES.length - 1} aria-label="下一個空間"><ArrowRight /></button>
+              <small>{mobile ? "左右滑動切換空間" : "水平滑動／拖曳／方向鍵切換"}</small>
             </nav>
           )}
-
-          <button
-            className={styles.quickTrigger}
-            onClick={() => setQuickJumpOpen((open) => !open)}
-            aria-label="Quick Jump"
-            aria-expanded={quickJumpOpen}
-            aria-controls="quick-jump-menu"
-          >
-            <Map />
-            <span>Quick Jump</span>
-          </button>
-
-          {quickJumpOpen && (
-            <aside className={styles.quickMenu} id="quick-jump-menu">
-              <header>
-                <div>
-                  <span className={styles.kicker}>QUICK JUMP</span>
-                  <strong>直接前往</strong>
-                </div>
-                <button onClick={() => setQuickJumpOpen(false)} aria-label="關閉 Quick Jump">
-                  <X />
-                </button>
-              </header>
-              <div>
-                {ANCHORS.map((anchor) => (
-                  <button
-                    key={anchor.id}
-                    className={anchor.id === state.activeAnchor ? styles.quickActive : ""}
-                    onClick={() => jump(anchor.id)}
-                  >
-                    <anchor.icon />
-                    <span>{anchor.title}</span>
-                    <small>{String(anchor.index + 1).padStart(2, "0")}</small>
-                  </button>
-                ))}
-              </div>
-            </aside>
-          )}
-
-          {featureNote && <div className={styles.toast}><Sparkles />{featureNote}</div>}
         </>
       )}
 
-      {state.workMode && <DailyPlanPanel onBack={back} />}
+      {state.workMode && state.activeFeature === "daily-plan" && <DailyPlanPanel onBack={back} />}
+      {state.workMode && state.activeFeature && state.activeSpace !== "home" && state.activeSpace !== "planning" && (
+        <FeatureDetailPanel space={state.activeSpace} feature={state.activeFeature} onBack={back} />
+      )}
     </main>
   );
 }
